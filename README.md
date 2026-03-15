@@ -44,6 +44,11 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
    /humanize:gen-plan --input draft.md --output docs/plan.md
    ```
 
+   Or use the **plan refinement loop** for iterative improvement:
+   ```bash
+   /humanize:start-plan-loop --input draft.md --output docs/plan.md
+   ```
+
 2. **Run the loop**:
    ```bash
    /humanize:start-rlcr-loop docs/plan.md

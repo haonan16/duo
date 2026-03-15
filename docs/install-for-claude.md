@@ -51,6 +51,7 @@ After installing, you should see Humanize commands available:
 ```
 /humanize:start-rlcr-loop
 /humanize:gen-plan
+/humanize:start-plan-loop
 /humanize:ask-codex
 ```
 

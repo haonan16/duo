@@ -18,6 +18,7 @@ The loop continues until all acceptance criteria are met or no issues remain.
 | `/start-rlcr-loop <plan.md>` | Start iterative development with Codex review |
 | `/cancel-rlcr-loop` | Cancel active loop |
 | `/gen-plan --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
+| `/start-plan-loop --input <draft.md> --output <plan.md>` | Generate and iteratively refine plan with Codex |
 | `/start-pr-loop --claude\|--codex` | Start PR review loop with bot monitoring |
 | `/cancel-pr-loop` | Cancel active PR loop |
 | `/ask-codex [question]` | One-shot consultation with Codex |
@@ -72,6 +73,24 @@ Workflow:
 4. Engages user to resolve any issues found
 5. Generates a structured plan.md with acceptance criteria
 ```
+
+### start-plan-loop
+
+```
+/humanize:start-plan-loop --input <path/to/draft.md> --output <path/to/plan.md> [OPTIONS]
+
+OPTIONS:
+  --input <path>         Path to the input draft file (required)
+  --output <path>        Path to the output plan file (required)
+  --max <N>              Maximum refinement rounds (default: 5)
+  --codex-model <MODEL:EFFORT>
+                         Codex model and reasoning effort (default: gpt-5.4:xhigh)
+  --codex-timeout <SECONDS>
+                         Timeout for each Codex review in seconds (default: 5400)
+  -h, --help             Show help message
+```
+
+Generates an implementation plan from a draft document (Round 0), then iteratively refines it with Codex review (Round 1+). The loop stops when Codex outputs APPROVED or max rounds are reached.
 
 ### start-pr-loop
 
