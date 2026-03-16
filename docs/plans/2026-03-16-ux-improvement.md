@@ -282,18 +282,18 @@ else
     fail "missing reference to detection script"
 fi
 
-# Test 10: References /duo:run for plans
-if grep -q '/duo:run\|duo:run' "$START_FILE"; then
-    pass "references /duo:run"
+# Test 10: References setup-rlcr-loop.sh for running plans
+if grep -q 'setup-rlcr-loop' "$START_FILE"; then
+    pass "references setup-rlcr-loop.sh"
 else
-    fail "missing reference to /duo:run"
+    fail "missing reference to setup-rlcr-loop.sh"
 fi
 
-# Test 11: References /duo:draft for drafts
-if grep -q '/duo:draft\|duo:draft' "$START_FILE"; then
-    pass "references /duo:draft"
+# Test 11: References validate-gen-plan-io.sh for drafts
+if grep -q 'validate-gen-plan-io' "$START_FILE"; then
+    pass "references validate-gen-plan-io.sh"
 else
-    fail "missing reference to /duo:draft"
+    fail "missing reference to validate-gen-plan-io.sh"
 fi
 
 # Test 12: Supports --draft-only flag
@@ -374,11 +374,13 @@ allowed-tools:
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/detect-plan-structure.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh:*)"
+  - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/ask-codex.sh:*)"
   - "Read"
   - "Glob"
   - "Grep"
   - "Task"
   - "Write"
+  - "Edit"
   - "AskUserQuestion"
 hide-from-slash-command-tool: "true"
 ---
@@ -399,16 +401,22 @@ Parse `$ARGUMENTS` for:
 
 ### Case 1: `--review-only` flag present
 
-Run the development loop in skip-impl mode. Remove `--review-only` from the arguments and invoke `/duo:run --skip-impl` with the remaining arguments.
+Run the development loop in skip-impl mode. Remove `--review-only` from the arguments and run the setup script directly:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh" --skip-impl <remaining-args>
+```
 
 Report: "Starting code review (skipping implementation)..."
 
 ### Case 2: No file argument provided
 
-Check for an existing plan in the project:
+Check for an existing loop state in the project:
 1. Look for `.duo/loop/*/state.md` (active loop state)
-2. If found, report: "Found an active loop. Use `/duo:stop` to cancel it first, or `/duo:run` to resume."
+2. If found, report: "An active loop is already running. Use `/duo:stop` to cancel it first."
 3. If not found, report: "No file provided. Usage: `/duo:start <file.md>` or see `/duo:help` for all commands."
+
+Note: There is no "resume" capability. If a loop was cancelled, the user must start a new one.
 
 ### Case 3: File argument provided
 
@@ -421,25 +429,41 @@ Check for an existing plan in the project:
 
 3. **If exit code 0 (plan detected)**:
    - Report: "Detected: plan file (has Acceptance Criteria). Starting development loop..."
-   - Invoke `/duo:run <file>` with any passthrough options
+   - Run the setup script directly:
+     ```bash
+     "${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh" <file> <passthrough-options>
+     ```
+   - Then follow the same post-setup instructions as `commands/run.md` (Goal Tracker, summary writing, exit rules)
 
 4. **If exit code 1 (draft detected)**:
    - Report: "Detected: draft document (no plan structure). Generating plan first..."
    - Determine output path: `docs/plans/<input-basename>-plan.md`
      - Example: `ideas.md` produces `docs/plans/ideas-plan.md`
    - If `--draft-only` flag is present:
-     - Invoke `/duo:draft --input <file> --output <output-path>`
+     - Run IO validation: `"${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh" --input <file> --output <output-path>`
+     - Then follow the same draft workflow as `commands/draft.md` (relevance check, analysis, plan generation)
      - After completion, report the output path and stop
    - If `--draft-only` flag is NOT present:
-     - Invoke `/duo:draft --input <file> --output <output-path>`
+     - Run the full draft workflow (same as `commands/draft.md`)
      - After draft completes successfully, report: "Plan generated. Starting development loop..."
-     - Invoke `/duo:run <output-path>` with any passthrough options
+     - Run the setup script directly:
+       ```bash
+       "${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh" <output-path> <passthrough-options>
+       ```
+     - Then follow the same post-setup instructions as `commands/run.md`
 
 ## Error Handling
 
 - If the file does not exist: "File not found: <path>. Please check the path and try again."
-- If `/duo:draft` fails: Report the error and stop. Do not proceed to `/duo:run`.
-- If `/duo:run` fails: Report the error.
+- If the draft workflow fails: Report the error and stop. Do not proceed to the development loop.
+- If setup-rlcr-loop.sh fails: Report the error.
+
+## Important: Command Composition
+
+This command does NOT invoke other slash commands (that is not supported by the plugin system).
+Instead, it directly calls the same scripts and follows the same inline instructions that
+`commands/run.md` and `commands/draft.md` use. The allowed-tools list in the frontmatter
+includes all tools needed for both the draft and run workflows.
 ```
 
 **Step 5: Run test to verify it passes**
@@ -910,6 +934,9 @@ Rename the state directory from `.duo/rlcr/` to `.duo/loop/` and update the moni
 - Modify: `scripts/cancel-rlcr-loop.sh` (state dir path)
 - Modify: `hooks/lib/loop-common.sh` (state dir constants)
 - Modify: `hooks/loop-codex-stop-hook.sh` (state dir references)
+- Modify: `commands/stop.md` (user-facing "RLCR" text in description and body)
+- Modify: `commands/pr-stop.md` (user-facing ".duo/rlcr" reference)
+- Modify: `commands/run.md` (user-facing "RLCR" in description)
 - Modify: `docs/usage.md` (user-facing docs)
 - Modify: `docs/install-for-claude.md` (monitor instructions)
 - Modify: `README.md` (monitor instructions)
@@ -922,8 +949,10 @@ Rename the state directory from `.duo/rlcr/` to `.duo/loop/` and update the moni
 1. Identify the constant that defines the state directory path
 2. Change it in one place (the constant definition)
 3. Do a global find-replace of `.duo/rlcr` to `.duo/loop` across all files
-4. Update the monitor function to accept `duo monitor` as default (no required subcommand) and `duo monitor --pr` for PR loops
-5. Run the full test suite
+4. Replace user-facing "RLCR" with "development loop" or "loop" in all `commands/*.md` files
+5. Update the monitor function to accept `duo monitor` as default (no required subcommand) and `duo monitor --pr` for PR loops
+6. Add dual-read migration for in-flight loops
+7. Run the full test suite
 
 **Step 1: Find the state directory constant**
 
@@ -940,6 +969,25 @@ Expected files (41 based on grep):
 - Docs: `docs/usage.md`, `docs/install-for-kimi.md`
 - Templates in `prompt-template/`
 - Test files in `tests/`
+
+**Step 2b: Replace user-facing "RLCR" in command files**
+
+Update all `commands/*.md` files that contain user-facing "RLCR" text:
+- `commands/stop.md`: Change `description: "Cancel active RLCR loop"` to `description: "Cancel active development loop"`, change `# Cancel RLCR Loop` to `# Cancel Development Loop`, change "No active RLCR loop found" to "No active loop found"
+- `commands/pr-stop.md`: Change `.duo/rlcr/` to `.duo/loop/` and "RLCR loops" to "development loops"
+- `commands/run.md`: Change `# Start RLCR Loop` to `# Start Development Loop` and any user-facing "RLCR" in descriptions (keep internal references like `setup-rlcr-loop.sh` since those are script names)
+
+**Step 2c: Add dual-read migration for in-flight loops**
+
+To avoid breaking in-flight loops after upgrade, add a fallback in the state directory discovery logic. In `hooks/lib/loop-common.sh`, where the loop state directory is resolved:
+- First look for `.duo/loop/` (new path)
+- If not found, fall back to `.duo/rlcr/` (old path)
+- This ensures active loops started before the upgrade remain visible to the monitor and hooks
+
+Similarly, in `scripts/duo.sh` monitor functions:
+- Check `.duo/loop/` first, then fall back to `.duo/rlcr/`
+
+New loops will always use `.duo/loop/`. The fallback is read-only and will be removed in a future version.
 
 **Step 3: Update the monitor entry point in `scripts/duo.sh`**
 
@@ -966,7 +1014,15 @@ Expected: All tests pass. If any fail, fix them -- the failures will be from har
 **Step 7: Verify no user-facing "rlcr" remains**
 
 Run: `grep -ri 'rlcr' --include='*.md' . | grep -v 'docs/plans/' | grep -v '.git/'`
-Expected: Only internal code references (variable names, script filenames), no user-facing text.
+Expected: Only internal references in SKILL.md files (script paths like `setup-rlcr-loop.sh`), no user-facing text in commands/*.md, docs/*.md, or README.md.
+
+Specifically verify these files have NO user-facing "RLCR":
+- `commands/stop.md`
+- `commands/pr-stop.md`
+- `commands/run.md`
+- `docs/usage.md`
+- `docs/install-for-claude.md`
+- `README.md`
 
 Note: The script filenames `setup-rlcr-loop.sh`, `cancel-rlcr-loop.sh` are internal and do NOT need renaming. Only user-facing surfaces change.
 
@@ -981,17 +1037,32 @@ git commit -m "refactor: rename user-facing rlcr to loop in state dirs, monitor,
 
 ## Task 5: Improve hook error messages
 
-Add actionable tips to the 50 block messages across the 3 hook files that produce them.
+Add actionable tips to all block messages across hooks and templates.
 
 **Files:**
 - Modify: `hooks/loop-plan-file-validator.sh` (12 block messages)
 - Modify: `hooks/loop-codex-stop-hook.sh` (24 block messages)
 - Modify: `hooks/pr-loop-stop-hook.sh` (14 block messages)
+- Modify: `hooks/loop-bash-validator.sh` (block messages for bash workaround attempts)
+- Modify: `hooks/loop-write-validator.sh` (block messages for write attempts)
+- Modify: `hooks/loop-edit-validator.sh` (block messages for edit attempts)
+- Modify: `prompt-template/block/state-file-modification.md` (user-facing block text)
+- Modify: `prompt-template/block/finalize-state-file-modification.md` (user-facing block text)
+- Modify: Other `prompt-template/block/*.md` files that contain user-facing error text without actionable guidance
 - Test: existing test suite must pass
+
+**Step 0: Inventory all block message sources**
+
+Before editing, do a comprehensive inventory:
+1. Run `grep -r '"decision".*"block"' hooks/` to find all JSON block responses in hook scripts
+2. Run `grep -r '"decision".*"block"' hooks/lib/` to find block responses in shared helpers
+3. Read all files in `prompt-template/block/` -- these are template messages loaded by hooks and shown to users. Each one should be reviewed for clarity and actionable guidance.
+
+This inventory supersedes the file list above -- if additional sources are found, include them.
 
 **Step 1: Categorize block messages**
 
-Read each of the 3 files and categorize every `"decision": "block"` message by type:
+Read each file from the inventory and categorize every block message by type:
 - State file protection -- tip: "Use /duo:stop to cancel the active loop"
 - Git branch mismatch -- tip: "Switch back to the original branch or cancel with /duo:stop"
 - Git operation failure -- tip: "Check git status and try again"
