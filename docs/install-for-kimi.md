@@ -14,7 +14,21 @@ Duo provides three Agent Skills for kimi:
 
 ## Installation
 
-### Quick Install (Recommended)
+### Remote Install (No Clone Required)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/haonan16/duo/main/scripts/remote-install.sh | bash -s -- --target kimi
+```
+
+This downloads Duo temporarily and installs `duo`, `duo-gen-plan`, and `duo-rlcr` skills into `~/.config/agents/skills`. No local clone needed.
+
+To install for both Kimi and Codex at once:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/haonan16/duo/main/scripts/remote-install.sh | bash -s -- --target both
+```
+
+### Local Install (From Cloned Repo)
 
 From the Duo repo root, run:
 

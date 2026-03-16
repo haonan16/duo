@@ -6,6 +6,22 @@
 - `jq` -- JSON processor. Verify with `jq --version`.
 - `git` -- Git version control. Verify with `git --version`.
 
+### Setting Up Codex CLI
+
+If you do not have the Codex CLI installed:
+
+```bash
+npm install -g @openai/codex
+```
+
+Then configure your OpenAI API key:
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+```
+
+Add the export to your shell profile (`~/.bashrc`, `~/.zshrc`, or `~/.zprofile`) so it persists across sessions.
+
 ## Install
 
 Start Claude Code and run:

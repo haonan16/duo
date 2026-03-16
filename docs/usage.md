@@ -15,16 +15,16 @@ The loop continues until all acceptance criteria are met or no issues remain.
 
 | Command | Purpose |
 |---------|---------|
-| `/start <file.md>` | Smart start (auto-detects draft vs plan) |
-| `/run <plan.md>` | Start iterative development with Codex review |
-| `/stop` | Cancel active loop |
-| `/draft --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
-| `/plan --input <draft.md> --output <plan.md>` | Generate and iteratively refine plan with Codex |
-| `/pr --claude\|--codex` | Start PR review loop with bot monitoring |
-| `/pr-stop` | Cancel active PR loop |
-| `/ask [question]` | One-shot consultation with Codex |
-| `/setup` | Install, configure, verify prerequisites |
-| `/help` | Show all commands |
+| `/duo:start <file.md>` | Smart start (auto-detects draft vs plan) |
+| `/duo:run <plan.md>` | Start iterative development with Codex review |
+| `/duo:stop` | Cancel active loop |
+| `/duo:draft --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
+| `/duo:plan --input <draft.md> --output <plan.md>` | Generate and iteratively refine plan with Codex |
+| `/duo:pr --claude\|--codex` | Start PR review loop with bot monitoring |
+| `/duo:pr-stop` | Cancel active PR loop |
+| `/duo:ask [question]` | One-shot consultation with Codex |
+| `/duo:setup` | Install, configure, verify prerequisites |
+| `/duo:help` | Show all commands |
 
 ## Command Reference
 
