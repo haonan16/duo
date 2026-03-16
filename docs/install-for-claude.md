@@ -6,47 +6,20 @@
 - `jq` -- JSON processor. Verify with `jq --version`.
 - `git` -- Git version control. Verify with `git --version`.
 
-## Option 1: Git Marketplace (Recommended)
+## Install
 
 Start Claude Code and run:
 
 ```bash
-# Add the marketplace
 /plugin marketplace add haonan16/duo
-
-# Install the plugin
 /plugin install duo@haonan16
 ```
 
-## Option 2: Local Development
+Then run `/duo:setup` to verify prerequisites and configure monitoring.
 
-If you have the plugin cloned locally:
+## Verify
 
-```bash
-claude --plugin-dir /path/to/duo
-```
-
-## Option 3: Try Experimental Features (dev branch)
-
-The `dev` branch contains experimental features that are not yet released to `main`. To try them locally:
-
-```bash
-git clone https://github.com/haonan16/duo.git
-cd duo
-git checkout dev
-```
-
-Then start Claude Code with the local plugin directory:
-
-```bash
-claude --plugin-dir /path/to/duo
-```
-
-Note: The `dev` branch may contain unstable or incomplete features. For production use, stick with Option 1 (Git Marketplace) which tracks the stable `main` branch.
-
-## Verify Installation
-
-After installing, you should see Duo commands available:
+You should see Duo commands available:
 
 ```
 /duo:start
@@ -56,24 +29,6 @@ After installing, you should see Duo commands available:
 /duo:ask
 /duo:setup
 /duo:help
-```
-
-After installing, run `/duo:setup` to verify prerequisites and configure monitoring.
-
-## Monitor Setup (Optional)
-
-Add the monitoring helper to your shell for real-time progress tracking:
-
-```bash
-# Add to your .bashrc or .zshrc
-source ~/.claude/plugins/cache/haonan16/duo/<LATEST.VERSION>/scripts/duo.sh
-```
-
-Then use:
-
-```bash
-duo monitor        # Monitor development loop
-duo monitor --pr   # Monitor PR loop
 ```
 
 ## Other Install Guides
