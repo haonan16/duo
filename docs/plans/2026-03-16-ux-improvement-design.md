@@ -47,13 +47,13 @@ Decision logic:
 
 | Input file | What happens |
 |------------|-------------|
-| No file, plan exists in `.duo/` | Resume the last loop (`/duo:run` on existing plan) |
+| No file, active loop exists | Report active loop status; tell user to `/duo:stop` first or provide a file |
 | Markdown file without plan structure | Draft -> Plan -> Run (full pipeline) |
 | Markdown file with valid plan structure | Run directly (`/duo:run`) |
 | `--draft-only` flag | Stop after plan generation, do not start loop |
 | `--review-only` flag | Skip implementation, go to code review (`--skip-impl`) |
 
-Plan structure detection: check if the file has the required frontmatter fields (acceptance criteria, task list) that `gen-plan-template.md` produces. Simple grep, no AI call needed.
+Plan structure detection: check if the file has the three required sections from `gen-plan-template.md`: `## Goal Description`, `## Acceptance Criteria` (with at least one `AC-` entry), and `## Path Boundaries`. Simple grep, no AI call needed.
 
 User experience:
 
@@ -78,13 +78,12 @@ Options passthrough: any option not consumed by `/duo:start` gets forwarded to t
 
 | Old (internal) | New (user-facing) | Where |
 |---|---|---|
-| `rlcr` | `loop` or omitted entirely | monitor, state dirs, docs |
-| `.duo/rlcr/` | `.duo/loop/` | state directory |
+| `rlcr` | `loop` or omitted entirely | monitor CLI, docs, error messages |
 | `duo monitor rlcr` | `duo monitor` | shell command |
 | `duo monitor pr` | `duo monitor --pr` | shell command flag |
 | "Finalize phase" | "Review phase" | stop hook messages |
 
-Internal code can keep using `rlcr` in variable names -- only user-facing surfaces change.
+On-disk paths (`.duo/rlcr/`) and internal code stay unchanged to avoid migration complexity. The user never types these paths directly.
 
 ### 3b: `/duo:help` command
 

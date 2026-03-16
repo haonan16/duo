@@ -197,7 +197,7 @@ else
     fail "detect-plan-structure.sh missing or not executable"
 fi
 
-# Test 2: Detects a valid plan (has AC and Goal Description)
+# Test 2: Detects a valid plan (has Goal Description, AC, and Path Boundaries)
 cat > "$TMPDIR/plan.md" << 'PLAN'
 # My Plan
 
@@ -208,6 +208,14 @@ Build a feature
 - AC-1: Feature works
   - Positive Tests: it works
   - Negative Tests: it fails gracefully
+
+## Path Boundaries
+
+### Upper Bound
+Full implementation
+
+### Lower Bound
+Minimal implementation
 PLAN
 
 if "$DETECT" "$TMPDIR/plan.md" 2>/dev/null; then
@@ -216,7 +224,7 @@ else
     fail "should detect valid plan structure"
 fi
 
-# Test 3: Rejects a draft (no AC or Goal Description)
+# Test 3: Rejects a draft (no plan sections)
 cat > "$TMPDIR/draft.md" << 'DRAFT'
 # Ideas
 
@@ -245,18 +253,35 @@ else
     pass "rejects nonexistent file"
 fi
 
-# Test 6: Detects plan with just AC section (minimal plan)
-cat > "$TMPDIR/minimal-plan.md" << 'PLAN'
-# Minimal Plan
+# Test 6: Rejects file with AC but missing Goal Description and Path Boundaries
+cat > "$TMPDIR/partial-plan.md" << 'PLAN'
+# Partial Plan
 
 ## Acceptance Criteria
 - AC-1: Something
 PLAN
 
-if "$DETECT" "$TMPDIR/minimal-plan.md" 2>/dev/null; then
-    pass "detects minimal plan with just AC"
+if "$DETECT" "$TMPDIR/partial-plan.md" 2>/dev/null; then
+    fail "should reject plan missing Goal Description and Path Boundaries"
 else
-    fail "should detect minimal plan with AC section"
+    pass "rejects partial plan (AC only, missing required sections)"
+fi
+
+# Test 7: Rejects file with Goal Description and AC but missing Path Boundaries
+cat > "$TMPDIR/no-boundaries.md" << 'PLAN'
+# Almost Plan
+
+## Goal Description
+Build something
+
+## Acceptance Criteria
+- AC-1: Something
+PLAN
+
+if "$DETECT" "$TMPDIR/no-boundaries.md" 2>/dev/null; then
+    fail "should reject plan missing Path Boundaries"
+else
+    pass "rejects plan without Path Boundaries"
 fi
 
 # --- commands/start.md tests ---
@@ -336,9 +361,15 @@ Create `scripts/detect-plan-structure.sh`:
 ```bash
 #!/bin/bash
 #
-# Detect whether a markdown file has plan structure.
-# Exit 0 = plan (has Acceptance Criteria section)
-# Exit 1 = draft or invalid (no plan structure)
+# Detect whether a markdown file has plan structure matching gen-plan-template.md.
+#
+# A valid plan must have ALL of these sections (matching the template):
+#   - "## Goal Description"
+#   - "## Acceptance Criteria" with at least one "AC-" entry
+#   - "## Path Boundaries"
+#
+# Exit 0 = plan (matches template structure)
+# Exit 1 = draft or invalid (missing required sections)
 #
 # Usage: detect-plan-structure.sh <file>
 #
@@ -351,13 +382,13 @@ if [[ -z "$FILE" || ! -f "$FILE" ]]; then
     exit 1
 fi
 
-# A file is considered a plan if it has an "Acceptance Criteria" section
-# with at least one AC-N entry.
-if grep -q '## Acceptance Criteria' "$FILE" && grep -q 'AC-[0-9]' "$FILE"; then
-    exit 0
-fi
+# Check for the three required sections from gen-plan-template.md
+grep -q '## Goal Description' "$FILE" || exit 1
+grep -q '## Acceptance Criteria' "$FILE" || exit 1
+grep -q 'AC-[0-9]' "$FILE" || exit 1
+grep -q '## Path Boundaries' "$FILE" || exit 1
 
-exit 1
+exit 0
 ```
 
 Make executable: `chmod +x scripts/detect-plan-structure.sh`
@@ -485,8 +516,9 @@ git commit -m "feat: add /duo:start smart entry point with plan detection"
 Verifies prerequisites, installs skills for non-Claude platforms, configures monitor.
 
 **Files:**
-- Create: `commands/setup.md`
-- Create: `scripts/setup-environment.sh`
+- Create: `commands/setup.md` (Claude Code slash command)
+- Create: `scripts/setup-environment.sh` (shared logic, called by both paths)
+- Create: `scripts/setup.sh` (standalone entry point for non-Claude platforms)
 - Test: `tests/test-setup-command.sh`
 
 **Step 1: Write the setup script test**
@@ -910,16 +942,89 @@ All commands: /duo:help
 ```
 ```
 
-**Step 5: Run test to verify it passes**
+**Step 5: Create the standalone setup script for non-Claude platforms**
+
+Create `scripts/setup.sh`:
+
+```bash
+#!/bin/bash
+#
+# Standalone Duo setup for non-Claude platforms.
+# Runs prerequisite checks, skill installation, and shell configuration
+# interactively from the terminal (no Claude Code needed).
+#
+# Usage: ./scripts/setup.sh
+#
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+
+echo "=== Duo Setup ==="
+echo ""
+
+# Phase 1: Check prerequisites
+"$SCRIPT_DIR/setup-environment.sh" --check-prereqs || true
+echo ""
+
+# Phase 2: Detect and install for platforms
+PLATFORMS="$("$SCRIPT_DIR/setup-environment.sh" --detect-platform)"
+echo "Detected platforms: $PLATFORMS"
+
+for platform in $PLATFORMS; do
+    case "$platform" in
+        codex|kimi)
+            read -rp "Install Duo skills for $platform? [y/N] " answer
+            if [[ "$answer" =~ ^[Yy] ]]; then
+                "$SCRIPT_DIR/setup-environment.sh" --install-skills "$platform"
+            fi
+            ;;
+    esac
+done
+echo ""
+
+# Phase 3: Configure monitor
+echo "Checking shell configuration..."
+"$SCRIPT_DIR/setup-environment.sh" --configure-shell | while IFS= read -r line; do
+    case "$line" in
+        ALREADY_CONFIGURED:*)
+            echo "Monitor already configured in ${line#ALREADY_CONFIGURED:}"
+            ;;
+        NEEDS_CONFIGURE:*)
+            rc_file="${line#NEEDS_CONFIGURE:}"
+            read -rp "Add Duo monitor helper to $rc_file? [y/N] " answer
+            if [[ "$answer" =~ ^[Yy] ]]; then
+                "$SCRIPT_DIR/setup-environment.sh" --add-to-rc "$rc_file"
+            fi
+            ;;
+        NO_RC_FILES)
+            echo "No shell RC files found (.bashrc/.zshrc)"
+            ;;
+    esac
+done
+
+echo ""
+echo "Setup complete!"
+echo ""
+echo "Quick start (in Claude Code):"
+echo "  /duo:start <file.md>   Generate plan and start development"
+echo ""
+echo "Monitor (in another terminal):"
+echo "  duo monitor"
+```
+
+Make executable: `chmod +x scripts/setup.sh`
+
+**Step 6: Run test to verify it passes**
 
 Run: `bash tests/test-setup-command.sh 2>&1`
 Expected: All PASS
 
-**Step 6: Commit**
+**Step 7: Commit**
 
 ```bash
-git add commands/setup.md scripts/setup-environment.sh tests/test-setup-command.sh
-git commit -m "feat: add /duo:setup command for guided installation and configuration"
+git add commands/setup.md scripts/setup-environment.sh scripts/setup.sh tests/test-setup-command.sh
+git commit -m "feat: add /duo:setup command and standalone setup script"
 ```
 
 ---
@@ -929,48 +1034,25 @@ git commit -m "feat: add /duo:setup command for guided installation and configur
 Rename the state directory from `.duo/rlcr/` to `.duo/loop/` and update the monitor command from `duo monitor rlcr` to `duo monitor` (with `--pr` flag for PR loops).
 
 **Files:**
-- Modify: `scripts/duo.sh` (monitor entry point and function names)
-- Modify: `scripts/setup-rlcr-loop.sh` (state dir path)
-- Modify: `scripts/cancel-rlcr-loop.sh` (state dir path)
-- Modify: `hooks/lib/loop-common.sh` (state dir constants)
-- Modify: `hooks/loop-codex-stop-hook.sh` (state dir references)
+- Modify: `scripts/duo.sh` (monitor entry point: add default subcommand and --pr flag)
 - Modify: `commands/stop.md` (user-facing "RLCR" text in description and body)
-- Modify: `commands/pr-stop.md` (user-facing ".duo/rlcr" reference)
-- Modify: `commands/run.md` (user-facing "RLCR" in description)
-- Modify: `docs/usage.md` (user-facing docs)
+- Modify: `commands/pr-stop.md` (user-facing "RLCR" reference)
+- Modify: `commands/run.md` (user-facing "RLCR" in heading)
+- Modify: `docs/usage.md` (monitor commands, terminology)
 - Modify: `docs/install-for-claude.md` (monitor instructions)
-- Modify: `README.md` (monitor instructions)
-- Modify: `.gitignore` (state dir pattern)
-- Modify: multiple test files (state dir references)
+- Modify: `README.md` (monitor instructions, quick start)
 - Test: existing test suite must pass after changes
 
-**This task has high blast radius. It touches 40+ files. The approach is:**
+**Scope: user-facing text only.** On-disk paths (`.duo/rlcr/`), script filenames, hooks, and internal variables are NOT changed. This keeps the blast radius small and avoids migration complexity.
 
-1. Identify the constant that defines the state directory path
-2. Change it in one place (the constant definition)
-3. Do a global find-replace of `.duo/rlcr` to `.duo/loop` across all files
-4. Replace user-facing "RLCR" with "development loop" or "loop" in all `commands/*.md` files
-5. Update the monitor function to accept `duo monitor` as default (no required subcommand) and `duo monitor --pr` for PR loops
-6. Add dual-read migration for in-flight loops
-7. Run the full test suite
+**Approach:**
 
-**Step 1: Find the state directory constant**
+1. Replace user-facing "RLCR" with "development loop" or "loop" in commands/*.md and docs
+2. Update the monitor function to accept `duo monitor` as default and `duo monitor --pr`
+3. Update docs to use new monitor syntax
+4. Run test suite to verify nothing breaks
 
-Read `hooks/lib/loop-common.sh` and find where `.duo/rlcr` is defined as a constant. Also check `scripts/setup-rlcr-loop.sh` for the directory creation.
-
-**Step 2: Replace `.duo/rlcr` with `.duo/loop` across all files**
-
-Use Edit tool to replace in each file. Key files (use `grep -r '\.duo/rlcr' --include='*.sh' --include='*.md' --include='*.json'` to find the complete list, excluding `docs/plans/`).
-
-Expected files (41 based on grep):
-- All hook files in `hooks/`
-- All scripts in `scripts/`
-- Skill files in `skills/`
-- Docs: `docs/usage.md`, `docs/install-for-kimi.md`
-- Templates in `prompt-template/`
-- Test files in `tests/`
-
-**Step 2b: Replace user-facing "RLCR" in command files**
+**Step 1: Replace user-facing "RLCR" in command files**
 
 Update all `commands/*.md` files that contain user-facing "RLCR" text:
 - `commands/stop.md`: Change `description: "Cancel active RLCR loop"` to `description: "Cancel active development loop"`, change `# Cancel RLCR Loop` to `# Cancel Development Loop`, change "No active RLCR loop found" to "No active loop found"
@@ -979,54 +1061,48 @@ Update all `commands/*.md` files that contain user-facing "RLCR" text:
 
 **Step 2c: Add dual-read migration for in-flight loops**
 
-To avoid breaking in-flight loops after upgrade, add a fallback in the state directory discovery logic. In `hooks/lib/loop-common.sh`, where the loop state directory is resolved:
-- First look for `.duo/loop/` (new path)
-- If not found, fall back to `.duo/rlcr/` (old path)
-- This ensures active loops started before the upgrade remain visible to the monitor and hooks
+To avoid breaking in-flight loops after upgrade, keep the on-disk storage path stable at `.duo/rlcr/` and only rename user-facing CLI terms and documentation. This is the safest approach because:
+- `setup-rlcr-loop.sh`, `cancel-rlcr-loop.sh`, and all hooks hard-code `.duo/rlcr` in dozens of places
+- Dual-read fallback across setup, cancel, hooks, and monitor is fragile and hard to test
+- The user never types `.duo/rlcr` -- it is an internal implementation detail
 
-Similarly, in `scripts/duo.sh` monitor functions:
-- Check `.duo/loop/` first, then fall back to `.duo/rlcr/`
+**What changes (user-facing only):**
+- `duo monitor rlcr` becomes `duo monitor` (keep `rlcr` as hidden alias)
+- `duo monitor pr` becomes `duo monitor --pr` (keep `pr` as hidden alias)
+- All docs, command descriptions, and error messages say "loop" not "RLCR"
+- The `.duo/rlcr/` on-disk path stays unchanged
 
-New loops will always use `.duo/loop/`. The fallback is read-only and will be removed in a future version.
+**What does NOT change:**
+- `.duo/rlcr/` directory path in scripts, hooks, and tests
+- Script filenames (`setup-rlcr-loop.sh`, `cancel-rlcr-loop.sh`)
+- Internal variable names
 
-**Step 3: Update the monitor entry point in `scripts/duo.sh`**
+**Step 2: Update the monitor entry point in `scripts/duo.sh`**
 
 The `duo()` function currently dispatches on `duo monitor rlcr` and `duo monitor pr`. Change to:
 - `duo monitor` (no arg or `--loop`) = development loop monitor (was `duo monitor rlcr`)
 - `duo monitor --pr` = PR loop monitor (was `duo monitor pr`)
 - Keep `duo monitor rlcr` and `duo monitor pr` as hidden aliases for backward compatibility
 
-**Step 4: Update user-facing docs**
+**Step 3: Update user-facing docs**
 
 - `docs/usage.md`: Change `duo monitor rlcr` to `duo monitor`, `duo monitor pr` to `duo monitor --pr`
 - `docs/install-for-claude.md`: Same changes in monitor section
 - `README.md`: Same changes in quick start
 
-**Step 5: Update `.gitignore`**
-
-If `.duo/rlcr` is referenced, change to `.duo/loop`. The existing `.duo*` glob pattern may already cover this, but verify.
-
-**Step 6: Run the full test suite**
+**Step 4: Run the full test suite**
 
 Run: `bash tests/run-all-tests.sh 2>&1`
 Expected: All tests pass. If any fail, fix them -- the failures will be from hardcoded `.duo/rlcr` paths in test assertions.
 
-**Step 7: Verify no user-facing "rlcr" remains**
+**Step 5: Verify no user-facing "RLCR" remains in docs and commands**
 
-Run: `grep -ri 'rlcr' --include='*.md' . | grep -v 'docs/plans/' | grep -v '.git/'`
-Expected: Only internal references in SKILL.md files (script paths like `setup-rlcr-loop.sh`), no user-facing text in commands/*.md, docs/*.md, or README.md.
+Run: `grep -ri 'rlcr' commands/ docs/ README.md | grep -v 'docs/plans/'`
+Expected: No matches. All user-facing text should say "loop" or "development loop" instead of "RLCR".
 
-Specifically verify these files have NO user-facing "RLCR":
-- `commands/stop.md`
-- `commands/pr-stop.md`
-- `commands/run.md`
-- `docs/usage.md`
-- `docs/install-for-claude.md`
-- `README.md`
+Internal files (hooks/, scripts/, tests/, skills/) will still contain "rlcr" in variable names, script filenames, and `.duo/rlcr` paths -- this is expected and correct.
 
-Note: The script filenames `setup-rlcr-loop.sh`, `cancel-rlcr-loop.sh` are internal and do NOT need renaming. Only user-facing surfaces change.
-
-**Step 8: Commit**
+**Step 6: Commit**
 
 ```bash
 git add -A
@@ -1194,7 +1270,7 @@ git commit -m "chore: bump version to 1.17.0 for UX improvements"
 | 1 | `/duo:help` command | New command | - |
 | 2 | `/duo:start` smart entry | New command + script | - |
 | 3 | `/duo:setup` command | New command + script | - |
-| 4 | Rename rlcr to loop | Refactor (40+ files) | - |
+| 4 | Rename user-facing rlcr to loop | Content edit (commands, docs, monitor) | - |
 | 5 | Improve hook messages | Content edit (50 messages) | Task 4 |
 | 6 | Update docs | Content edit | Tasks 1-5 |
 | 7 | Version bump + verify | Edit + test | Tasks 1-6 |
