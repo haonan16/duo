@@ -1,14 +1,14 @@
 {
-  "name": "humania",
+  "name": "duo-dev",
   "owner": {
-    "name": "humania-org"
+    "name": "duo-dev"
   },
   "plugins": [
     {
-      "name": "humanize",
+      "name": "duo",
       "source": "./",
-      "description": "Humanize - An iterative development plugin that uses Codex to review Claude's work. Creates a feedback loop where Claude implements plans and Codex independently reviews progress, ensuring quality through continuous refinement.",
-      "version": "1.15.0"
+      "description": "Duo - An iterative development plugin that uses Codex to review Claude's work. Creates a feedback loop where Claude implements plans and Codex independently reviews progress, ensuring quality through continuous refinement.",
+      "version": "1.16.0"
     }
   ]
 }

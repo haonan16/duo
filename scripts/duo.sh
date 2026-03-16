@@ -1,18 +1,18 @@
 #!/bin/bash
-# humanize.sh - Humanize shell utilities
+# duo.sh - Duo shell utilities
 # Part of rc.d configuration
 # Compatible with both bash and zsh
 
 # Source shared monitor utilities (per plan: scripts/lib/monitor-common.sh)
-HUMANIZE_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-if [[ -f "$HUMANIZE_SCRIPT_DIR/lib/monitor-common.sh" ]]; then
-    source "$HUMANIZE_SCRIPT_DIR/lib/monitor-common.sh"
+DUO_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+if [[ -f "$DUO_SCRIPT_DIR/lib/monitor-common.sh" ]]; then
+    source "$DUO_SCRIPT_DIR/lib/monitor-common.sh"
 fi
 
 # Source shared loop library (provides DEFAULT_CODEX_MODEL and other constants)
-HUMANIZE_HOOKS_LIB_DIR="$(cd "$HUMANIZE_SCRIPT_DIR/../hooks/lib" && pwd)"
-if [[ -f "$HUMANIZE_HOOKS_LIB_DIR/loop-common.sh" ]]; then
-    source "$HUMANIZE_HOOKS_LIB_DIR/loop-common.sh"
+DUO_HOOKS_LIB_DIR="$(cd "$DUO_SCRIPT_DIR/../hooks/lib" && pwd)"
+if [[ -f "$DUO_HOOKS_LIB_DIR/loop-common.sh" ]]; then
+    source "$DUO_HOOKS_LIB_DIR/loop-common.sh"
 fi
 
 # ========================================
@@ -20,8 +20,8 @@ fi
 # ========================================
 
 # Split pipe-delimited string into array (bash/zsh compatible)
-# Usage: humanize_split_to_array "output_array_name" "value1|value2|value3"
-humanize_split_to_array() {
+# Usage: duo_split_to_array "output_array_name" "value1|value2|value3"
+duo_split_to_array() {
     local arr_name="$1"
     local input="$2"
     if [[ -n "${ZSH_VERSION:-}" ]]; then
@@ -35,7 +35,7 @@ humanize_split_to_array() {
 
 # Parse goal-tracker.md and return summary values
 # Returns: total_acs|completed_acs|active_tasks|completed_tasks|deferred_tasks|open_issues|goal_summary
-humanize_parse_goal_tracker() {
+duo_parse_goal_tracker() {
     local tracker_file="$1"
     if [[ ! -f "$tracker_file" ]]; then
         echo "0|0|0|0|0|0|No goal tracker"
@@ -119,7 +119,7 @@ humanize_parse_goal_tracker() {
 
 # Detect special git repository states
 # Returns: state_name (one of: normal, detached, rebase, merge, shallow, permission_error)
-humanize_detect_git_state() {
+duo_detect_git_state() {
     local git_dir
 
     # Check if we're in a git repo and can access it
@@ -169,7 +169,7 @@ humanize_detect_git_state() {
 
 # Parse git status and return summary values
 # Returns: modified|added|deleted|untracked|insertions|deletions
-humanize_parse_git_status() {
+duo_parse_git_status() {
     # Check if we're in a git repo
     if ! git rev-parse --git-dir &>/dev/null 2>&1; then
         echo "0|0|0|0|0|0|not a git repo"
@@ -219,24 +219,24 @@ humanize_parse_git_status() {
 # Monitor function
 # ========================================
 
-# Monitor the latest Codex run log from .humanize/rlcr
+# Monitor the latest Codex run log from .duo/rlcr
 # Automatically switches to newer logs when they appear
 # Features a fixed status bar at the top showing session info
-_humanize_monitor_codex() {
+_duo_monitor_codex() {
     # Enable 0-indexed arrays in zsh for bash compatibility
     # This affects all _split_to_array calls within this function
     [[ -n "${ZSH_VERSION:-}" ]] && setopt localoptions ksharrays
 
-    local loop_dir=".humanize/rlcr"
+    local loop_dir=".duo/rlcr"
     local current_file=""
     local current_session_dir=""
     local check_interval=2  # seconds between checking for new files
     local status_bar_height=11  # number of lines for status bar (includes loop status line)
 
-    # Check if .humanize/rlcr exists
+    # Check if .duo/rlcr exists
     if [[ ! -d "$loop_dir" ]]; then
         echo "Error: $loop_dir directory not found in current directory"
-        echo "Are you in a project with an active humanize loop?"
+        echo "Are you in a project with an active duo loop?"
         return 1
     fi
 
@@ -246,7 +246,7 @@ _humanize_monitor_codex() {
     }
 
     # Function to find the latest codex log file for a specific session
-    # Log files are now in $HOME/.cache/humanize/<sanitized-project-path>/<timestamp>/ to avoid context pollution
+    # Log files are now in $HOME/.cache/duo/<sanitized-project-path>/<timestamp>/ to avoid context pollution
     # Respects XDG_CACHE_HOME for testability in restricted environments
     # Searches for both implementation phase logs (codex-run.log) and review phase logs (codex-review.log)
     # Usage: _find_latest_codex_log [session_dir]
@@ -256,7 +256,7 @@ _humanize_monitor_codex() {
         local target_session_dir="$1"
         local latest=""
         local latest_round=-1
-        local cache_base="${XDG_CACHE_HOME:-$HOME/.cache}/humanize"
+        local cache_base="${XDG_CACHE_HOME:-$HOME/.cache}/duo"
 
         # Require explicit session directory to avoid showing logs from wrong session
         if [[ -z "$target_session_dir" || ! -d "$target_session_dir" ]]; then
@@ -367,14 +367,14 @@ _humanize_monitor_codex() {
     }
 
     # Internal wrappers that call top-level functions
-    # These maintain backward compatibility within _humanize_monitor_codex
-    _parse_goal_tracker() { humanize_parse_goal_tracker "$@"; }
-    _parse_git_status() { humanize_parse_git_status "$@"; }
-    _split_to_array() { humanize_split_to_array "$@"; }
+    # These maintain backward compatibility within _duo_monitor_codex
+    _parse_goal_tracker() { duo_parse_goal_tracker "$@"; }
+    _parse_git_status() { duo_parse_git_status "$@"; }
+    _split_to_array() { duo_split_to_array "$@"; }
 
     # Draw the status bar at the top
     _draw_status_bar() {
-        # Note: ksharrays is set at _humanize_monitor_codex() level for zsh compatibility
+        # Note: ksharrays is set at _duo_monitor_codex() level for zsh compatibility
 
         local session_dir="$1"
         local log_file="$2"
@@ -462,7 +462,7 @@ _humanize_monitor_codex() {
 
         # Move to top and draw directly (no pre-clearing to avoid flicker)
         tput cup 0 0
-        printf "${bg}${bold}%-${term_width}s${reset}${clr_eol}\n" " Humanize Loop Monitor"
+        printf "${bg}${bold}%-${term_width}s${reset}${clr_eol}\n" " Duo Loop Monitor"
         printf "${cyan}Session Started:${reset} ${start_display}${clr_eol}\n"
         # Format full_review_round display (show in parentheses if available)
         local full_review_display=""
@@ -611,7 +611,7 @@ _humanize_monitor_codex() {
         local term_width=$(tput cols)
         local term_height=$(tput lines)
         local min_height=$((status_bar_height + 3))
-        local message="This Humanize Monitor requires at least $min_height lines to work"
+        local message="This Duo Monitor requires at least $min_height lines to work"
         local msg_len=${#message}
         local center_row=$((term_height / 2))
         local start_col=$(( (term_width - msg_len) / 2 ))
@@ -776,7 +776,7 @@ _humanize_monitor_codex() {
     while [[ "$monitor_running" == "true" ]]; do
         # Check if loop directory still exists (graceful exit if deleted)
         if [[ ! -d "$loop_dir" ]]; then
-            _graceful_stop ".humanize/rlcr directory no longer exists"
+            _graceful_stop ".duo/rlcr directory no longer exists"
             return 0
         fi
 
@@ -836,7 +836,7 @@ _humanize_monitor_codex() {
 
                 # Check if loop directory still exists (graceful exit if deleted)
                 if [[ ! -d "$loop_dir" ]]; then
-                    _graceful_stop ".humanize/rlcr directory no longer exists"
+                    _graceful_stop ".duo/rlcr directory no longer exists"
                     return 0
                 fi
 
@@ -947,7 +947,7 @@ _humanize_monitor_codex() {
 
             # Check if loop directory still exists (graceful exit if deleted)
             if [[ ! -d "$loop_dir" ]]; then
-                _graceful_stop ".humanize/rlcr directory no longer exists"
+                _graceful_stop ".duo/rlcr directory no longer exists"
                 return 0
             fi
 
@@ -1100,8 +1100,8 @@ _humanize_monitor_codex() {
     fi
 }
 
-# Main humanize function
-humanize() {
+# Main duo function
+duo() {
     local cmd="$1"
     shift
 
@@ -1111,21 +1111,21 @@ humanize() {
             shift 2>/dev/null || true
             case "$target" in
                 rlcr)
-                    _humanize_monitor_codex "$@"
+                    _duo_monitor_codex "$@"
                     ;;
                 pr)
-                    _humanize_monitor_pr "$@"
+                    _duo_monitor_pr "$@"
                     ;;
                 skill)
-                    _humanize_monitor_skill "$@"
+                    _duo_monitor_skill "$@"
                     ;;
                 *)
-                    echo "Usage: humanize monitor <rlcr|pr|skill>"
+                    echo "Usage: duo monitor <rlcr|pr|skill>"
                     echo ""
                     echo "Subcommands:"
-                    echo "  rlcr    Monitor the latest RLCR loop log from .humanize/rlcr"
-                    echo "  pr      Monitor the latest PR loop from .humanize/pr-loop"
-                    echo "  skill   Monitor ask-codex skill invocations from .humanize/skill"
+                    echo "  rlcr    Monitor the latest RLCR loop log from .duo/rlcr"
+                    echo "  pr      Monitor the latest PR loop from .duo/pr-loop"
+                    echo "  skill   Monitor ask-codex skill invocations from .duo/skill"
                     echo ""
                     echo "Features:"
                     echo "  - Fixed status bar showing session info, round progress, model config"
@@ -1137,7 +1137,7 @@ humanize() {
             esac
             ;;
         *)
-            echo "Usage: humanize <command> [args]"
+            echo "Usage: duo <command> [args]"
             echo ""
             echo "Commands:"
             echo "  monitor rlcr    Monitor the latest RLCR loop log"
@@ -1152,12 +1152,12 @@ humanize() {
 # PR Loop Monitor Function
 # ========================================
 
-# Monitor the latest PR loop from .humanize/pr-loop with fixed status bar and rolling tail
-_humanize_monitor_pr() {
+# Monitor the latest PR loop from .duo/pr-loop with fixed status bar and rolling tail
+_duo_monitor_pr() {
     # Enable 0-indexed arrays in zsh for bash compatibility
     [[ -n "${ZSH_VERSION:-}" ]] && setopt localoptions ksharrays
 
-    local loop_dir=".humanize/pr-loop"
+    local loop_dir=".duo/pr-loop"
     local current_file=""
     local current_session_dir=""
     local check_interval=2  # seconds between checking for new files
@@ -1177,7 +1177,7 @@ _humanize_monitor_pr() {
         esac
     done
 
-    # Check if .humanize/pr-loop exists
+    # Check if .duo/pr-loop exists
     if [[ ! -d "$loop_dir" ]]; then
         echo "Error: $loop_dir directory not found in current directory"
         echo "Are you in a project with an active PR loop?"
@@ -1359,8 +1359,8 @@ _humanize_monitor_pr() {
 
         # Goal tracker issue stats
         local goal_tracker_file="$session_dir/goal-tracker.md"
-        if [[ -f "$goal_tracker_file" ]] && type humanize_parse_pr_goal_tracker &>/dev/null; then
-            local tracker_stats=$(humanize_parse_pr_goal_tracker "$goal_tracker_file")
+        if [[ -f "$goal_tracker_file" ]] && type duo_parse_pr_goal_tracker &>/dev/null; then
+            local tracker_stats=$(duo_parse_pr_goal_tracker "$goal_tracker_file")
             local total_issues resolved_issues remaining_issues last_reviewer
             IFS='|' read -r total_issues resolved_issues remaining_issues last_reviewer <<< "$tracker_stats"
             if [[ "$total_issues" != "0" ]] || [[ "$resolved_issues" != "0" ]]; then
@@ -1584,7 +1584,7 @@ _humanize_monitor_pr() {
     fi
 }
 
-# Source skill monitor (provides _humanize_monitor_skill)
-if [[ -f "$HUMANIZE_SCRIPT_DIR/lib/monitor-skill.sh" ]]; then
-    source "$HUMANIZE_SCRIPT_DIR/lib/monitor-skill.sh"
+# Source skill monitor (provides _duo_monitor_skill)
+if [[ -f "$DUO_SCRIPT_DIR/lib/monitor-skill.sh" ]]; then
+    source "$DUO_SCRIPT_DIR/lib/monitor-skill.sh"
 fi

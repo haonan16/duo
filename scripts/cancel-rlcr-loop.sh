@@ -67,7 +67,7 @@ done
 # ========================================
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/rlcr"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/rlcr"
 
 # Source shared loop library for find_active_loop
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
@@ -149,7 +149,7 @@ fi
 touch "$CANCEL_SIGNAL"
 
 # Clean up any pending session_id signal file (setup may not have completed)
-rm -f "$PROJECT_ROOT/.humanize/.pending-session-id"
+rm -f "$PROJECT_ROOT/.duo/.pending-session-id"
 
 # Rename state file to cancel-state.md
 mv "$ACTIVE_STATE_FILE" "$LOOP_DIR/cancel-state.md"

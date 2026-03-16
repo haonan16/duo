@@ -241,8 +241,8 @@ GHEOF
 create_pr_loop_state() {
     local dir="$1"
     local round="${2:-0}"
-    mkdir -p "$dir/.humanize/pr-loop/2026-01-19_00-00-00"
-    cat > "$dir/.humanize/pr-loop/2026-01-19_00-00-00/state.md" << EOF
+    mkdir -p "$dir/.duo/pr-loop/2026-01-19_00-00-00"
+    cat > "$dir/.duo/pr-loop/2026-01-19_00-00-00/state.md" << EOF
 ---
 current_round: $round
 max_iterations: 42
@@ -291,10 +291,10 @@ run_fetch_tests() {
 
     # Test 1: find_active_pr_loop detects PR loop state
     echo "Test 1: PR loop state detection"
-    mkdir -p "$TEST_DIR/prloop1/.humanize/pr-loop/2026-01-19_00-00-00"
+    mkdir -p "$TEST_DIR/prloop1/.duo/pr-loop/2026-01-19_00-00-00"
     create_pr_loop_state "$TEST_DIR/prloop1"
 
-    ACTIVE=$(find_active_pr_loop "$TEST_DIR/prloop1/.humanize/pr-loop" 2>/dev/null || echo "")
+    ACTIVE=$(find_active_pr_loop "$TEST_DIR/prloop1/.duo/pr-loop" 2>/dev/null || echo "")
     if [[ "$ACTIVE" == *"2026-01-19"* ]]; then
         pass "PR loop state detected"
     else
@@ -304,8 +304,8 @@ run_fetch_tests() {
     # Test 2: PR loop with YAML list active_bots
     echo ""
     echo "Test 2: PR loop with YAML list active_bots"
-    mkdir -p "$TEST_DIR/prloop2/.humanize/pr-loop/2026-01-19_00-00-00"
-    cat > "$TEST_DIR/prloop2/.humanize/pr-loop/2026-01-19_00-00-00/state.md" << 'EOF'
+    mkdir -p "$TEST_DIR/prloop2/.duo/pr-loop/2026-01-19_00-00-00"
+    cat > "$TEST_DIR/prloop2/.duo/pr-loop/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -322,7 +322,7 @@ review_started: false
 EOF
 
     # Verify the file can be read
-    if grep -q "active_bots:" "$TEST_DIR/prloop2/.humanize/pr-loop/2026-01-19_00-00-00/state.md"; then
+    if grep -q "active_bots:" "$TEST_DIR/prloop2/.duo/pr-loop/2026-01-19_00-00-00/state.md"; then
         pass "YAML list active_bots format accepted"
     else
         fail "YAML list format" "contains active_bots" "not found"
@@ -331,8 +331,8 @@ EOF
     # Test 3: PR loop state with missing pr_number
     echo ""
     echo "Test 3: PR loop state with missing pr_number"
-    mkdir -p "$TEST_DIR/prloop3/.humanize/pr-loop/2026-01-19_00-00-00"
-    cat > "$TEST_DIR/prloop3/.humanize/pr-loop/2026-01-19_00-00-00/state.md" << 'EOF'
+    mkdir -p "$TEST_DIR/prloop3/.duo/pr-loop/2026-01-19_00-00-00"
+    cat > "$TEST_DIR/prloop3/.duo/pr-loop/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -344,7 +344,7 @@ review_started: false
 EOF
 
     # Should still be detectable as an active loop
-    ACTIVE=$(find_active_pr_loop "$TEST_DIR/prloop3/.humanize/pr-loop" 2>/dev/null || echo "")
+    ACTIVE=$(find_active_pr_loop "$TEST_DIR/prloop3/.duo/pr-loop" 2>/dev/null || echo "")
     if [[ -n "$ACTIVE" ]]; then
         pass "PR loop without pr_number still detected"
     else
@@ -587,8 +587,8 @@ run_poll_tests() {
     # Test 13: Stop hook with corrupted state
     echo ""
     echo "Test 13: Stop hook with corrupted state"
-    mkdir -p "$TEST_DIR/stop2/.humanize/pr-loop/2026-01-19_00-00-00"
-    echo "not valid yaml [[[" > "$TEST_DIR/stop2/.humanize/pr-loop/2026-01-19_00-00-00/state.md"
+    mkdir -p "$TEST_DIR/stop2/.duo/pr-loop/2026-01-19_00-00-00"
+    echo "not valid yaml [[[" > "$TEST_DIR/stop2/.duo/pr-loop/2026-01-19_00-00-00/state.md"
     init_basic_git_repo "$TEST_DIR/stop2"
 
     set +e
@@ -606,11 +606,11 @@ run_poll_tests() {
     # Test 14: approve-state.md directory structure
     echo ""
     echo "Test 14: approve-state.md directory structure"
-    mkdir -p "$TEST_DIR/stop3/.humanize/pr-loop/2026-01-19_00-00-00"
+    mkdir -p "$TEST_DIR/stop3/.duo/pr-loop/2026-01-19_00-00-00"
     create_pr_loop_state "$TEST_DIR/stop3"
 
     # The approve-state.md path should be writable
-    APPROVE_PATH="$TEST_DIR/stop3/.humanize/pr-loop/2026-01-19_00-00-00/approve-state.md"
+    APPROVE_PATH="$TEST_DIR/stop3/.duo/pr-loop/2026-01-19_00-00-00/approve-state.md"
     touch "$APPROVE_PATH" 2>/dev/null
     if [[ -f "$APPROVE_PATH" ]]; then
         pass "approve-state.md path is writable"

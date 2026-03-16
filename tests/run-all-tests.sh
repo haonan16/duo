@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Run all test suites for the Humanize plugin (parallel execution)
+# Run all test suites for the Duo plugin (parallel execution)
 #
 # Usage: ./tests/run-all-tests.sh
 #
@@ -24,7 +24,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 echo "========================================"
-echo "Running All Humanize Plugin Tests"
+echo "Running All Duo Plugin Tests"
 echo "========================================"
 echo ""
 
@@ -45,7 +45,7 @@ TEST_SUITES=(
     "test-finalize-phase.sh"
     "test-codex-review-merge.sh"
     "test-cancel-signal-file.sh"
-    "test-humanize-escape.sh"
+    "test-duo-escape.sh"
     "test-zsh-monitor-safety.sh"
     "test-monitor-runtime.sh"
     "test-monitor-e2e-deletion.sh"

@@ -46,8 +46,8 @@ echo ""
 
 # Setup test loop directory structure
 setup_test_env() {
-    LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
-    CACHE_DIR="$XDG_CACHE_HOME/humanize/codex-review"
+    LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
+    CACHE_DIR="$XDG_CACHE_HOME/duo/codex-review"
     mkdir -p "$LOOP_DIR"
     mkdir -p "$CACHE_DIR"
     export LOOP_DIR CACHE_DIR

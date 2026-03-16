@@ -23,7 +23,7 @@ setup_active_loop_fixture() {
     local branch
     branch=$(git -C "$project_dir" rev-parse --abbrev-ref HEAD)
 
-    mkdir -p "$project_dir/.humanize/rlcr/2026-03-01_00-00-00"
+    mkdir -p "$project_dir/.duo/rlcr/2026-03-01_00-00-00"
 
     cat > "$project_dir/plan.md" << 'PLANEOF'
 # Test Plan
@@ -34,9 +34,9 @@ Line 3
 Line 4
 PLANEOF
 
-    cp "$project_dir/plan.md" "$project_dir/.humanize/rlcr/2026-03-01_00-00-00/plan.md"
+    cp "$project_dir/plan.md" "$project_dir/.duo/rlcr/2026-03-01_00-00-00/plan.md"
 
-    cat > "$project_dir/.humanize/rlcr/2026-03-01_00-00-00/state.md" <<EOF_STATE
+    cat > "$project_dir/.duo/rlcr/2026-03-01_00-00-00/state.md" <<EOF_STATE
 ---
 current_round: 0
 max_iterations: 42

@@ -5,19 +5,19 @@ type: flow
 user-invocable: false
 ---
 
-# Humanize Generate Plan
+# Duo Generate Plan
 
 Transforms a rough draft document into a well-structured implementation plan with clear goals, acceptance criteria (AC-X format), path boundaries, and feasibility suggestions.
 
 The installer hydrates this skill with an absolute runtime root path:
 
 ```bash
-{{HUMANIZE_RUNTIME_ROOT}}
+{{DUO_RUNTIME_ROOT}}
 ```
 
 ```mermaid
 flowchart TD
-    BEGIN([BEGIN]) --> VALIDATE[Validate input/output paths<br/>Run: {{HUMANIZE_RUNTIME_ROOT}}/scripts/validate-gen-plan-io.sh --input &lt;draft&gt; --output &lt;plan&gt;]
+    BEGIN([BEGIN]) --> VALIDATE[Validate input/output paths<br/>Run: {{DUO_RUNTIME_ROOT}}/scripts/validate-gen-plan-io.sh --input &lt;draft&gt; --output &lt;plan&gt;]
     VALIDATE --> CHECK{Validation passed?}
     CHECK -->|No| REPORT_ERROR[Report validation error<br/>Stop]
     REPORT_ERROR --> END_FAIL([END])

@@ -21,8 +21,8 @@ case "$TEST_NAME" in
     yaml_list)
         # Test: active_bots with YAML list format
         TIMESTAMP="2026-01-18_16-00-00"
-        mkdir -p "$TEST_DIR/.humanize/pr-loop/$TIMESTAMP"
-        cat > "$TEST_DIR/.humanize/pr-loop/$TIMESTAMP/state.md" << 'STATEEOF'
+        mkdir -p "$TEST_DIR/.duo/pr-loop/$TIMESTAMP"
+        cat > "$TEST_DIR/.duo/pr-loop/$TIMESTAMP/state.md" << 'STATEEOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -43,8 +43,8 @@ STATEEOF
     configured)
         # Test: configured_bots vs active_bots (partial approval)
         TIMESTAMP="2026-01-18_16-01-00"
-        mkdir -p "$TEST_DIR/.humanize/pr-loop/$TIMESTAMP"
-        cat > "$TEST_DIR/.humanize/pr-loop/$TIMESTAMP/state.md" << 'STATEEOF'
+        mkdir -p "$TEST_DIR/.duo/pr-loop/$TIMESTAMP"
+        cat > "$TEST_DIR/.duo/pr-loop/$TIMESTAMP/state.md" << 'STATEEOF'
 ---
 current_round: 2
 max_iterations: 42
@@ -64,8 +64,8 @@ STATEEOF
     empty)
         # Test: empty active_bots (all approved)
         TIMESTAMP="2026-01-18_16-02-00"
-        mkdir -p "$TEST_DIR/.humanize/pr-loop/$TIMESTAMP"
-        cat > "$TEST_DIR/.humanize/pr-loop/$TIMESTAMP/state.md" << 'STATEEOF'
+        mkdir -p "$TEST_DIR/.duo/pr-loop/$TIMESTAMP"
+        cat > "$TEST_DIR/.duo/pr-loop/$TIMESTAMP/state.md" << 'STATEEOF'
 ---
 current_round: 3
 max_iterations: 42

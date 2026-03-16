@@ -541,8 +541,8 @@ echo "plan.md" >> "$TEST_DIR/repo24/.gitignore"
 git -C "$TEST_DIR/repo24" add .gitignore && git -C "$TEST_DIR/repo24" commit -q -m "Add gitignore"
 
 # Create fake active RLCR loop
-mkdir -p "$TEST_DIR/repo24/.humanize/rlcr/2026-01-19_00-00-00"
-cat > "$TEST_DIR/repo24/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/repo24/.duo/rlcr/2026-01-19_00-00-00"
+cat > "$TEST_DIR/repo24/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -572,8 +572,8 @@ echo "plan.md" >> "$TEST_DIR/repo25/.gitignore"
 git -C "$TEST_DIR/repo25" add .gitignore && git -C "$TEST_DIR/repo25" commit -q -m "Add gitignore"
 
 # Create fake active PR loop
-mkdir -p "$TEST_DIR/repo25/.humanize/pr-loop/2026-01-19_00-00-00"
-cat > "$TEST_DIR/repo25/.humanize/pr-loop/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/repo25/.duo/pr-loop/2026-01-19_00-00-00"
+cat > "$TEST_DIR/repo25/.duo/pr-loop/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -1008,7 +1008,7 @@ OUTPUT=$(PATH="$TEST_DIR/repo42/bin:$PATH" run_rlcr_setup "$TEST_DIR/repo42" --s
 EXIT_CODE=${EXIT_CODE:-0}
 
 # Find the loop directory
-LOOP_DIR=$(find "$TEST_DIR/repo42/.humanize/rlcr" -maxdepth 1 -type d -name "20*" 2>/dev/null | head -1)
+LOOP_DIR=$(find "$TEST_DIR/repo42/.duo/rlcr" -maxdepth 1 -type d -name "20*" 2>/dev/null | head -1)
 if [[ -n "$LOOP_DIR" ]] && [[ -f "$LOOP_DIR/.review-phase-started" ]]; then
     if grep -q "build_finish_round=0" "$LOOP_DIR/.review-phase-started"; then
         pass "--skip-impl creates .review-phase-started marker with build_finish_round=0"

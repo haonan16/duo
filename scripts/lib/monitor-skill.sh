@@ -1,23 +1,23 @@
 #!/bin/bash
 #
-# monitor-skill.sh - Skill monitor for humanize
+# monitor-skill.sh - Skill monitor for duo
 #
-# Provides the _humanize_monitor_skill function for monitoring
-# ask-codex skill invocations from .humanize/skill directory.
+# Provides the _duo_monitor_skill function for monitoring
+# ask-codex skill invocations from .duo/skill directory.
 #
-# This file is sourced by humanize.sh and depends on:
+# This file is sourced by duo.sh and depends on:
 # - monitor-common.sh (monitor_get_yaml_value, monitor_format_timestamp, etc.)
-# - humanize.sh (humanize_split_to_array)
+# - duo.sh (duo_split_to_array)
 
-# Monitor ask-codex skill invocations from .humanize/skill
+# Monitor ask-codex skill invocations from .duo/skill
 # Shows a fixed status bar with aggregate stats and latest invocation details,
 # with live output display in the scrollable area below.
-_humanize_monitor_skill() {
+_duo_monitor_skill() {
     # Enable 0-indexed arrays in zsh for bash compatibility
     # no_monitor suppresses background job notifications ([1] PID)
     [[ -n "${ZSH_VERSION:-}" ]] && setopt localoptions ksharrays no_monitor
 
-    local skill_dir=".humanize/skill"
+    local skill_dir=".duo/skill"
     local current_skill_dir=""
     local current_file=""
     local check_interval=2
@@ -32,7 +32,7 @@ _humanize_monitor_skill() {
         esac
     done
 
-    # Check if .humanize/skill exists
+    # Check if .duo/skill exists
     if [[ ! -d "$skill_dir" ]]; then
         echo "Error: $skill_dir directory not found in current directory"
         echo "Run /duo:ask first to create skill invocations"
@@ -114,19 +114,19 @@ _humanize_monitor_skill() {
     }
 
     # Find the global cache directory for a skill invocation (display only)
-    # Returns the ~/.cache/humanize/... path if it exists, empty otherwise.
+    # Returns the ~/.cache/duo/... path if it exists, empty otherwise.
     _skill_find_cache_dir() {
         local unique_id=$(basename "$1")
         local project_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
         local sanitized=$(echo "$project_root" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
         local cache_base="${XDG_CACHE_HOME:-$HOME/.cache}"
-        local cache_dir="$cache_base/humanize/$sanitized/skill-$unique_id"
+        local cache_dir="$cache_base/duo/$sanitized/skill-$unique_id"
         [[ -d "$cache_dir" ]] && echo "$cache_dir" || echo ""
     }
 
     # Find the best file to monitor for a skill invocation
-    # Searches both global cache (~/.cache/humanize/), local cache ($dir/cache/),
-    # and project-local files (.humanize/skill/) for the best content.
+    # Searches both global cache (~/.cache/duo/), local cache ($dir/cache/),
+    # and project-local files (.duo/skill/) for the best content.
     _skill_find_monitored_file() {
         local dir="$1"
         local gcache=$(_skill_find_cache_dir "$dir")
@@ -180,7 +180,7 @@ _humanize_monitor_skill() {
 
         # Aggregate stats
         local -a stats
-        humanize_split_to_array stats "$(_skill_count_stats)"
+        duo_split_to_array stats "$(_skill_count_stats)"
         local total="${stats[0]}" success="${stats[1]}" err="${stats[2]}"
         local tmo="${stats[3]}" empty="${stats[4]}" running="${stats[5]}"
 
@@ -239,7 +239,7 @@ _humanize_monitor_skill() {
         tput cup 0 0
 
         # Line 1: Title
-        printf "${bg}${bold}%-${term_width}s${reset}${clr_eol}\n" " Humanize Skill Monitor"
+        printf "${bg}${bold}%-${term_width}s${reset}${clr_eol}\n" " Duo Skill Monitor"
         # Line 2: Aggregate stats
         printf "${cyan}Total:${reset}    ${bold}${total}${reset} invocations"
         [[ "$success" -gt 0 ]] && printf " | ${green}${success} success${reset}"
@@ -281,7 +281,7 @@ _humanize_monitor_skill() {
         local focus_dir="${best_dir:-$latest}"
 
         local -a stats
-        humanize_split_to_array stats "$(_skill_count_stats)"
+        duo_split_to_array stats "$(_skill_count_stats)"
         local inv_status="running" model="N/A" effort="N/A" duration="N/A" started_at="N/A"
         if [[ -f "$focus_dir/metadata.md" ]]; then
             inv_status=$(monitor_get_yaml_value "status" "$focus_dir/metadata.md")
@@ -294,7 +294,7 @@ _humanize_monitor_skill() {
         local cache_dir=$(_skill_find_cache_dir "$focus_dir")
 
         echo "=========================================="
-        echo " Humanize Skill Monitor"
+        echo " Duo Skill Monitor"
         echo "=========================================="
         echo ""
         echo "Total Invocations: ${stats[0]}"

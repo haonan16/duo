@@ -6,7 +6,7 @@
 # This hook fires right after the setup script's Bash command completes.
 #
 # Mechanism:
-# 1. Setup script creates .humanize/.pending-session-id with:
+# 1. Setup script creates .duo/.pending-session-id with:
 #    Line 1: path to state.md
 #    Line 2: full resolved path of setup script (command signature)
 # 2. This hook checks for the signal file on every Bash PostToolUse event
@@ -30,7 +30,7 @@ HOOK_INPUT=$(cat)
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 # Check for pending session_id signal file
-SIGNAL_FILE="$PROJECT_ROOT/.humanize/.pending-session-id"
+SIGNAL_FILE="$PROJECT_ROOT/.duo/.pending-session-id"
 
 if [[ ! -f "$SIGNAL_FILE" ]]; then
     # No pending session_id to record - this is the normal case

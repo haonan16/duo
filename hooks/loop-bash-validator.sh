@@ -57,11 +57,11 @@ PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 HOOK_SESSION_ID=$(extract_session_id "$HOOK_INPUT")
 
 # Check for active RLCR loop (filtered by session_id)
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/rlcr"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/rlcr"
 ACTIVE_LOOP_DIR=$(find_active_loop "$LOOP_BASE_DIR" "$HOOK_SESSION_ID")
 
 # Check for active PR loop
-PR_LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/pr-loop"
+PR_LOOP_BASE_DIR="$PROJECT_ROOT/.duo/pr-loop"
 ACTIVE_PR_LOOP_DIR=$(find_active_pr_loop "$PR_LOOP_BASE_DIR")
 
 # If no active loop of either type, allow all commands
@@ -107,13 +107,13 @@ Use --push-every-round flag when starting the loop if you need to push each roun
 fi
 
 # ========================================
-# Block Git Add Commands Targeting .humanize
+# Block Git Add Commands Targeting .duo
 # ========================================
-# Prevents force-adding .humanize files to version control
-# Note: .humanize is in .gitignore, but git add -f bypasses it
+# Prevents force-adding .duo files to version control
+# Note: .duo is in .gitignore, but git add -f bypasses it
 
-if git_adds_humanize "$COMMAND_LOWER"; then
-    git_add_humanize_blocked_message >&2
+if git_adds_duo "$COMMAND_LOWER"; then
+    git_add_duo_blocked_message >&2
     exit 2
 fi
 
@@ -333,7 +333,7 @@ fi
 # Plan backup is read-only - protects plan integrity during loop
 # Use command_modifies_file helper for consistent pattern matching
 
-if command_modifies_file "$COMMAND_LOWER" "\.humanize/rlcr(/[^/]+)?/plan\.md"; then
+if command_modifies_file "$COMMAND_LOWER" "\.duo/rlcr(/[^/]+)?/plan\.md"; then
     FALLBACK="Writing to plan.md backup is not allowed during RLCR loop."
     REASON=$(load_and_render_safe "$TEMPLATE_DIR" "block/plan-backup-protected.md" "$FALLBACK")
     echo "$REASON" >&2
@@ -403,8 +403,8 @@ fi  # End of RLCR-specific checks
 if [[ -n "$ACTIVE_PR_LOOP_DIR" ]]; then
     # Block PR loop state.md modifications
     # Check both full path pattern AND bare filename to catch relative path bypass
-    # (e.g., cd .humanize/pr-loop/timestamp && sed -i state.md)
-    if command_modifies_file "$COMMAND_LOWER" "\.humanize/pr-loop(/[^/]+)?/state\.md"; then
+    # (e.g., cd .duo/pr-loop/timestamp && sed -i state.md)
+    if command_modifies_file "$COMMAND_LOWER" "\.duo/pr-loop(/[^/]+)?/state\.md"; then
         pr_loop_state_blocked_message >&2
         exit 2
     fi
@@ -430,7 +430,7 @@ if [[ -n "$ACTIVE_PR_LOOP_DIR" ]]; then
 
     for pattern in "${PR_LOOP_READONLY_PATTERNS[@]}"; do
         # Check both full path pattern AND bare filename to catch relative path bypass
-        if command_modifies_file "$COMMAND_LOWER" "\.humanize/pr-loop(/[^/]+)?/${pattern}"; then
+        if command_modifies_file "$COMMAND_LOWER" "\.duo/pr-loop(/[^/]+)?/${pattern}"; then
             pr_loop_prompt_blocked_message >&2
             exit 2
         fi

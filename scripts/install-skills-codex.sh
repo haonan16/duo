@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Convenience wrapper: install Humanize skills for Codex target.
+# Convenience wrapper: install Duo skills for Codex target.
 #
 
 set -euo pipefail

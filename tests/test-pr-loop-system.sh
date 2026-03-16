@@ -109,11 +109,11 @@ run_test() {
 
 test_mutual_exclusion_rlcr_blocks_pr() {
     # Create an active RLCR loop
-    mkdir -p .humanize/rlcr/2026-01-18_12-00-00
+    mkdir -p .duo/rlcr/2026-01-18_12-00-00
     echo "---
 current_round: 1
 max_iterations: 10
----" > .humanize/rlcr/2026-01-18_12-00-00/state.md
+---" > .duo/rlcr/2026-01-18_12-00-00/state.md
 
     # Try to start a PR loop - should fail
     export MOCK_GH_PR_NUMBER=123
@@ -128,12 +128,12 @@ max_iterations: 10
 
 test_mutual_exclusion_pr_blocks_rlcr() {
     # Create an active PR loop
-    mkdir -p .humanize/pr-loop/2026-01-18_12-00-00
+    mkdir -p .duo/pr-loop/2026-01-18_12-00-00
     echo "---
 current_round: 0
 max_iterations: 42
 pr_number: 123
----" > .humanize/pr-loop/2026-01-18_12-00-00/state.md
+---" > .duo/pr-loop/2026-01-18_12-00-00/state.md
 
     # Try to start an RLCR loop - should fail
     echo "# Test Plan" > test-plan.md
@@ -258,7 +258,7 @@ test_phase_detection_approved() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create a fake session dir with approve-state.md
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     touch "$session_dir/approve-state.md"
 
@@ -273,7 +273,7 @@ test_phase_detection_waiting_initial() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create a fake session dir with state.md at round 0 and startup_case 1
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     cat > "$session_dir/state.md" << 'EOF'
 ---
@@ -293,7 +293,7 @@ test_phase_detection_waiting_reviewer() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create a fake session dir with state.md at round 1
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     cat > "$session_dir/state.md" << 'EOF'
 ---
@@ -402,7 +402,7 @@ test_pr_goal_tracker_parsing() {
 EOF
 
     local result
-    result=$(humanize_parse_pr_goal_tracker "$tracker_file")
+    result=$(duo_parse_pr_goal_tracker "$tracker_file")
 
     # Should return: total_issues|resolved_issues|remaining_issues|last_reviewer
     # Expected: 5|3|2|Claude
@@ -425,7 +425,7 @@ test_state_file_detection_active() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create active state
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     echo "current_round: 0" > "$session_dir/state.md"
 
@@ -441,7 +441,7 @@ test_state_file_detection_approve() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create approve state (no state.md, only approve-state.md)
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     echo "approved" > "$session_dir/approve-state.md"
 
@@ -461,7 +461,7 @@ test_phase_detection_cancelled() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create a fake session dir with cancel-state.md
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     touch "$session_dir/cancel-state.md"
 
@@ -476,7 +476,7 @@ test_phase_detection_maxiter() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create a fake session dir with maxiter-state.md
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     touch "$session_dir/maxiter-state.md"
 
@@ -618,7 +618,7 @@ test_approve_state_detection() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create session dir with approve-state.md
-    local session_dir="$TEST_TEMP_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    local session_dir="$TEST_TEMP_DIR/.duo/pr-loop/2026-01-18_12-00-00"
     mkdir -p "$session_dir"
     echo "approved" > "$session_dir/approve-state.md"
 
@@ -772,7 +772,7 @@ test_shared_monitor_find_latest_session() {
     source "$PROJECT_ROOT/scripts/lib/monitor-common.sh"
 
     # Create session directories with different timestamps
-    local loop_dir="$TEST_TEMP_DIR/.humanize/pr-loop"
+    local loop_dir="$TEST_TEMP_DIR/.duo/pr-loop"
     mkdir -p "$loop_dir/2026-01-18_10-00-00"
     mkdir -p "$loop_dir/2026-01-18_12-00-00"
     mkdir -p "$loop_dir/2026-01-18_11-00-00"
@@ -884,7 +884,7 @@ EOF
     local size
     size=$(stat -c%s "$check_file" 2>/dev/null || stat -f%z "$check_file" 2>/dev/null || echo 0)
     local session_name=$(basename "$session_dir")
-    local cache_file="/tmp/humanize-phase-${session_name}-1.size"
+    local cache_file="/tmp/duo-phase-${session_name}-1.size"
     echo "$size" > "$cache_file"
 
     # Now call again - same size, old mtime -> should be waiting_reviewer
@@ -931,11 +931,11 @@ export -f clear
 # Disable ANSI colors for easier parsing
 export NO_COLOR=1
 
-# Source humanize.sh
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source duo.sh
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Run monitor with --once flag
-humanize monitor pr --once 2>&1
+duo monitor pr --once 2>&1
 WRAPPER_EOF
     chmod +x "$wrapper"
 
@@ -946,10 +946,10 @@ WRAPPER_EOF
 # Test: Monitor displays "All reviews approved" for approved state
 test_monitor_output_phase_approved() {
     local test_dir="$TEST_TEMP_DIR/monitor_phase_approved"
-    mkdir -p "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00"
+    mkdir -p "$test_dir/.duo/pr-loop/2026-01-18_10-00-00"
 
     # Create approve-state.md (final approved state)
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/approve-state.md" << 'EOF'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/approve-state.md" << 'EOF'
 ---
 current_round: 1
 startup_case: 3
@@ -961,7 +961,7 @@ active_bots:
 EOF
 
     # Create goal-tracker.md (required by monitor)
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
 # Goal Tracker
 ## Issue Summary
 | Round | Reviewer | Issues Found | Status |
@@ -970,7 +970,7 @@ EOF
 GOAL
 
     local output
-    output=$(run_monitor_once_capture_output "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00" "$test_dir")
+    output=$(run_monitor_once_capture_output "$test_dir/.duo/pr-loop/2026-01-18_10-00-00" "$test_dir")
 
     # Assert output contains approved phase (require Phase: label)
     if echo "$output" | grep -qi "Phase:.*approved\|Phase:.*All reviews"; then
@@ -984,10 +984,10 @@ GOAL
 # Test: Monitor displays "Waiting for initial PR review" for waiting_initial_review state
 test_monitor_output_phase_waiting_initial() {
     local test_dir="$TEST_TEMP_DIR/monitor_phase_waiting"
-    mkdir -p "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00"
+    mkdir -p "$test_dir/.duo/pr-loop/2026-01-18_10-00-00"
 
     # Create state.md with startup_case=1, round=0 (waiting for initial review)
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/state.md" << 'EOF'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 startup_case: 1
@@ -1001,7 +1001,7 @@ active_bots:
 ---
 EOF
 
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
 # Goal Tracker
 ## Issue Summary
 | Round | Reviewer | Issues Found | Status |
@@ -1010,7 +1010,7 @@ EOF
 GOAL
 
     local output
-    output=$(run_monitor_once_capture_output "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00" "$test_dir")
+    output=$(run_monitor_once_capture_output "$test_dir/.duo/pr-loop/2026-01-18_10-00-00" "$test_dir")
 
     # Assert output contains waiting phase (require Phase: label)
     # For startup_case=1 (no comments yet), the loop is waiting for initial review
@@ -1025,10 +1025,10 @@ GOAL
 # Test: Monitor displays "Loop cancelled" for cancelled state
 test_monitor_output_phase_cancelled() {
     local test_dir="$TEST_TEMP_DIR/monitor_phase_cancelled"
-    mkdir -p "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00"
+    mkdir -p "$test_dir/.duo/pr-loop/2026-01-18_10-00-00"
 
     # Create cancel-state.md (cancelled state)
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/cancel-state.md" << 'EOF'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/cancel-state.md" << 'EOF'
 ---
 current_round: 1
 startup_case: 3
@@ -1041,7 +1041,7 @@ cancelled_at: 2026-01-18T12:00:00Z
 ---
 EOF
 
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
 # Goal Tracker
 ## Issue Summary
 | Round | Reviewer | Issues Found | Status |
@@ -1050,7 +1050,7 @@ EOF
 GOAL
 
     local output
-    output=$(run_monitor_once_capture_output "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00" "$test_dir")
+    output=$(run_monitor_once_capture_output "$test_dir/.duo/pr-loop/2026-01-18_10-00-00" "$test_dir")
 
     # Assert output contains cancel phase (require Phase: label)
     if echo "$output" | grep -qi "Phase:.*cancel"; then
@@ -1064,10 +1064,10 @@ GOAL
 # Test: Monitor displays "Codex analyzing..." for codex_analyzing phase
 test_monitor_output_phase_codex_analyzing() {
     local test_dir="$TEST_TEMP_DIR/monitor_phase_analyzing"
-    mkdir -p "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00"
+    mkdir -p "$test_dir/.duo/pr-loop/2026-01-18_10-00-00"
 
     # Create state.md for active session
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/state.md" << 'EOF'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 startup_case: 2
@@ -1079,7 +1079,7 @@ active_bots:
 ---
 EOF
 
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_10-00-00/goal-tracker.md" << 'GOAL'
 # Goal Tracker
 ## Issue Summary
 | Round | Reviewer | Issues Found | Status |
@@ -1088,13 +1088,13 @@ EOF
 GOAL
 
     # Create a pr-check file with current mtime (simulates Codex actively writing)
-    local check_file="$test_dir/.humanize/pr-loop/2026-01-18_10-00-00/round-1-pr-check.md"
+    local check_file="$test_dir/.duo/pr-loop/2026-01-18_10-00-00/round-1-pr-check.md"
     echo "Analyzing PR..." > "$check_file"
     # Touch with current time ensures mtime is within 10 seconds
     touch "$check_file"
 
     local output
-    output=$(run_monitor_once_capture_output "$test_dir/.humanize/pr-loop/2026-01-18_10-00-00" "$test_dir")
+    output=$(run_monitor_once_capture_output "$test_dir/.duo/pr-loop/2026-01-18_10-00-00" "$test_dir")
 
     # Assert output contains "Codex analyzing" phase (require Phase: prefix)
     if echo "$output" | grep -qi "Phase:.*Codex.*analyz"; then
@@ -1429,7 +1429,7 @@ test_setup_case45_missing_trigger_comment_id() {
     fi
 
     # Verify loop directory was cleaned up
-    if ls .humanize/pr-loop/*/state.md 2>/dev/null | head -1 | grep -q .; then
+    if ls .duo/pr-loop/*/state.md 2>/dev/null | head -1 | grep -q .; then
         echo "Loop directory was not cleaned up on failure"
         # Restore fixtures
         echo '[{"id":1001,"user":{"login":"claude[bot]"},"created_at":"2026-01-18T11:00:00Z","body":"Issue found"}]' > "$FIXTURES_DIR/issue-comments.json"
@@ -1466,7 +1466,7 @@ test_goal_tracker_creation_integration() {
     export MOCK_GH_HEAD_SHA="abc123xyz"
 
     # Clean up any existing pr-loop directories
-    rm -rf .humanize/pr-loop 2>/dev/null || true
+    rm -rf .duo/pr-loop 2>/dev/null || true
 
     # Run setup-pr-loop.sh with --codex
     local result exit_code
@@ -1477,7 +1477,7 @@ test_goal_tracker_creation_integration() {
 
     # Find the created loop directory
     local loop_dir
-    loop_dir=$(ls -d .humanize/pr-loop/*/ 2>/dev/null | head -1)
+    loop_dir=$(ls -d .duo/pr-loop/*/ 2>/dev/null | head -1)
 
     if [[ -z "$loop_dir" ]]; then
         echo "No loop directory created by setup-pr-loop.sh"
@@ -1494,7 +1494,7 @@ test_goal_tracker_creation_integration() {
         echo "goal-tracker.md not found in $loop_dir"
         echo "Files in loop dir: $(ls -la "$loop_dir" 2>/dev/null)"
         # Clean up
-        rm -rf .humanize/pr-loop
+        rm -rf .duo/pr-loop
         # Restore fixtures
         echo '[{"id":1001,"user":{"login":"claude[bot]"},"created_at":"2026-01-18T11:00:00Z","body":"Issue found"}]' > "$FIXTURES_DIR/issue-comments.json"
         echo '[{"id":4001,"user":{"login":"chatgpt-codex-connector[bot]"},"submitted_at":"2026-01-18T11:15:00Z","body":"LGTM!","state":"APPROVED"}]' > "$FIXTURES_DIR/pr-reviews.json"
@@ -1506,7 +1506,7 @@ test_goal_tracker_creation_integration() {
     if ! grep -q "Issue Summary" "${loop_dir}goal-tracker.md"; then
         echo "goal-tracker.md missing 'Issue Summary' section"
         echo "Contents: $(cat "${loop_dir}goal-tracker.md")"
-        rm -rf .humanize/pr-loop
+        rm -rf .duo/pr-loop
         # Restore fixtures
         echo '[{"id":1001,"user":{"login":"claude[bot]"},"created_at":"2026-01-18T11:00:00Z","body":"Issue found"}]' > "$FIXTURES_DIR/issue-comments.json"
         echo '[{"id":4001,"user":{"login":"chatgpt-codex-connector[bot]"},"submitted_at":"2026-01-18T11:15:00Z","body":"LGTM!","state":"APPROVED"}]' > "$FIXTURES_DIR/pr-reviews.json"
@@ -1518,7 +1518,7 @@ test_goal_tracker_creation_integration() {
     if ! grep -q "999" "${loop_dir}goal-tracker.md"; then
         echo "goal-tracker.md missing PR number 999"
         echo "Contents: $(cat "${loop_dir}goal-tracker.md")"
-        rm -rf .humanize/pr-loop
+        rm -rf .duo/pr-loop
         # Restore fixtures
         echo '[{"id":1001,"user":{"login":"claude[bot]"},"created_at":"2026-01-18T11:00:00Z","body":"Issue found"}]' > "$FIXTURES_DIR/issue-comments.json"
         echo '[{"id":4001,"user":{"login":"chatgpt-codex-connector[bot]"},"submitted_at":"2026-01-18T11:15:00Z","body":"LGTM!","state":"APPROVED"}]' > "$FIXTURES_DIR/pr-reviews.json"
@@ -1527,7 +1527,7 @@ test_goal_tracker_creation_integration() {
     fi
 
     # Clean up
-    rm -rf .humanize/pr-loop
+    rm -rf .duo/pr-loop
 
     # Restore fixtures
     echo '[{"id":1001,"user":{"login":"claude[bot]"},"created_at":"2026-01-18T11:00:00Z","body":"Issue found"}]' > "$FIXTURES_DIR/issue-comments.json"
@@ -1542,7 +1542,7 @@ test_goal_tracker_creation_integration() {
 test_stophook_updates_goal_tracker() {
     # This test verifies that running the stop hook after bot review updates the goal tracker
     local test_dir="$TEST_TEMP_DIR/stophook_goal_test"
-    mkdir -p "$test_dir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_dir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Use dynamic timestamps
     local trigger_ts commit_ts comment_ts
@@ -1551,7 +1551,7 @@ test_stophook_updates_goal_tracker() {
     comment_ts=$(date -u -d "-5 seconds" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-5S +%Y-%m-%dT%H:%M:%SZ)
 
     # Create state.md for Round 0
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << EOF
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << EOF
 ---
 current_round: 0
 max_iterations: 42
@@ -1576,7 +1576,7 @@ latest_commit_at: $commit_ts
 EOF
 
     # Create initial goal tracker (need blank line after table header for row insertion)
-    cat > "$test_dir/.humanize/pr-loop/2026-01-18_12-00-00/goal-tracker.md" << 'EOF'
+    cat > "$test_dir/.duo/pr-loop/2026-01-18_12-00-00/goal-tracker.md" << 'EOF'
 # PR Review Goal Tracker (PR #123)
 
 ## Issue Summary
@@ -1590,7 +1590,7 @@ EOF
 EOF
 
     # Create round-0 resolve file
-    echo "# Resolution" > "$test_dir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_dir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     # Create mock gh and git
     local mock_bin="$test_dir/bin"
@@ -1726,7 +1726,7 @@ MOCK_CODEX
     unset CLAUDE_PROJECT_DIR
 
     # Verify goal tracker was updated with Round 1 row
-    local goal_file="$test_dir/.humanize/pr-loop/2026-01-18_12-00-00/goal-tracker.md"
+    local goal_file="$test_dir/.duo/pr-loop/2026-01-18_12-00-00/goal-tracker.md"
     if [[ ! -f "$goal_file" ]]; then
         echo "Goal tracker file not found"
         rm -rf "$test_dir"

@@ -18,7 +18,7 @@ This PR has no review comments yet. The monitored bots ({{ACTIVE_BOTS_DISPLAY}})
 ## Important Rules
 
 1. **Do not comment to trigger review**: First reviews are automatic
-2. **Do not modify state files**: The .humanize/pr-loop/ files are managed by the system
+2. **Do not modify state files**: The .duo/pr-loop/ files are managed by the system
 3. **Trust the process**: The Stop Hook manages polling and Codex validation
 
 ---

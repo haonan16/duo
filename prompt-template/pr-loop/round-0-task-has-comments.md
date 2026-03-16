@@ -29,7 +29,7 @@
 
 ## Important Rules
 
-1. **Do not modify state files**: The .humanize/pr-loop/ files are managed by the system
+1. **Do not modify state files**: The .duo/pr-loop/ files are managed by the system
 2. **Always push changes**: Your fixes must be pushed for bots to review them
 3. **Use the correct comment format**: Tag the bots to trigger their reviews
 4. **Be thorough**: Address all valid concerns from the reviewers

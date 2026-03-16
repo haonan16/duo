@@ -54,7 +54,7 @@ test_plan_validation() {
     result_file=$(mktemp)
 
     # Clean up any existing loop directories for consistent testing
-    rm -rf "$TEST_DIR/.humanize/rlcr"
+    rm -rf "$TEST_DIR/.duo/rlcr"
 
     # Run the production script, writing output to file
     # Note: Use nohup style to avoid SIGPIPE issues with large output
@@ -86,9 +86,9 @@ test_plan_validation() {
     fi
 
     # Also check if loop directory was created (alternative success indicator)
-    if [[ -d "$TEST_DIR/.humanize/rlcr" ]]; then
+    if [[ -d "$TEST_DIR/.duo/rlcr" ]]; then
         local loop_dir
-        loop_dir=$(ls -d "$TEST_DIR/.humanize/rlcr"/*/ 2>/dev/null | head -1)
+        loop_dir=$(ls -d "$TEST_DIR/.duo/rlcr"/*/ 2>/dev/null | head -1)
         if [[ -n "$loop_dir" ]] && [[ -f "${loop_dir}state.md" ]]; then
             rm -f "$result_file"
             return 0

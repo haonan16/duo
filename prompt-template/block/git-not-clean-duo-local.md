@@ -1,8 +1,8 @@
 
-**Special Case - .humanize directory detected**:
-The `.humanize/` directory is created by duo:run and should NOT be committed.
+**Special Case - .duo directory detected**:
+The `.duo/` directory is created by duo:run and should NOT be committed.
 Please add it to .gitignore:
 ```bash
-echo '.humanize*' >> .gitignore
+echo '.duo*' >> .gitignore
 git add .gitignore
 ```

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Install/upgrade Humanize skills for Kimi and/or Codex.
+# Install/upgrade Duo skills for Kimi and/or Codex.
 #
 # What this does:
 # 1) Sync skills/{duo,duo-gen-plan,duo-rlcr} to target skills dir(s)
@@ -11,7 +11,7 @@
 #   ./scripts/install-skill.sh [options]
 #
 # Options:
-#   --repo-root PATH        Humanize repo root (default: auto-detect)
+#   --repo-root PATH        Duo repo root (default: auto-detect)
 #   --target MODE           kimi|codex|both (default: kimi)
 #   --skills-dir PATH       Legacy alias for target skills dir (kept for compatibility)
 #   --kimi-skills-dir PATH  Kimi skills dir (default: ~/.config/agents/skills)
@@ -38,14 +38,14 @@ SKILL_NAMES=(
 
 usage() {
     cat <<'EOF'
-Install Humanize skills for Kimi and/or Codex.
+Install Duo skills for Kimi and/or Codex.
 
 Usage:
   scripts/install-skill.sh [options]
 
 Options:
   --target MODE           kimi|codex|both (default: kimi)
-  --repo-root PATH        Humanize repo root (default: auto-detect)
+  --repo-root PATH        Duo repo root (default: auto-detect)
   --skills-dir PATH       Legacy alias for target skills dir (compat)
   --kimi-skills-dir PATH  Kimi skills dir (default: ~/.config/agents/skills)
   --codex-skills-dir PATH Codex skills dir (default: ${CODEX_HOME:-~/.codex}/skills)
@@ -141,7 +141,7 @@ hydrate_skill_runtime_root() {
         # interprets backslash escape sequences (e.g. \n -> newline).
         # ENVIRON passes the value verbatim.
         _HYDRATE_RUNTIME_ROOT="$runtime_root" \
-            awk '{gsub(/\{\{HUMANIZE_RUNTIME_ROOT\}\}/, ENVIRON["_HYDRATE_RUNTIME_ROOT"]); print}' "$skill_file" > "$tmp" \
+            awk '{gsub(/\{\{DUO_RUNTIME_ROOT\}\}/, ENVIRON["_HYDRATE_RUNTIME_ROOT"]); print}' "$skill_file" > "$tmp" \
             || { rm -f "$tmp"; die "failed to hydrate $skill_file"; }
         mv "$tmp" "$skill_file"
     done

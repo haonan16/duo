@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Tests for _humanize_monitor_skill (humanize monitor skill)
+# Tests for _duo_monitor_skill (duo monitor skill)
 #
 # Tests the --once mode output and helper functions for the skill monitor.
 # Interactive mode is not tested here (requires terminal).
@@ -49,8 +49,8 @@ setup_test_env() {
     git config user.name "Test"
     touch dummy && git add dummy && git commit -q -m "init"
 
-    # Source humanize.sh (which sources monitor-common.sh and monitor-skill.sh)
-    source "$PROJECT_ROOT/scripts/humanize.sh"
+    # Source duo.sh (which sources monitor-common.sh and monitor-skill.sh)
+    source "$PROJECT_ROOT/scripts/duo.sh"
 }
 
 # Create a completed skill invocation directory
@@ -63,7 +63,7 @@ create_skill_invocation() {
     local duration="${5:-15s}"
     local question="${6:-How should I structure this?}"
 
-    local dir=".humanize/skill/$unique_id"
+    local dir=".duo/skill/$unique_id"
     mkdir -p "$dir"
 
     # Create input.md
@@ -110,9 +110,9 @@ EOF
 echo "=== Skill Monitor: Directory Checks ==="
 
 setup_test_env
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if [[ $rc -ne 0 ]] && echo "$output" | grep -q "directory not found"; then
-    pass "Returns error when .humanize/skill does not exist"
+    pass "Returns error when .duo/skill does not exist"
 else
     fail "Should error when skill dir missing" "got: $output"
 fi
@@ -124,8 +124,8 @@ fi
 echo "=== Skill Monitor: Empty Directory ==="
 
 setup_test_env
-mkdir -p .humanize/skill
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+mkdir -p .duo/skill
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if [[ $rc -ne 0 ]] && echo "$output" | grep -q "No skill invocations found"; then
     pass "Returns error when no invocations exist"
 else
@@ -139,10 +139,10 @@ fi
 echo "=== Skill Monitor: Single Invocation ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 create_skill_invocation "2026-02-19_21-02-35-12345-abc123" "success" "gpt-5.4" "xhigh" "15s" "How should I structure the auth module?"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if [[ $rc -eq 0 ]]; then
     pass "--once mode exits successfully with one invocation"
 else
@@ -198,13 +198,13 @@ fi
 echo "=== Skill Monitor: Multiple Invocations ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 create_skill_invocation "2026-02-19_20-00-00-111-aaa" "success" "gpt-5.4" "high" "10s" "First question"
 create_skill_invocation "2026-02-19_20-30-00-222-bbb" "error" "gpt-5.4" "xhigh" "5s" "Second question"
 create_skill_invocation "2026-02-19_21-00-00-333-ccc" "timeout" "gpt-5.4" "xhigh" "3600s" "Third question"
 create_skill_invocation "2026-02-19_21-30-00-444-ddd" "success" "gpt-5.4" "xhigh" "20s" "Latest question"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if echo "$output" | grep -q "Total Invocations: 4"; then
     pass "Counts all invocations"
 else
@@ -249,11 +249,11 @@ fi
 echo "=== Skill Monitor: Running Invocation ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 create_skill_invocation "2026-02-19_21-00-00-111-aaa" "success" "gpt-5.4" "xhigh" "10s" "Completed question"
 create_skill_invocation "2026-02-19_21-30-00-222-bbb" "running" "gpt-5.4" "high" "" "Running question"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if echo "$output" | grep -q "Running: 1"; then
     pass "Counts running invocations"
 else
@@ -273,12 +273,12 @@ fi
 echo "=== Skill Monitor: Recent Invocations List ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 create_skill_invocation "2026-02-19_20-00-00-111-aaa" "success" "gpt-5.4" "xhigh" "10s" "Question one"
 create_skill_invocation "2026-02-19_20-30-00-222-bbb" "error" "gpt-5.4" "xhigh" "5s" "Question two"
 create_skill_invocation "2026-02-19_21-00-00-333-ccc" "success" "gpt-5.4" "xhigh" "20s" "Question three"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if echo "$output" | grep -q "Recent Invocations"; then
     pass "Shows recent invocations section"
 else
@@ -299,9 +299,9 @@ fi
 echo "=== Skill Monitor: Question Extraction ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 # Create an invocation with a multi-line question (only first line should be extracted)
-local_dir=".humanize/skill/2026-02-19_22-00-00-555-eee"
+local_dir=".duo/skill/2026-02-19_22-00-00-555-eee"
 mkdir -p "$local_dir"
 cat > "$local_dir/input.md" << 'EOF'
 # Ask Codex Input
@@ -331,7 +331,7 @@ started_at: 2026-02-19T22:00:00Z
 EOF
 echo "Performance analysis result" > "$local_dir/output.md"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if echo "$output" | grep -q "What are the performance bottlenecks"; then
     pass "Extracts first line of question"
 else
@@ -352,10 +352,10 @@ fi
 echo "=== Skill Monitor: Empty Response ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 create_skill_invocation "2026-02-19_21-00-00-111-aaa" "empty_response" "gpt-5.4" "xhigh" "30s" "Why is the sky blue?"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if echo "$output" | grep -q "Empty: 1"; then
     pass "Counts empty response invocations"
 else
@@ -375,13 +375,13 @@ fi
 echo "=== Skill Monitor: Non-skill Dir Filtering ==="
 
 setup_test_env
-mkdir -p .humanize/skill
+mkdir -p .duo/skill
 create_skill_invocation "2026-02-19_21-00-00-111-aaa" "success" "gpt-5.4" "xhigh" "10s" "Real question"
 # Create a non-matching directory
-mkdir -p ".humanize/skill/not-a-skill-dir"
-echo "junk" > ".humanize/skill/not-a-skill-dir/input.md"
+mkdir -p ".duo/skill/not-a-skill-dir"
+echo "junk" > ".duo/skill/not-a-skill-dir/input.md"
 
-output=$(_humanize_monitor_skill --once 2>&1) && rc=0 || rc=$?
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
 if echo "$output" | grep -q "Total Invocations: 1"; then
     pass "Ignores non-timestamp directories"
 else

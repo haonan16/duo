@@ -81,7 +81,7 @@ test_path_validation() {
     local exit_code
 
     # Clean up any existing RLCR loop in TEST_DIR to avoid "loop already active" errors
-    rm -rf "$TEST_DIR/.humanize/rlcr" 2>/dev/null || true
+    rm -rf "$TEST_DIR/.duo/rlcr" 2>/dev/null || true
 
     # Run the production script (will fail after path validation
     # because codex isn't available, but we capture validation errors)

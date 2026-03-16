@@ -380,8 +380,8 @@ echo ""
 
 # Test 21: Production goal tracker parser is available and works
 echo "Test 21: Production goal tracker parser function available"
-# Source humanize.sh to get production functions
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source duo.sh to get production functions
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Create a test goal-tracker.md file
 cat > "$TEST_DIR/goal-tracker.md" << 'GOAL_EOF'
@@ -399,7 +399,7 @@ Test the monitor integration.
 GOAL_EOF
 
 # Call production function directly (this is what monitor calls internally)
-RESULT=$(humanize_parse_goal_tracker "$TEST_DIR/goal-tracker.md" 2>/dev/null || echo "error")
+RESULT=$(duo_parse_goal_tracker "$TEST_DIR/goal-tracker.md" 2>/dev/null || echo "error")
 # Expected format: total_ac|verified_ac|pending_tasks|completed_tasks|open_issues|deferred_tasks|goal_text
 if [[ "$RESULT" =~ ^[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\| ]]; then
     pass "Production goal tracker parser works (output: ${RESULT:0:30}...)"
@@ -413,7 +413,7 @@ echo "Test 22: Production git status parser function available"
 cd "$TEST_DIR"
 
 # Call production function directly (this is what monitor calls internally)
-RESULT=$(humanize_parse_git_status 2>/dev/null || echo "error")
+RESULT=$(duo_parse_git_status 2>/dev/null || echo "error")
 # Expected format: staged|unstaged|untracked|conflict|ahead|behind|branch_or_status
 if [[ "$RESULT" =~ ^[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+\| ]]; then
     pass "Production git status parser works (output: ${RESULT:0:30}...)"
@@ -424,8 +424,8 @@ fi
 # Test 23: Production git state detection is available
 echo ""
 echo "Test 23: Production git state detection function available"
-# Verify humanize_detect_git_state is callable
-STATE=$(humanize_detect_git_state 2>/dev/null || echo "error")
+# Verify duo_detect_git_state is callable
+STATE=$(duo_detect_git_state 2>/dev/null || echo "error")
 if [[ "$STATE" == "normal" ]] || [[ "$STATE" == "not_a_repo" ]] || [[ "$STATE" == "detached" ]]; then
     pass "Git state detection function callable (state: $STATE)"
 else
@@ -435,7 +435,7 @@ fi
 # ========================================
 # Monitor Loop Integration Tests
 # ========================================
-# These tests invoke the real _humanize_monitor_codex function
+# These tests invoke the real _duo_monitor_codex function
 
 echo ""
 echo "--- Monitor Loop Integration Tests ---"
@@ -447,7 +447,7 @@ MONITOR_TEST_DIR=$(mktemp -d)
 FAKE_HOME_MONITOR=$(mktemp -d)
 trap "rm -rf $MONITOR_TEST_DIR $FAKE_HOME_MONITOR" EXIT
 
-# Create project with NO .humanize directory
+# Create project with NO .duo directory
 mkdir -p "$MONITOR_TEST_DIR/project"
 cd "$MONITOR_TEST_DIR/project"
 
@@ -467,8 +467,8 @@ tput() { case "$1" in cols) echo "80";; lines) echo "24";; *) :;; esac; }
 clear() { :; }
 export -f tput clear
 
-source "$PROJECT_ROOT/scripts/humanize.sh"
-_humanize_monitor_codex 2>&1
+source "$PROJECT_ROOT/scripts/duo.sh"
+_duo_monitor_codex 2>&1
 echo "EXIT_CODE:$?"
 MONITOR_EOF
 chmod +x "$MONITOR_TEST_DIR/run_monitor.sh"
@@ -488,14 +488,14 @@ fi
 # Test 25: Monitor with narrow terminal width
 echo ""
 echo "Test 25: Monitor handles narrow terminal (40 chars)"
-mkdir -p "$MONITOR_TEST_DIR/project2/.humanize/rlcr/2026-01-17_10-00-00"
-cat > "$MONITOR_TEST_DIR/project2/.humanize/rlcr/2026-01-17_10-00-00/state.md" << 'STATE_EOF'
+mkdir -p "$MONITOR_TEST_DIR/project2/.duo/rlcr/2026-01-17_10-00-00"
+cat > "$MONITOR_TEST_DIR/project2/.duo/rlcr/2026-01-17_10-00-00/state.md" << 'STATE_EOF'
 ---
 current_round: 1
 max_iterations: 5
 ---
 STATE_EOF
-cat > "$MONITOR_TEST_DIR/project2/.humanize/rlcr/2026-01-17_10-00-00/goal-tracker.md" << 'GOAL_EOF'
+cat > "$MONITOR_TEST_DIR/project2/.duo/rlcr/2026-01-17_10-00-00/goal-tracker.md" << 'GOAL_EOF'
 # Goal Tracker
 ## IMMUTABLE SECTION
 ### Ultimate Goal
@@ -507,10 +507,10 @@ GOAL_EOF
 
 # Create cache dir for log file
 SANITIZED=$(echo "$MONITOR_TEST_DIR/project2" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-mkdir -p "$FAKE_HOME_MONITOR/.cache/humanize/$SANITIZED/2026-01-17_10-00-00"
-echo "Test log" > "$FAKE_HOME_MONITOR/.cache/humanize/$SANITIZED/2026-01-17_10-00-00/round-1-codex-run.log"
+mkdir -p "$FAKE_HOME_MONITOR/.cache/duo/$SANITIZED/2026-01-17_10-00-00"
+echo "Test log" > "$FAKE_HOME_MONITOR/.cache/duo/$SANITIZED/2026-01-17_10-00-00/round-1-codex-run.log"
 
-# Create narrow terminal runner - calls _humanize_monitor_codex directly in same shell
+# Create narrow terminal runner - calls _duo_monitor_codex directly in same shell
 cat > "$MONITOR_TEST_DIR/run_narrow.sh" << 'NARROW_EOF'
 #!/bin/bash
 PROJECT_DIR="$1"
@@ -526,15 +526,15 @@ tput() { case "$1" in cols) echo "40";; lines) echo "24";; *) :;; esac; }
 clear() { :; }
 export -f tput clear
 
-source "$PROJECT_ROOT/scripts/humanize.sh"
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Delete the session directory after 1 second to trigger graceful exit
-(sleep 1 && rm -rf "$PROJECT_DIR/.humanize/rlcr") &
+(sleep 1 && rm -rf "$PROJECT_DIR/.duo/rlcr") &
 DELETE_PID=$!
 
 # Call monitor directly in this shell (not in a subshell via bash -c)
 # Use timeout wrapper if available, otherwise just run with a trap
-_humanize_monitor_codex 2>&1 &
+_duo_monitor_codex 2>&1 &
 MONITOR_PID=$!
 
 # Wait up to 5 seconds for monitor to exit
@@ -580,14 +580,14 @@ fi
 # Test 26: Monitor with ANSI codes in log file
 echo ""
 echo "Test 26: Monitor handles ANSI codes in log file"
-mkdir -p "$MONITOR_TEST_DIR/project3/.humanize/rlcr/2026-01-17_11-00-00"
-cat > "$MONITOR_TEST_DIR/project3/.humanize/rlcr/2026-01-17_11-00-00/state.md" << 'STATE_EOF'
+mkdir -p "$MONITOR_TEST_DIR/project3/.duo/rlcr/2026-01-17_11-00-00"
+cat > "$MONITOR_TEST_DIR/project3/.duo/rlcr/2026-01-17_11-00-00/state.md" << 'STATE_EOF'
 ---
 current_round: 1
 max_iterations: 5
 ---
 STATE_EOF
-cat > "$MONITOR_TEST_DIR/project3/.humanize/rlcr/2026-01-17_11-00-00/goal-tracker.md" << 'GOAL_EOF'
+cat > "$MONITOR_TEST_DIR/project3/.duo/rlcr/2026-01-17_11-00-00/goal-tracker.md" << 'GOAL_EOF'
 # Goal Tracker
 ## IMMUTABLE SECTION
 ### Ultimate Goal
@@ -598,9 +598,9 @@ Test ANSI codes.
 GOAL_EOF
 
 SANITIZED3=$(echo "$MONITOR_TEST_DIR/project3" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-mkdir -p "$FAKE_HOME_MONITOR/.cache/humanize/$SANITIZED3/2026-01-17_11-00-00"
+mkdir -p "$FAKE_HOME_MONITOR/.cache/duo/$SANITIZED3/2026-01-17_11-00-00"
 # Write log with ANSI codes
-printf '\033[31mRed text\033[0m\n\033[1;32mBold green\033[0m\n' > "$FAKE_HOME_MONITOR/.cache/humanize/$SANITIZED3/2026-01-17_11-00-00/round-1-codex-run.log"
+printf '\033[31mRed text\033[0m\n\033[1;32mBold green\033[0m\n' > "$FAKE_HOME_MONITOR/.cache/duo/$SANITIZED3/2026-01-17_11-00-00/round-1-codex-run.log"
 
 cat > "$MONITOR_TEST_DIR/run_ansi.sh" << 'ANSI_EOF'
 #!/bin/bash
@@ -616,14 +616,14 @@ tput() { case "$1" in cols) echo "80";; lines) echo "24";; *) :;; esac; }
 clear() { :; }
 export -f tput clear
 
-source "$PROJECT_ROOT/scripts/humanize.sh"
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Delete session directory after 1 second
-(sleep 1 && rm -rf "$PROJECT_DIR/.humanize/rlcr") &
+(sleep 1 && rm -rf "$PROJECT_DIR/.duo/rlcr") &
 DELETE_PID=$!
 
 # Call monitor directly in this shell
-_humanize_monitor_codex 2>&1 &
+_duo_monitor_codex 2>&1 &
 MONITOR_PID=$!
 
 # Wait up to 5 seconds

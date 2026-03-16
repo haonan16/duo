@@ -1,5 +1,5 @@
 {
-  "description": "Humanize Plugin Hooks - Validation hooks and Stop hooks for /run and /pr",
+  "description": "Duo Plugin Hooks - Validation hooks and Stop hooks for /run and /pr",
   "hooks": {
     "UserPromptSubmit": [
       {

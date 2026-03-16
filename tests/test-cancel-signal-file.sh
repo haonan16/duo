@@ -41,8 +41,8 @@ echo ""
 
 setup_test_loop() {
     local test_name="$1"
-    rm -rf "$TEST_DIR/.humanize" 2>/dev/null || true
-    LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
+    rm -rf "$TEST_DIR/.duo" 2>/dev/null || true
+    LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
     mkdir -p "$LOOP_DIR"
     cat > "$LOOP_DIR/state.md" << 'EOF'
 ---
@@ -201,7 +201,7 @@ fi
 echo "NEGATIVE TEST 5: Signal file in wrong directory does not authorize"
 setup_test_loop "negative-5"
 # Create signal file in WRONG directory (parent)
-touch "$TEST_DIR/.humanize/rlcr/.cancel-requested"
+touch "$TEST_DIR/.duo/rlcr/.cancel-requested"
 # NOT in the active loop dir
 COMMAND="mv ${LOOP_DIR}/state.md ${LOOP_DIR}/cancel-state.md"
 
@@ -1231,8 +1231,8 @@ fi
 # ========================================
 
 echo "NEGATIVE TEST 53: Validator allows commands when no active loop"
-rm -rf "$TEST_DIR/.humanize" 2>/dev/null || true
-LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
+rm -rf "$TEST_DIR/.duo" 2>/dev/null || true
+LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$LOOP_DIR"
 # No state.md created - loop is not active
 COMMAND="mv ${LOOP_DIR}/state.md ${LOOP_DIR}/cancel-state.md"

@@ -1,6 +1,6 @@
-# Humanize
+# Duo
 
-**Current Version: 1.15.0**
+**Current Version: 1.16.0**
 
 > Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 
@@ -12,7 +12,7 @@ A Claude Code plugin that provides iterative development with independent AI rev
 
 ## Core Concepts
 
-- **Iteration over Perfection** -- Instead of expecting perfect output in one shot, Humanize leverages continuous feedback loops where issues are caught early and refined incrementally.
+- **Iteration over Perfection** -- Instead of expecting perfect output in one shot, Duo leverages continuous feedback loops where issues are caught early and refined incrementally.
 - **One Build + One Review** -- Claude implements, Codex independently reviews. No blind spots.
 - **Ralph Loop with Swarm Mode** -- Iterative refinement continues until all acceptance criteria are met. Optionally parallelize with Agent Teams.
 
@@ -27,12 +27,12 @@ The loop has two phases: **Implementation** (Claude works, Codex reviews summari
 ## Install
 
 ```bash
-# Add humania marketplace
-/plugin marketplace add humania-org/humanize
+# Add duo-dev marketplace
+/plugin marketplace add duo-dev/duo
 # If you want to use development branch for experimental features
-/plugin marketplace add humania-org/humanize#dev
-# Then install humanize plugin
-/plugin install humanize@humania
+/plugin marketplace add duo-dev/duo#dev
+# Then install duo plugin
+/plugin install duo@duo-dev
 ```
 
 Requires [codex CLI](https://github.com/openai/codex) for review. See the full [Installation Guide](docs/install-for-claude.md) for prerequisites and alternative setup options.
@@ -56,14 +56,14 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
 
 3. **Monitor progress**:
    ```bash
-   source <path/to/humanize>/scripts/humanize.sh
-   humanize monitor rlcr
+   source <path/to/duo>/scripts/duo.sh
+   duo monitor rlcr
    ```
 
 ## Monitor Dashboard
 
 <p align="center">
-  <img src="docs/images/monitor.png" alt="Humanize Monitor" width="680"/>
+  <img src="docs/images/monitor.png" alt="Duo Monitor" width="680"/>
 </p>
 
 ## Documentation

@@ -18,8 +18,8 @@ To cancel the active PR loop:
    - **NO_LOOP** or **NO_ACTIVE_LOOP**: Say "No active PR loop found."
    - **CANCELLED**: Report the cancellation message from the output
 
-**Key principle**: The script handles all cancellation logic. A PR loop is active if `state.md` exists in the newest PR loop directory (.humanize/pr-loop/).
+**Key principle**: The script handles all cancellation logic. A PR loop is active if `state.md` exists in the newest PR loop directory (.duo/pr-loop/).
 
 The loop directory with comments, resolution summaries, and state information will be preserved for reference.
 
-**Note**: This command only affects PR loops. RLCR loops (.humanize/rlcr/) are not affected. Use `/duo:stop` to cancel RLCR loops.
+**Note**: This command only affects PR loops. RLCR loops (.duo/rlcr/) are not affected. Use `/duo:stop` to cancel RLCR loops.

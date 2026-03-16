@@ -17,9 +17,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-HUMANIZE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+DUO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-HOOK_SCRIPT="$HUMANIZE_ROOT/hooks/loop-codex-stop-hook.sh"
+HOOK_SCRIPT="$DUO_ROOT/hooks/loop-codex-stop-hook.sh"
 
 SESSION_ID="${CLAUDE_SESSION_ID:-}"
 TRANSCRIPT_PATH="${CLAUDE_TRANSCRIPT_PATH:-}"

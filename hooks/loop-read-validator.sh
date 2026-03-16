@@ -4,11 +4,11 @@
 #
 # Blocks Claude from reading:
 # - Wrong round's prompt/summary files (outdated information)
-# - Round files from wrong locations (not in .humanize/rlcr/)
+# - Round files from wrong locations (not in .duo/rlcr/)
 # - Round files from old session directories
 # - Todos files (should use native Task tools instead)
 #
-# PR loop files (.humanize/pr-loop/) are generally allowed to read
+# PR loop files (.duo/pr-loop/) are generally allowed to read
 # to give Claude access to comments, prompts, and feedback.
 #
 
@@ -57,7 +57,7 @@ HOOK_SESSION_ID=$(extract_session_id "$HOOK_INPUT")
 
 if is_round_file_type "$FILE_PATH_LOWER" "todos"; then
     PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-    LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/rlcr"
+    LOOP_BASE_DIR="$PROJECT_ROOT/.duo/rlcr"
     LOOP_DIR=$(find_active_loop "$LOOP_BASE_DIR" "$HOOK_SESSION_ID")
     if [[ -z "$LOOP_DIR" ]] || ! is_allowlisted_file "$FILE_PATH" "$LOOP_DIR"; then
         todos_blocked_message "Read" >&2
@@ -74,14 +74,14 @@ if ! is_round_file_type "$FILE_PATH_LOWER" "summary" && ! is_round_file_type "$F
 fi
 
 CLAUDE_FILENAME=$(basename "$FILE_PATH")
-IN_HUMANIZE_LOOP_DIR=$(is_in_humanize_loop_dir "$FILE_PATH" && echo "true" || echo "false")
+IN_DUO_LOOP_DIR=$(is_in_duo_loop_dir "$FILE_PATH" && echo "true" || echo "false")
 
 # ========================================
 # Find Active Loop and Current Round
 # ========================================
 
 PROJECT_ROOT="${PROJECT_ROOT:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
-LOOP_BASE_DIR="${LOOP_BASE_DIR:-$PROJECT_ROOT/.humanize/rlcr}"
+LOOP_BASE_DIR="${LOOP_BASE_DIR:-$PROJECT_ROOT/.duo/rlcr}"
 ACTIVE_LOOP_DIR="${LOOP_DIR:-$(find_active_loop "$LOOP_BASE_DIR" "$HOOK_SESSION_ID")}"
 
 if [[ -z "$ACTIVE_LOOP_DIR" ]]; then
@@ -119,7 +119,7 @@ fi
 # Validate File Location
 # ========================================
 
-if [[ "$IN_HUMANIZE_LOOP_DIR" == "false" ]]; then
+if [[ "$IN_DUO_LOOP_DIR" == "false" ]]; then
     CORRECT_PATH="$ACTIVE_LOOP_DIR/round-${CURRENT_ROUND}-${FILE_TYPE}.md"
     FALLBACK="# Wrong File Location
 

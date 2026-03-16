@@ -5,7 +5,7 @@
 # Intercepts Claude's exit attempts and uses Codex to review work.
 # If Codex doesn't confirm completion, blocks exit and feeds review back.
 #
-# State directory: .humanize/rlcr/<timestamp>/
+# State directory: .duo/rlcr/<timestamp>/
 # State file: state.md (current_round, max_iterations, codex config)
 # Summary file: round-N-summary.md (Claude's work summary)
 # Review prompt: round-N-review-prompt.md (prompt sent to Codex)
@@ -40,7 +40,7 @@ HOOK_INPUT=$(cat)
 # ========================================
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/rlcr"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/rlcr"
 
 # Source shared loop functions and template loader
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
@@ -181,11 +181,11 @@ fi
 if [[ -z "$PLAN_TRACKED" || -z "$START_BRANCH" ]]; then
     REASON="RLCR loop state file is missing required fields (plan_tracked or start_branch).
 
-This indicates the loop was started with an older version of humanize.
+This indicates the loop was started with an older version of duo.
 
 **Options:**
 1. Cancel the loop: \`/duo:stop\`
-2. Update humanize plugin to version 1.1.2+
+2. Update duo plugin to version 1.1.2+
 3. Restart the RLCR loop with the updated plugin"
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -200,11 +200,11 @@ fi
 if [[ -z "$REVIEW_STARTED" || ( "$REVIEW_STARTED" != "true" && "$REVIEW_STARTED" != "false" ) ]]; then
     REASON="RLCR loop state file is missing or has invalid review_started field.
 
-This indicates the loop was started with an older version of humanize (pre-1.5.0).
+This indicates the loop was started with an older version of duo (pre-1.5.0).
 
 **Options:**
 1. Cancel the loop: \`/duo:stop\`
-2. Update humanize plugin to version 1.5.0+
+2. Update duo plugin to version 1.5.0+
 3. Restart the RLCR loop with the updated plugin"
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated (missing review_started)" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -214,11 +214,11 @@ fi
 if [[ -z "$BASE_BRANCH" ]]; then
     REASON="RLCR loop state file is missing base_branch field.
 
-This indicates the loop was started with an older version of humanize (pre-1.5.0).
+This indicates the loop was started with an older version of duo (pre-1.5.0).
 
 **Options:**
 1. Cancel the loop: \`/duo:stop\`
-2. Update humanize plugin to version 1.5.0+
+2. Update duo plugin to version 1.5.0+
 3. Restart the RLCR loop with the updated plugin"
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated (missing base_branch)" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -234,7 +234,7 @@ fi
 if [[ -z "$RAW_FULL_REVIEW_ROUND" ]]; then
     echo "Note: State file missing full_review_round field (introduced in v1.5.2)." >&2
     echo "  Using default value: 5 (Full Alignment Checks at rounds 4, 9, 14, ...)" >&2
-    echo "  To use configurable Full Alignment Check intervals, upgrade to humanize v1.5.2+" >&2
+    echo "  To use configurable Full Alignment Check intervals, upgrade to duo v1.5.2+" >&2
     echo "  and restart the RLCR loop with --full-review-round <N> option." >&2
 fi
 
@@ -564,17 +564,17 @@ if [[ "$GIT_IS_REPO" == "true" ]]; then
         # Check for special cases in untracked files
         UNTRACKED=$(echo "$GIT_STATUS_CACHED" | grep '^??' || true)
 
-        # Check if .humanize* directories are untracked (includes .humanize/ and any legacy .humanize-* dirs)
-        if echo "$UNTRACKED" | grep -q '\.humanize'; then
-            HUMANIZE_LOCAL_NOTE=$(load_template "$TEMPLATE_DIR" "block/git-not-clean-humanize-local.md" 2>/dev/null)
-            if [[ -z "$HUMANIZE_LOCAL_NOTE" ]]; then
-                HUMANIZE_LOCAL_NOTE="Note: .humanize* directories are intentionally untracked."
+        # Check if .duo* directories are untracked (includes .duo/ and any legacy .duo-* dirs)
+        if echo "$UNTRACKED" | grep -q '\.duo'; then
+            DUO_LOCAL_NOTE=$(load_template "$TEMPLATE_DIR" "block/git-not-clean-duo-local.md" 2>/dev/null)
+            if [[ -z "$DUO_LOCAL_NOTE" ]]; then
+                DUO_LOCAL_NOTE="Note: .duo* directories are intentionally untracked."
             fi
-            SPECIAL_NOTES="$SPECIAL_NOTES$HUMANIZE_LOCAL_NOTE"
+            SPECIAL_NOTES="$SPECIAL_NOTES$DUO_LOCAL_NOTE"
         fi
 
         # Check for other untracked files (potential artifacts)
-        OTHER_UNTRACKED=$(echo "$UNTRACKED" | grep -v '\.humanize' || true)
+        OTHER_UNTRACKED=$(echo "$UNTRACKED" | grep -v '\.duo' || true)
         if [[ -n "$OTHER_UNTRACKED" ]]; then
             UNTRACKED_NOTE=$(load_template "$TEMPLATE_DIR" "block/git-not-clean-untracked.md" 2>/dev/null)
             if [[ -z "$UNTRACKED_NOTE" ]]; then
@@ -915,7 +915,7 @@ EOF
     exit 0
 fi
 
-# Debug log files go to XDG_CACHE_HOME/humanize/<project-path>/<timestamp>/ to avoid polluting project dir
+# Debug log files go to XDG_CACHE_HOME/duo/<project-path>/<timestamp>/ to avoid polluting project dir
 # Respects XDG_CACHE_HOME for testability in restricted environments (falls back to $HOME/.cache)
 # This prevents Claude and Codex from reading these debug files during their work
 # The project path is sanitized to replace problematic characters with '-'
@@ -924,7 +924,7 @@ LOOP_TIMESTAMP=$(basename "$LOOP_DIR")
 # This matches Claude Code's convention (e.g., /home/sihao/github.com/foo -> -home-sihao-github-com-foo)
 SANITIZED_PROJECT_PATH=$(echo "$PROJECT_ROOT" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
 CACHE_BASE="${XDG_CACHE_HOME:-$HOME/.cache}"
-CACHE_DIR="$CACHE_BASE/humanize/$SANITIZED_PROJECT_PATH/$LOOP_TIMESTAMP"
+CACHE_DIR="$CACHE_BASE/duo/$SANITIZED_PROJECT_PATH/$LOOP_TIMESTAMP"
 mkdir -p "$CACHE_DIR"
 
 # Note: portable-timeout.sh already sourced at line 52
@@ -938,9 +938,9 @@ fi
 
 # Determine automation flag based on environment variable
 # Default: Use --full-auto (safe mode with sandbox)
-# If HUMANIZE_CODEX_BYPASS_SANDBOX is "true" or "1": Use --dangerously-bypass-approvals-and-sandbox
+# If DUO_CODEX_BYPASS_SANDBOX is "true" or "1": Use --dangerously-bypass-approvals-and-sandbox
 CODEX_AUTO_FLAG="--full-auto"
-if [[ "${HUMANIZE_CODEX_BYPASS_SANDBOX:-}" == "true" ]] || [[ "${HUMANIZE_CODEX_BYPASS_SANDBOX:-}" == "1" ]]; then
+if [[ "${DUO_CODEX_BYPASS_SANDBOX:-}" == "true" ]] || [[ "${DUO_CODEX_BYPASS_SANDBOX:-}" == "1" ]]; then
     CODEX_AUTO_FLAG="--dangerously-bypass-approvals-and-sandbox"
 fi
 
@@ -1529,7 +1529,7 @@ if [[ "$LAST_LINE_TRIMMED" == "$MARKER_STOP" ]]; then
         echo "Codex detected development stagnation during Full Alignment Check (Round $CURRENT_ROUND)." >&2
         echo "The loop has been stopped to prevent further unproductive iterations." >&2
         echo "" >&2
-        echo "Review the historical round files in .humanize/rlcr/$(basename "$LOOP_DIR")/ to understand what went wrong." >&2
+        echo "Review the historical round files in .duo/rlcr/$(basename "$LOOP_DIR")/ to understand what went wrong." >&2
         echo "Consider:" >&2
         echo "  - Revisiting the original plan for clarity" >&2
         echo "  - Breaking down the task into smaller pieces" >&2

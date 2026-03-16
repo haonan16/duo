@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Convenience wrapper: install Humanize skills for Kimi target.
+# Convenience wrapper: install Duo skills for Kimi target.
 #
 
 set -euo pipefail

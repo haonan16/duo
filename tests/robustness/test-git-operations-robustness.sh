@@ -2,7 +2,7 @@
 #
 # Robustness tests for git operation scripts
 #
-# Tests production humanize_parse_git_status function from scripts/humanize.sh:
+# Tests production duo_parse_git_status function from scripts/duo.sh:
 # - Clean repository state
 # - Modified/added/deleted/untracked files
 # - Detached HEAD handling
@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/../test-helpers.sh"
 source "$PROJECT_ROOT/scripts/portable-timeout.sh"
-source "$PROJECT_ROOT/scripts/humanize.sh"
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 setup_test_dir
 
@@ -29,7 +29,7 @@ echo ""
 # Production Function Under Test
 # ========================================
 
-# Uses humanize_parse_git_status from scripts/humanize.sh (sourced above)
+# Uses duo_parse_git_status from scripts/duo.sh (sourced above)
 # Returns: modified|added|deleted|untracked|insertions|deletions
 
 # Helper to parse output
@@ -72,7 +72,7 @@ echo ""
 echo "Test 1: Detect clean repository state"
 init_test_repo "$TEST_DIR/repo1"
 cd "$TEST_DIR/repo1"
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 MODIFIED=$(parse_result "$RESULT" modified)
 ADDED=$(parse_result "$RESULT" added)
 UNTRACKED=$(parse_result "$RESULT" untracked)
@@ -100,7 +100,7 @@ echo ""
 echo "Test 3: Count untracked files"
 cd "$TEST_DIR/repo1"
 echo "new file" > newfile.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 UNTRACKED=$(parse_result "$RESULT" untracked)
 if [[ "$UNTRACKED" == "1" ]]; then
     pass "Untracked file count: 1"
@@ -115,7 +115,7 @@ echo ""
 echo "Test 4: Count modified files"
 cd "$TEST_DIR/repo1"
 echo "modified content" >> file.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 MODIFIED=$(parse_result "$RESULT" modified)
 if [[ "$MODIFIED" == "1" ]]; then
     pass "Modified file count: 1"
@@ -131,7 +131,7 @@ echo "Test 5: Count staged added files"
 cd "$TEST_DIR/repo1"
 echo "new staged" > staged.txt
 git add staged.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 ADDED=$(parse_result "$RESULT" added)
 if [[ "$ADDED" == "1" ]]; then
     pass "Added (staged) file count: 1"
@@ -147,7 +147,7 @@ echo ""
 echo "Test 6: Count line insertions"
 cd "$TEST_DIR/repo1"
 echo -e "line1\nline2\nline3" >> file.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 INSERTIONS=$(parse_result "$RESULT" insertions)
 if [[ "$INSERTIONS" -ge "3" ]]; then
     pass "Insertions counted: $INSERTIONS"
@@ -169,7 +169,7 @@ echo ""
 echo "Test 7: Handle non-git directory"
 mkdir -p "$TEST_DIR/not-a-repo"
 cd "$TEST_DIR/not-a-repo"
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 if [[ "$RESULT" == *"not a git repo"* ]]; then
     pass "Non-git directory detected"
 else
@@ -183,7 +183,7 @@ echo "Test 8: Parse status in detached HEAD state"
 cd "$TEST_DIR/repo1"
 COMMIT=$(git rev-parse HEAD)
 git checkout -q "$COMMIT"
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 MODIFIED=$(parse_result "$RESULT" modified)
 # Should still parse status correctly in detached HEAD
 if [[ "$MODIFIED" == "0" ]]; then
@@ -201,7 +201,7 @@ cd "$TEST_DIR/repo1"
 echo "mod" >> file.txt                    # Modified
 echo "new" > new.txt                      # Untracked
 echo "staged" > staged.txt && git add staged.txt  # Added
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 MODIFIED=$(parse_result "$RESULT" modified)
 ADDED=$(parse_result "$RESULT" added)
 UNTRACKED=$(parse_result "$RESULT" untracked)
@@ -220,7 +220,7 @@ echo ""
 echo "Test 10: Detect deleted files"
 cd "$TEST_DIR/repo1"
 rm file.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 DELETED=$(parse_result "$RESULT" deleted)
 if [[ "$DELETED" == "1" ]]; then
     pass "Deleted file count: 1"
@@ -236,7 +236,7 @@ echo "Test 11: Handle empty repository (no commits)"
 mkdir -p "$TEST_DIR/empty-repo"
 cd "$TEST_DIR/empty-repo"
 git init -q
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 # Should not crash, may return zeros or empty
 if [[ -n "$RESULT" ]]; then
     pass "Empty repo handled gracefully: $RESULT"
@@ -251,7 +251,7 @@ echo "Test 12: Feature branch status parsing"
 cd "$TEST_DIR/repo1"
 git checkout -q -b feature/test-branch
 echo "feature work" > feature.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 UNTRACKED=$(parse_result "$RESULT" untracked)
 if [[ "$UNTRACKED" == "1" ]]; then
     pass "Feature branch status parsed correctly"
@@ -267,7 +267,7 @@ echo ""
 echo "Test 13: Detect renamed file"
 cd "$TEST_DIR/repo1"
 git mv file.txt renamed.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 MODIFIED=$(parse_result "$RESULT" modified)
 # Renamed counts as modified in our implementation
 if [[ "$MODIFIED" -ge "1" ]]; then
@@ -288,7 +288,7 @@ cd "$TEST_DIR/repo1"
 for i in $(seq 1 20); do
     echo "content $i" > "untracked$i.txt"
 done
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 UNTRACKED=$(parse_result "$RESULT" untracked)
 if [[ "$UNTRACKED" == "20" ]]; then
     pass "Counts 20 untracked files correctly"
@@ -303,7 +303,7 @@ echo ""
 echo "Test 15: Handle file with spaces in name"
 cd "$TEST_DIR/repo1"
 echo "content" > "file with spaces.txt"
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 UNTRACKED=$(parse_result "$RESULT" untracked)
 if [[ "$UNTRACKED" == "1" ]]; then
     pass "File with spaces counted correctly"
@@ -318,7 +318,7 @@ echo ""
 echo "Test 16: Handle binary file changes"
 cd "$TEST_DIR/repo1"
 printf '\x00\x01\x02\x03' > binary.bin
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 UNTRACKED=$(parse_result "$RESULT" untracked)
 if [[ "$UNTRACKED" == "1" ]]; then
     pass "Binary file counted as untracked"
@@ -335,7 +335,7 @@ cd "$TEST_DIR/repo1"
 echo "staged change" >> file.txt
 git add file.txt
 echo "unstaged change" >> file.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 MODIFIED=$(parse_result "$RESULT" modified)
 # MM status (staged + unstaged) should count as 1 modified
 if [[ "$MODIFIED" -ge "1" ]]; then
@@ -356,7 +356,7 @@ git add file.txt
 git commit -q -m "Add lines"
 # Now delete them
 git checkout -q HEAD~1 -- file.txt
-RESULT=$(humanize_parse_git_status)
+RESULT=$(duo_parse_git_status)
 DELETIONS=$(parse_result "$RESULT" deletions)
 if [[ "$DELETIONS" -ge "3" ]]; then
     pass "Deletions counted: $DELETIONS"
@@ -377,7 +377,7 @@ echo ""
 # Test 19: Detect normal state
 echo "Test 19: Detect normal git state"
 cd "$TEST_DIR/repo1"
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "normal" ]]; then
     pass "Normal state detected correctly"
 else
@@ -391,7 +391,7 @@ echo "Test 20: Detect detached HEAD state"
 cd "$TEST_DIR/repo1"
 COMMIT=$(git rev-parse HEAD)
 git checkout -q "$COMMIT"
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "detached" ]]; then
     pass "Detached HEAD state detected"
 else
@@ -417,7 +417,7 @@ git commit -q -m "Main conflict commit"
 git checkout -q test-rebase-branch
 # Create the rebase-merge directory to simulate rebase in progress
 mkdir -p "$(git rev-parse --git-dir)/rebase-merge"
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "rebase" ]]; then
     pass "Rebase in progress detected"
 else
@@ -437,7 +437,7 @@ echo "Test 22: Detect merge in progress"
 cd "$TEST_DIR/repo1"
 # Create MERGE_HEAD to simulate merge in progress
 echo "dummy" > "$(git rev-parse --git-dir)/MERGE_HEAD"
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "merge" ]]; then
     pass "Merge in progress detected"
 else
@@ -453,7 +453,7 @@ echo "Test 23: Detect shallow clone"
 cd "$TEST_DIR/repo1"
 # Create shallow file to simulate shallow clone
 touch "$(git rev-parse --git-dir)/shallow"
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "shallow" ]]; then
     pass "Shallow clone detected"
 else
@@ -467,7 +467,7 @@ cd - > /dev/null
 echo ""
 echo "Test 24: Detect non-git directory"
 cd "$TEST_DIR/not-a-repo"
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "not_a_repo" ]]; then
     pass "Non-git directory detected"
 else
@@ -483,7 +483,7 @@ mkdir -p "$TEST_DIR/perm-test"
 cd "$TEST_DIR/perm-test"
 mkdir .git
 chmod 000 .git
-STATE=$(humanize_detect_git_state)
+STATE=$(duo_detect_git_state)
 if [[ "$STATE" == "permission_error" ]]; then
     pass "Permission error detected"
 else

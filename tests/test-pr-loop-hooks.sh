@@ -33,7 +33,7 @@ test_active_bots_yaml_format() {
 
     # Create PR loop state file with proper YAML format
     local timestamp="2026-01-18_13-00-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     cat > "$loop_dir/state.md" << EOF
@@ -71,7 +71,7 @@ test_pr_loop_state_protected() {
 
     # Create mock loop directory
     local timestamp="2026-01-18_14-00-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     cat > "$loop_dir/state.md" << EOF
@@ -83,7 +83,7 @@ pr_number: 123
 EOF
 
     # Test that write validator blocks state.md writes
-    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.humanize/pr-loop/'$timestamp'/state.md", "content": "malicious content"}}'
+    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.duo/pr-loop/'$timestamp'/state.md", "content": "malicious content"}}'
 
     local output
     local exit_code
@@ -104,7 +104,7 @@ test_pr_loop_comment_protected() {
     cd "$TEST_DIR"
 
     local timestamp="2026-01-18_14-00-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     cat > "$loop_dir/state.md" << EOF
@@ -116,7 +116,7 @@ pr_number: 123
 EOF
 
     # Test that write validator blocks pr-comment.md writes
-    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.humanize/pr-loop/'$timestamp'/round-0-pr-comment.md", "content": "fake comments"}}'
+    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.duo/pr-loop/'$timestamp'/round-0-pr-comment.md", "content": "fake comments"}}'
 
     local output
     local exit_code
@@ -137,7 +137,7 @@ test_pr_loop_resolve_allowed() {
     cd "$TEST_DIR"
 
     local timestamp="2026-01-18_14-00-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     cat > "$loop_dir/state.md" << EOF
@@ -149,7 +149,7 @@ pr_number: 123
 EOF
 
     # Test that write validator allows pr-resolve.md writes
-    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.humanize/pr-loop/'$timestamp'/round-0-pr-resolve.md", "content": "resolution summary"}}'
+    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.duo/pr-loop/'$timestamp'/round-0-pr-resolve.md", "content": "resolution summary"}}'
 
     local output
     local exit_code
@@ -176,10 +176,10 @@ test_pr_loop_bash_protection_no_rlcr() {
     cd "$TEST_DIR"
 
     # Ensure NO RLCR loop exists
-    rm -rf ".humanize/rlcr"
+    rm -rf ".duo/rlcr"
 
     local timestamp="2026-01-18_14-30-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     cat > "$loop_dir/state.md" << EOF
@@ -191,7 +191,7 @@ pr_number: 456
 EOF
 
     # Test that Bash validator blocks state.md modifications via echo redirect
-    local hook_input='{"tool_name": "Bash", "tool_input": {"command": "echo bad > '$TEST_DIR'/.humanize/pr-loop/'$timestamp'/state.md"}}'
+    local hook_input='{"tool_name": "Bash", "tool_input": {"command": "echo bad > '$TEST_DIR'/.duo/pr-loop/'$timestamp'/state.md"}}'
 
     local output
     local exit_code
@@ -698,9 +698,9 @@ test_timeout_anchored_to_trigger() {
 # Test: State file includes configured_bots
 test_state_has_configured_bots() {
     local test_subdir="$TEST_DIR/state_configured_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 configured_bots:
@@ -714,7 +714,7 @@ EOF
 
     # Extract configured_bots count
     local configured_count
-    configured_count=$(grep -c "^  - " "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" 2>/dev/null | head -1)
+    configured_count=$(grep -c "^  - " "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" 2>/dev/null | head -1)
 
     if [[ "$configured_count" -ge 2 ]]; then
         pass "T-HOOK-6: State file tracks configured_bots separately"
@@ -766,10 +766,10 @@ echo ""
 # Test: Stop hook blocks when no resolve file exists
 test_e2e_missing_resolve_blocks() {
     local test_subdir="$TEST_DIR/e2e_resolve_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -845,10 +845,10 @@ MOCK_GIT
 # Test: Stop hook detects trigger comment and updates state
 test_e2e_trigger_detection() {
     local test_subdir="$TEST_DIR/e2e_trigger_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file with empty last_trigger_at
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -869,7 +869,7 @@ last_trigger_at:
 EOF
 
     # Create resolve file
-    echo "# Resolution Summary" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution Summary" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     # Create mock binaries that return trigger comment
     local mock_bin="$test_subdir/bin"
@@ -947,10 +947,10 @@ MOCK_GIT
 # Test: Stop hook handles paginated API response (multi-page trigger detection)
 test_e2e_pagination_runtime() {
     local test_subdir="$TEST_DIR/e2e_pagination_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -971,7 +971,7 @@ last_trigger_at:
 EOF
 
     # Create resolve file
-    echo "# Resolution Summary" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution Summary" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -1052,12 +1052,12 @@ MOCK_GIT
 # Test: Stop hook uses last_trigger_at when present (even for round 0)
 test_e2e_trigger_priority_runtime() {
     local test_subdir="$TEST_DIR/e2e_priority_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file with BOTH started_at and last_trigger_at set
     # The trigger timestamp is LATER than started_at - if priority works,
     # the hook should use the trigger timestamp (not started_at)
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -1078,7 +1078,7 @@ last_trigger_at: 2026-01-18T14:30:00Z
 EOF
 
     # Create resolve file
-    echo "# Resolution Summary" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution Summary" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -1433,7 +1433,7 @@ test_wrong_round_pr_resolve_blocked() {
     cd "$TEST_DIR"
 
     local timestamp="2026-01-18_15-00-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     # State says current_round is 2
@@ -1446,7 +1446,7 @@ pr_number: 123
 EOF
 
     # Try to write to round-0 (wrong round)
-    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.humanize/pr-loop/'$timestamp'/round-0-pr-resolve.md", "content": "wrong round"}}'
+    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.duo/pr-loop/'$timestamp'/round-0-pr-resolve.md", "content": "wrong round"}}'
 
     local output
     local exit_code
@@ -1467,7 +1467,7 @@ test_correct_round_pr_resolve_allowed() {
     cd "$TEST_DIR"
 
     local timestamp="2026-01-18_15-01-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     # State says current_round is 2
@@ -1480,7 +1480,7 @@ pr_number: 123
 EOF
 
     # Write to round-2 (correct round)
-    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.humanize/pr-loop/'$timestamp'/round-2-pr-resolve.md", "content": "correct round"}}'
+    local hook_input='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.duo/pr-loop/'$timestamp'/round-2-pr-resolve.md", "content": "correct round"}}'
 
     local output
     local exit_code
@@ -1501,7 +1501,7 @@ test_wrong_round_pr_resolve_edit_blocked() {
     cd "$TEST_DIR"
 
     local timestamp="2026-01-18_15-02-00"
-    local loop_dir=".humanize/pr-loop/$timestamp"
+    local loop_dir=".duo/pr-loop/$timestamp"
     mkdir -p "$loop_dir"
 
     cat > "$loop_dir/state.md" << EOF
@@ -1513,7 +1513,7 @@ pr_number: 123
 EOF
 
     # Try to edit round-1 (wrong round)
-    local hook_input='{"tool_name": "Edit", "tool_input": {"file_path": "'$TEST_DIR'/.humanize/pr-loop/'$timestamp'/round-1-pr-resolve.md", "old_string": "x", "new_string": "y"}}'
+    local hook_input='{"tool_name": "Edit", "tool_input": {"file_path": "'$TEST_DIR'/.duo/pr-loop/'$timestamp'/round-1-pr-resolve.md", "old_string": "x", "new_string": "y"}}'
 
     local output
     local exit_code
@@ -1552,10 +1552,10 @@ test_monitor_yaml_list_parsing() {
     # Use helper script to create state file (avoids validator blocking)
     "$SCRIPT_DIR/setup-monitor-test-env.sh" "$test_subdir" yaml_list >/dev/null
 
-    # Source the humanize script and run monitor from test subdirectory (use --once for non-interactive)
+    # Source the duo script and run monitor from test subdirectory (use --once for non-interactive)
     cd "$test_subdir"
     local output
-    output=$(source "$PROJECT_ROOT/scripts/humanize.sh" && humanize monitor pr --once 2>&1) || true
+    output=$(source "$PROJECT_ROOT/scripts/duo.sh" && duo monitor pr --once 2>&1) || true
     cd "$SCRIPT_DIR"
 
     # Check that active bots are displayed correctly (comma-separated)
@@ -1579,10 +1579,10 @@ test_monitor_configured_bots() {
     # Use helper script to create state file (avoids validator blocking)
     "$SCRIPT_DIR/setup-monitor-test-env.sh" "$test_subdir" configured >/dev/null
 
-    # Source the humanize script and run monitor from test subdirectory (use --once for non-interactive)
+    # Source the duo script and run monitor from test subdirectory (use --once for non-interactive)
     cd "$test_subdir"
     local output
-    output=$(source "$PROJECT_ROOT/scripts/humanize.sh" && humanize monitor pr --once 2>&1) || true
+    output=$(source "$PROJECT_ROOT/scripts/duo.sh" && duo monitor pr --once 2>&1) || true
     cd "$SCRIPT_DIR"
 
     # Check that both configured and active bots are displayed
@@ -1601,10 +1601,10 @@ test_monitor_empty_active_bots() {
     # Use helper script to create state file (avoids validator blocking)
     "$SCRIPT_DIR/setup-monitor-test-env.sh" "$test_subdir" empty >/dev/null
 
-    # Source the humanize script and run monitor from test subdirectory (use --once for non-interactive)
+    # Source the duo script and run monitor from test subdirectory (use --once for non-interactive)
     cd "$test_subdir"
     local output
-    output=$(source "$PROJECT_ROOT/scripts/humanize.sh" && humanize monitor pr --once 2>&1) || true
+    output=$(source "$PROJECT_ROOT/scripts/duo.sh" && duo monitor pr --once 2>&1) || true
     cd "$SCRIPT_DIR"
 
     # Check that active bots shows 'none'

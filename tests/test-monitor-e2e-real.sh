@@ -2,11 +2,11 @@
 #
 # TRUE End-to-End Monitor Tests for monitor tests
 #
-# This test runs the REAL _humanize_monitor_codex function (not stubs)
-# and verifies graceful stop behavior when .humanize/rlcr is deleted.
+# This test runs the REAL _duo_monitor_codex function (not stubs)
+# and verifies graceful stop behavior when .duo/rlcr is deleted.
 #
 # Validates:
-# - Clean exit with user-friendly message when .humanize deleted
+# - Clean exit with user-friendly message when .duo deleted
 # - No zsh/bash "no matches found" errors
 # - Terminal state properly restored (scroll region reset)
 # - Works correctly in both bash and zsh
@@ -51,18 +51,18 @@ cleanup_test() {
 trap cleanup_test EXIT
 
 # ========================================
-# Test 1: Real _humanize_monitor_codex with directory deletion (bash)
+# Test 1: Real _duo_monitor_codex with directory deletion (bash)
 # ========================================
 monitor_test_bash_deletion() {
-    echo "Test 1: Real _humanize_monitor_codex with directory deletion (bash)"
+    echo "Test 1: Real _duo_monitor_codex with directory deletion (bash)"
     echo ""
 
     # Create test project directory
     TEST_PROJECT="$TEST_BASE/project1"
-    mkdir -p "$TEST_PROJECT/.humanize/rlcr/2026-01-16_10-00-00"
+    mkdir -p "$TEST_PROJECT/.duo/rlcr/2026-01-16_10-00-00"
 
     # Create valid state.md file
-    cat > "$TEST_PROJECT/.humanize/rlcr/2026-01-16_10-00-00/state.md" << 'STATE'
+    cat > "$TEST_PROJECT/.duo/rlcr/2026-01-16_10-00-00/state.md" << 'STATE'
 ---
 current_round: 1
 max_iterations: 5
@@ -78,7 +78,7 @@ review_started: false
 STATE
 
     # Create goal-tracker.md (required by monitor)
-    cat > "$TEST_PROJECT/.humanize/rlcr/2026-01-16_10-00-00/goal-tracker.md" << 'GOALTRACKER_EOF1'
+    cat > "$TEST_PROJECT/.duo/rlcr/2026-01-16_10-00-00/goal-tracker.md" << 'GOALTRACKER_EOF1'
 # Goal Tracker
 ## IMMUTABLE SECTION
 ### Ultimate Goal
@@ -98,15 +98,15 @@ GOALTRACKER_EOF1
 
     # Create cache directory matching the project path
     SANITIZED_PROJECT=$(echo "$TEST_PROJECT" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-    CACHE_DIR="$FAKE_HOME/.cache/humanize/$SANITIZED_PROJECT/2026-01-16_10-00-00"
+    CACHE_DIR="$FAKE_HOME/.cache/duo/$SANITIZED_PROJECT/2026-01-16_10-00-00"
     mkdir -p "$CACHE_DIR"
     echo "Round 1 started" > "$CACHE_DIR/round-1-codex-run.log"
 
     # Create the test runner script
-    # This script runs the REAL _humanize_monitor_codex function
+    # This script runs the REAL _duo_monitor_codex function
     cat > "$TEST_PROJECT/run_real_monitor.sh" << 'MONITOR_SCRIPT'
 #!/bin/bash
-# Run the REAL _humanize_monitor_codex function
+# Run the REAL _duo_monitor_codex function
 
 PROJECT_DIR="$1"
 PROJECT_ROOT="$2"
@@ -141,11 +141,11 @@ clear() {
 }
 export -f clear
 
-# Source the humanize.sh script to get the REAL _humanize_monitor_codex function
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source the duo.sh script to get the REAL _duo_monitor_codex function
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Run the REAL monitor function and capture all output
-_humanize_monitor_codex 2>&1
+_duo_monitor_codex 2>&1
 exit_code=$?
 
 echo "EXIT_CODE:$exit_code"
@@ -161,8 +161,8 @@ MONITOR_SCRIPT
     # Wait for monitor to start (check for initial output)
     sleep 2
 
-    # Delete the .humanize/rlcr directory to trigger graceful stop
-    rm -rf "$TEST_PROJECT/.humanize/rlcr"
+    # Delete the .duo/rlcr directory to trigger graceful stop
+    rm -rf "$TEST_PROJECT/.duo/rlcr"
 
     # Wait for monitor to exit (bounded loop)
     WAIT_COUNT=0
@@ -213,7 +213,7 @@ MONITOR_SCRIPT
     fi
 
     # Check source code for scroll reset (backup verification)
-    if grep -q 'printf "\\033\[r"' "$PROJECT_ROOT/scripts/humanize.sh"; then
+    if grep -q 'printf "\\033\[r"' "$PROJECT_ROOT/scripts/duo.sh"; then
         pass "Scroll region reset in source"
     else
         fail "Scroll reset" "Missing scroll reset escape in source"
@@ -228,11 +228,11 @@ MONITOR_SCRIPT
 }
 
 # ========================================
-# Test 2: Real _humanize_monitor_codex with directory deletion (zsh)
+# Test 2: Real _duo_monitor_codex with directory deletion (zsh)
 # ========================================
 monitor_test_zsh_deletion() {
     echo ""
-    echo "Test 2: Real _humanize_monitor_codex with directory deletion (zsh)"
+    echo "Test 2: Real _duo_monitor_codex with directory deletion (zsh)"
     echo ""
 
     if ! command -v zsh &>/dev/null; then
@@ -240,10 +240,10 @@ monitor_test_zsh_deletion() {
     else
         # Create test project directory for zsh
         TEST_PROJECT_ZSH="$TEST_BASE/project_zsh"
-        mkdir -p "$TEST_PROJECT_ZSH/.humanize/rlcr/2026-01-16_11-00-00"
+        mkdir -p "$TEST_PROJECT_ZSH/.duo/rlcr/2026-01-16_11-00-00"
 
         # Create valid state.md file
-        cat > "$TEST_PROJECT_ZSH/.humanize/rlcr/2026-01-16_11-00-00/state.md" << 'STATE'
+        cat > "$TEST_PROJECT_ZSH/.duo/rlcr/2026-01-16_11-00-00/state.md" << 'STATE'
 ---
 current_round: 1
 max_iterations: 5
@@ -259,7 +259,7 @@ review_started: false
 STATE
 
         # Create goal-tracker.md
-        cat > "$TEST_PROJECT_ZSH/.humanize/rlcr/2026-01-16_11-00-00/goal-tracker.md" << 'GOALTRACKER_EOF'
+        cat > "$TEST_PROJECT_ZSH/.duo/rlcr/2026-01-16_11-00-00/goal-tracker.md" << 'GOALTRACKER_EOF'
 # Goal Tracker
 ## IMMUTABLE SECTION
 ### Ultimate Goal
@@ -279,14 +279,14 @@ GOALTRACKER_EOF
 
         # Create cache directory
         SANITIZED_PROJECT_ZSH=$(echo "$TEST_PROJECT_ZSH" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-        CACHE_DIR_ZSH="$FAKE_HOME_ZSH/.cache/humanize/$SANITIZED_PROJECT_ZSH/2026-01-16_11-00-00"
+        CACHE_DIR_ZSH="$FAKE_HOME_ZSH/.cache/duo/$SANITIZED_PROJECT_ZSH/2026-01-16_11-00-00"
         mkdir -p "$CACHE_DIR_ZSH"
         echo "Round 1 started" > "$CACHE_DIR_ZSH/round-1-codex-run.log"
 
         # Create zsh test runner script
         cat > "$TEST_PROJECT_ZSH/run_real_monitor_zsh.zsh" << 'ZSH_MONITOR_SCRIPT'
 #!/bin/zsh
-# Run the REAL _humanize_monitor_codex function under zsh
+# Run the REAL _duo_monitor_codex function under zsh
 
 PROJECT_DIR="$1"
 PROJECT_ROOT="$2"
@@ -309,11 +309,11 @@ tput() {
 
 clear() { : }
 
-# Source the humanize.sh script
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source the duo.sh script
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Run the REAL monitor function
-_humanize_monitor_codex 2>&1
+_duo_monitor_codex 2>&1
 exit_code=$?
 
 echo "EXIT_CODE:$exit_code"
@@ -330,7 +330,7 @@ ZSH_MONITOR_SCRIPT
         sleep 2
 
         # Delete the directory
-        rm -rf "$TEST_PROJECT_ZSH/.humanize/rlcr"
+        rm -rf "$TEST_PROJECT_ZSH/.duo/rlcr"
 
         # Wait for exit
         WAIT_COUNT=0
@@ -372,19 +372,19 @@ ZSH_MONITOR_SCRIPT
 }
 
 # ========================================
-# Test 3: Real _humanize_monitor_codex with SIGINT/Ctrl+C
+# Test 3: Real _duo_monitor_codex with SIGINT/Ctrl+C
 # ========================================
 monitor_test_bash_sigint() {
     echo ""
-    echo "Test 3: Real _humanize_monitor_codex with SIGINT/Ctrl+C"
+    echo "Test 3: Real _duo_monitor_codex with SIGINT/Ctrl+C"
     echo ""
 
     # Create test project directory for SIGINT test
     TEST_PROJECT_SIGINT="$TEST_BASE/project_sigint"
-    mkdir -p "$TEST_PROJECT_SIGINT/.humanize/rlcr/2026-01-16_12-00-00"
+    mkdir -p "$TEST_PROJECT_SIGINT/.duo/rlcr/2026-01-16_12-00-00"
 
     # Create valid state.md file
-    cat > "$TEST_PROJECT_SIGINT/.humanize/rlcr/2026-01-16_12-00-00/state.md" << 'STATE'
+    cat > "$TEST_PROJECT_SIGINT/.duo/rlcr/2026-01-16_12-00-00/state.md" << 'STATE'
 ---
 current_round: 1
 max_iterations: 5
@@ -400,7 +400,7 @@ review_started: false
 STATE
 
     # Create goal-tracker.md
-    cat > "$TEST_PROJECT_SIGINT/.humanize/rlcr/2026-01-16_12-00-00/goal-tracker.md" << 'GOALTRACKER_SIGINT'
+    cat > "$TEST_PROJECT_SIGINT/.duo/rlcr/2026-01-16_12-00-00/goal-tracker.md" << 'GOALTRACKER_SIGINT'
 # Goal Tracker
 ## IMMUTABLE SECTION
 ### Ultimate Goal
@@ -420,14 +420,14 @@ GOALTRACKER_SIGINT
 
     # Create cache directory
     SANITIZED_PROJECT_SIGINT=$(echo "$TEST_PROJECT_SIGINT" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-    CACHE_DIR_SIGINT="$FAKE_HOME_SIGINT/.cache/humanize/$SANITIZED_PROJECT_SIGINT/2026-01-16_12-00-00"
+    CACHE_DIR_SIGINT="$FAKE_HOME_SIGINT/.cache/duo/$SANITIZED_PROJECT_SIGINT/2026-01-16_12-00-00"
     mkdir -p "$CACHE_DIR_SIGINT"
     echo "Round 1 started" > "$CACHE_DIR_SIGINT/round-1-codex-run.log"
 
     # Create the test runner script for SIGINT test
     cat > "$TEST_PROJECT_SIGINT/run_real_monitor_sigint.sh" << 'SIGINT_SCRIPT_EOF'
 #!/bin/bash
-# Run the REAL _humanize_monitor_codex function for SIGINT testing
+# Run the REAL _duo_monitor_codex function for SIGINT testing
 
 PROJECT_DIR="$1"
 PROJECT_ROOT="$2"
@@ -461,11 +461,11 @@ clear() {
 }
 export -f clear
 
-# Source the humanize.sh script
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source the duo.sh script
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Run the REAL monitor function
-_humanize_monitor_codex 2>&1
+_duo_monitor_codex 2>&1
 exit_code=$?
 
 echo "EXIT_CODE:$exit_code"
@@ -550,11 +550,11 @@ SIGINT_SCRIPT_EOF
 }
 
 # ========================================
-# Test 4: Real _humanize_monitor_codex with SIGINT/Ctrl+C
+# Test 4: Real _duo_monitor_codex with SIGINT/Ctrl+C
 # ========================================
 monitor_test_zsh_sigint() {
     echo ""
-    echo "Test 4: Real _humanize_monitor_codex with SIGINT/Ctrl+C"
+    echo "Test 4: Real _duo_monitor_codex with SIGINT/Ctrl+C"
     echo ""
 
     if ! command -v zsh &>/dev/null; then
@@ -562,10 +562,10 @@ monitor_test_zsh_sigint() {
     else
         # Create test project for zsh SIGINT
         TEST_PROJECT_ZSH_SIGINT="$TEST_BASE/project_zsh_sigint"
-        mkdir -p "$TEST_PROJECT_ZSH_SIGINT/.humanize/rlcr/2026-01-16_13-00-00"
+        mkdir -p "$TEST_PROJECT_ZSH_SIGINT/.duo/rlcr/2026-01-16_13-00-00"
 
         # Create state.md
-        cat > "$TEST_PROJECT_ZSH_SIGINT/.humanize/rlcr/2026-01-16_13-00-00/state.md" << 'STATE'
+        cat > "$TEST_PROJECT_ZSH_SIGINT/.duo/rlcr/2026-01-16_13-00-00/state.md" << 'STATE'
 ---
 current_round: 1
 max_iterations: 5
@@ -581,7 +581,7 @@ review_started: false
 STATE
 
         # Create goal-tracker.md
-        cat > "$TEST_PROJECT_ZSH_SIGINT/.humanize/rlcr/2026-01-16_13-00-00/goal-tracker.md" << 'GOALTRACKER_ZSH_SIGINT'
+        cat > "$TEST_PROJECT_ZSH_SIGINT/.duo/rlcr/2026-01-16_13-00-00/goal-tracker.md" << 'GOALTRACKER_ZSH_SIGINT'
 # Goal Tracker
 ## IMMUTABLE SECTION
 ### Ultimate Goal
@@ -601,14 +601,14 @@ GOALTRACKER_ZSH_SIGINT
 
         # Create cache directory
         SANITIZED_PROJECT_ZSH_SIGINT=$(echo "$TEST_PROJECT_ZSH_SIGINT" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-        CACHE_DIR_ZSH_SIGINT="$FAKE_HOME_ZSH_SIGINT/.cache/humanize/$SANITIZED_PROJECT_ZSH_SIGINT/2026-01-16_13-00-00"
+        CACHE_DIR_ZSH_SIGINT="$FAKE_HOME_ZSH_SIGINT/.cache/duo/$SANITIZED_PROJECT_ZSH_SIGINT/2026-01-16_13-00-00"
         mkdir -p "$CACHE_DIR_ZSH_SIGINT"
         echo "Round 1 started" > "$CACHE_DIR_ZSH_SIGINT/round-1-codex-run.log"
 
         # Create zsh test runner
         cat > "$TEST_PROJECT_ZSH_SIGINT/run_real_monitor_zsh_sigint.zsh" << 'ZSH_SIGINT_SCRIPT'
 #!/bin/zsh
-# Run the REAL _humanize_monitor_codex function under zsh for SIGINT testing
+# Run the REAL _duo_monitor_codex function under zsh for SIGINT testing
 
 PROJECT_DIR="$1"
 PROJECT_ROOT="$2"
@@ -629,9 +629,9 @@ tput() {
 
 clear() { : }
 
-source "$PROJECT_ROOT/scripts/humanize.sh"
+source "$PROJECT_ROOT/scripts/duo.sh"
 
-_humanize_monitor_codex 2>&1
+_duo_monitor_codex 2>&1
 exit_code=$?
 
 echo "EXIT_CODE:$exit_code"
@@ -686,19 +686,19 @@ ZSH_SIGINT_SCRIPT
 }
 
 # ========================================
-# Test 5: Real _humanize_monitor_pr with directory deletion
+# Test 5: Real _duo_monitor_pr with directory deletion
 # ========================================
 monitor_test_pr_deletion() {
     echo ""
-    echo "Test 5: Real _humanize_monitor_pr with directory deletion"
+    echo "Test 5: Real _duo_monitor_pr with directory deletion"
     echo ""
 
     # Create test project directory for PR monitor
     TEST_PROJECT_PR="$TEST_BASE/project_pr"
-    mkdir -p "$TEST_PROJECT_PR/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$TEST_PROJECT_PR/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create valid PR loop state.md file
-    cat > "$TEST_PROJECT_PR/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'STATE'
+    cat > "$TEST_PROJECT_PR/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'STATE'
 current_round: 1
 max_iterations: 42
 pr_number: 123
@@ -717,7 +717,7 @@ started_at: 2026-01-18T10:00:00Z
 STATE
 
     # Create goal-tracker.md for PR loop
-    cat > "$TEST_PROJECT_PR/.humanize/pr-loop/2026-01-18_12-00-00/goal-tracker.md" << 'GOALTRACKER_EOF'
+    cat > "$TEST_PROJECT_PR/.duo/pr-loop/2026-01-18_12-00-00/goal-tracker.md" << 'GOALTRACKER_EOF'
 # PR Review Goal Tracker
 
 ## PR Information
@@ -741,14 +741,14 @@ GOALTRACKER_EOF
 
     # Create cache directory for PR monitor
     SANITIZED_PROJECT_PR=$(echo "$TEST_PROJECT_PR" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-    CACHE_DIR_PR="$FAKE_HOME_PR/.cache/humanize/$SANITIZED_PROJECT_PR/2026-01-18_12-00-00"
+    CACHE_DIR_PR="$FAKE_HOME_PR/.cache/duo/$SANITIZED_PROJECT_PR/2026-01-18_12-00-00"
     mkdir -p "$CACHE_DIR_PR"
     echo "PR round 1 started" > "$CACHE_DIR_PR/round-1-codex-run.log"
 
     # Create bash test runner script for PR monitor
     cat > "$TEST_PROJECT_PR/run_real_monitor_pr.sh" << 'MONITOR_SCRIPT'
 #!/bin/bash
-# Run the REAL _humanize_monitor_pr function
+# Run the REAL _duo_monitor_pr function
 
 PROJECT_DIR="$1"
 PROJECT_ROOT="$2"
@@ -777,8 +777,8 @@ printf() {
     esac
 }
 
-# Source the humanize script (loads all functions)
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source the duo script (loads all functions)
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Override _pr_cleanup for testing
 _pr_cleanup() {
@@ -789,12 +789,12 @@ _pr_cleanup() {
 # Then delete directory after brief delay
 (
     sleep 0.5
-    rm -rf "$PROJECT_DIR/.humanize/pr-loop/2026-01-18_12-00-00"
+    rm -rf "$PROJECT_DIR/.duo/pr-loop/2026-01-18_12-00-00"
 ) &
 cleanup_pid=$!
 
 # Run monitor in foreground (will detect deletion)
-humanize monitor pr --once 2>&1
+duo monitor pr --once 2>&1
 
 echo "EXIT_CODE:$?"
 
@@ -829,19 +829,19 @@ MONITOR_SCRIPT
 }
 
 # ========================================
-# Test 6: Real _humanize_monitor_pr without --once with SIGINT
+# Test 6: Real _duo_monitor_pr without --once with SIGINT
 # ========================================
 monitor_test_pr_sigint() {
     echo ""
-    echo "Test 6: Real _humanize_monitor_pr without --once with SIGINT"
+    echo "Test 6: Real _duo_monitor_pr without --once with SIGINT"
     echo ""
 
     # Create test project directory for PR monitor without --once
     TEST_PROJECT_PR_NO_ONCE="$TEST_BASE/project_pr_no_once"
-    mkdir -p "$TEST_PROJECT_PR_NO_ONCE/.humanize/pr-loop/2026-01-18_13-00-00"
+    mkdir -p "$TEST_PROJECT_PR_NO_ONCE/.duo/pr-loop/2026-01-18_13-00-00"
 
     # Create valid PR loop state.md file
-    cat > "$TEST_PROJECT_PR_NO_ONCE/.humanize/pr-loop/2026-01-18_13-00-00/state.md" << 'STATE'
+    cat > "$TEST_PROJECT_PR_NO_ONCE/.duo/pr-loop/2026-01-18_13-00-00/state.md" << 'STATE'
 current_round: 1
 max_iterations: 42
 pr_number: 456
@@ -860,7 +860,7 @@ started_at: 2026-01-18T13:00:00Z
 STATE
 
     # Create goal-tracker.md for PR loop
-    cat > "$TEST_PROJECT_PR_NO_ONCE/.humanize/pr-loop/2026-01-18_13-00-00/goal-tracker.md" << 'PR_GOAL_EOF'
+    cat > "$TEST_PROJECT_PR_NO_ONCE/.duo/pr-loop/2026-01-18_13-00-00/goal-tracker.md" << 'PR_GOAL_EOF'
 # PR Review Goal Tracker
 
 ## PR Information
@@ -884,14 +884,14 @@ PR_GOAL_EOF
 
     # Create cache directory for PR monitor
     SANITIZED_PROJECT_PR_NO_ONCE=$(echo "$TEST_PROJECT_PR_NO_ONCE" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-    CACHE_DIR_PR_NO_ONCE="$FAKE_HOME_PR_NO_ONCE/.cache/humanize/$SANITIZED_PROJECT_PR_NO_ONCE/2026-01-18_13-00-00"
+    CACHE_DIR_PR_NO_ONCE="$FAKE_HOME_PR_NO_ONCE/.cache/duo/$SANITIZED_PROJECT_PR_NO_ONCE/2026-01-18_13-00-00"
     mkdir -p "$CACHE_DIR_PR_NO_ONCE"
     echo "PR round 1 started" > "$CACHE_DIR_PR_NO_ONCE/round-1-codex-run.log"
 
     # Create bash test runner script for PR monitor without --once
     cat > "$TEST_PROJECT_PR_NO_ONCE/run_real_monitor_pr_no_once.sh" << 'PR_NO_ONCE_EOF'
 #!/bin/bash
-# Run the REAL _humanize_monitor_pr function WITHOUT --once flag
+# Run the REAL _duo_monitor_pr function WITHOUT --once flag
 
 PROJECT_DIR="$1"
 PROJECT_ROOT="$2"
@@ -920,12 +920,12 @@ printf() {
     esac
 }
 
-# Source the humanize script (loads all functions)
-source "$PROJECT_ROOT/scripts/humanize.sh"
+# Source the duo script (loads all functions)
+source "$PROJECT_ROOT/scripts/duo.sh"
 
 # Run monitor in foreground WITHOUT --once flag
 # This runs the actual poll loop (not just one iteration)
-humanize monitor pr 2>&1
+duo monitor pr 2>&1
 exit_code=$?
 
 echo "EXIT_CODE:$exit_code"

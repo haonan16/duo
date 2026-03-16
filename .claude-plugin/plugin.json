@@ -1,12 +1,12 @@
 {
-  "name": "humanize",
-  "description": "Humanize - An iterative development plugin that uses Codex to review Claude's work. Creates a feedback loop where Claude implements plans and Codex independently reviews progress, ensuring quality through continuous refinement.",
-  "version": "1.15.0",
+  "name": "duo",
+  "description": "Duo - An iterative development plugin that uses Codex to review Claude's work. Creates a feedback loop where Claude implements plans and Codex independently reviews progress, ensuring quality through continuous refinement.",
+  "version": "1.16.0",
   "author": {
-    "name": "humania-org"
+    "name": "duo-dev"
   },
-  "repository": "https://github.com/humania-org/humanize",
-  "homepage": "https://github.com/humania-org/humanize#readme",
+  "repository": "https://github.com/duo-dev/duo",
+  "homepage": "https://github.com/duo-dev/duo#readme",
   "license": "MIT",
   "keywords": [
     "iterative-development",

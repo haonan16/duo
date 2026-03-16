@@ -103,7 +103,7 @@ git commit -q -m "Add gitignore"
 cd "$TEST_DIR/project"
 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 CLAUDE_PROJECT_DIR="$TEST_DIR/project" bash "$SETUP_SCRIPT" --agent-teams temp/plan.md > /dev/null 2>&1 || true
 
-STATE_FILE=$(find "$TEST_DIR/project/.humanize/rlcr" -name "state.md" -type f 2>/dev/null | head -1)
+STATE_FILE=$(find "$TEST_DIR/project/.duo/rlcr" -name "state.md" -type f 2>/dev/null | head -1)
 if [[ -n "$STATE_FILE" ]]; then
     pass "setup with --agent-teams succeeds with env var set"
 else
@@ -145,7 +145,7 @@ git commit -q -m "Add gitignore"
 cd "$TEST_DIR/project"
 CLAUDE_PROJECT_DIR="$TEST_DIR/project" bash "$SETUP_SCRIPT" temp/plan.md > /dev/null 2>&1 || true
 
-STATE_FILE=$(find "$TEST_DIR/project/.humanize/rlcr" -name "state.md" -type f 2>/dev/null | head -1)
+STATE_FILE=$(find "$TEST_DIR/project/.duo/rlcr" -name "state.md" -type f 2>/dev/null | head -1)
 if [[ -n "$STATE_FILE" ]] && grep -q "^agent_teams: false" "$STATE_FILE"; then
     pass "agent_teams: false by default without --agent-teams flag"
 else
@@ -233,7 +233,7 @@ git commit -q -m "Add gitignore"
 cd "$TEST_DIR/project"
 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 CLAUDE_PROJECT_DIR="$TEST_DIR/project" bash "$SETUP_SCRIPT" --agent-teams temp/plan.md > /dev/null 2>&1 || true
 
-PROMPT_FILE=$(find "$TEST_DIR/project/.humanize/rlcr" -name "round-0-prompt.md" -type f 2>/dev/null | head -1)
+PROMPT_FILE=$(find "$TEST_DIR/project/.duo/rlcr" -name "round-0-prompt.md" -type f 2>/dev/null | head -1)
 
 if [[ -n "$PROMPT_FILE" ]]; then
     # Check for team leader keywords
@@ -282,7 +282,7 @@ git commit -q -m "Add gitignore"
 cd "$TEST_DIR/project"
 CLAUDE_PROJECT_DIR="$TEST_DIR/project" bash "$SETUP_SCRIPT" temp/plan.md > /dev/null 2>&1 || true
 
-PROMPT_FILE=$(find "$TEST_DIR/project/.humanize/rlcr" -name "round-0-prompt.md" -type f 2>/dev/null | head -1)
+PROMPT_FILE=$(find "$TEST_DIR/project/.duo/rlcr" -name "round-0-prompt.md" -type f 2>/dev/null | head -1)
 
 if [[ -n "$PROMPT_FILE" ]]; then
     if ! grep -qi "team leader" "$PROMPT_FILE"; then
@@ -423,7 +423,7 @@ PLAN_EOF
     # Gitignore for test artifacts
     cat > .gitignore << 'GI_EOF'
 plans/
-.humanize/
+.duo/
 bin/
 .cache/
 GI_EOF
@@ -431,7 +431,7 @@ GI_EOF
     git -c commit.gpgsign=false commit -q -m "Add gitignore"
 
     # Create loop directory
-    LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
+    LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
     mkdir -p "$LOOP_DIR"
 
     local current_branch

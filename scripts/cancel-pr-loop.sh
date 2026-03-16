@@ -52,8 +52,8 @@ DESCRIPTION:
   3. Renaming state.md to cancel-state.md
 
 NOTE:
-  This command only affects PR loops (.humanize/pr-loop/).
-  RLCR loops (.humanize/rlcr/) are not affected.
+  This command only affects PR loops (.duo/pr-loop/).
+  RLCR loops (.duo/rlcr/) are not affected.
 HELP_EOF
             exit 0
             ;;
@@ -70,7 +70,7 @@ done
 # ========================================
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/pr-loop"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/pr-loop"
 
 # Find newest loop directory (different from RLCR - uses pr-loop instead of rlcr)
 LOOP_DIR=$(ls -1d "$LOOP_BASE_DIR"/*/ 2>/dev/null | sort -r | head -1) || true

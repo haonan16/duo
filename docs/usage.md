@@ -1,10 +1,10 @@
-# Humanize Usage Guide
+# Duo Usage Guide
 
-Detailed usage documentation for the Humanize plugin. For installation, see [Install for Claude Code](install-for-claude.md).
+Detailed usage documentation for the Duo plugin. For installation, see [Install for Claude Code](install-for-claude.md).
 
 ## How It Works
 
-Humanize creates an iterative feedback loop with two phases:
+Duo creates an iterative feedback loop with two phases:
 
 1. **Implementation Phase**: Claude works on your plan, Codex reviews summaries until COMPLETE
 2. **Review Phase**: `codex review --base <branch>` checks code quality with `[P0-9]` severity markers
@@ -142,7 +142,7 @@ The ask-codex skill sends a one-shot question or task to Codex and returns the r
 inline. Unlike the RLCR loop, this is a single consultation without iteration -- useful
 for getting a second opinion, reviewing a design, or asking domain-specific questions.
 
-Responses are saved to `.humanize/skill/<timestamp>/` with `input.md`, `output.md`,
+Responses are saved to `.duo/skill/<timestamp>/` with `input.md`, `output.md`,
 and `metadata.md` for reference.
 
 ## Monitoring
@@ -151,16 +151,16 @@ Set up the monitoring helper for real-time progress tracking:
 
 ```bash
 # Add to your .bashrc or .zshrc
-source ~/.claude/plugins/cache/humania/humanize/<LATEST.VERSION>/scripts/humanize.sh
+source ~/.claude/plugins/cache/duo-dev/duo/<LATEST.VERSION>/scripts/duo.sh
 
 # Monitor RLCR loop progress
-humanize monitor rlcr
+duo monitor rlcr
 
 # Monitor PR loop progress
-humanize monitor pr
+duo monitor pr
 ```
 
-Progress data is stored in `.humanize/rlcr/<timestamp>/` for each loop session.
+Progress data is stored in `.duo/rlcr/<timestamp>/` for each loop session.
 
 ## Cancellation
 
@@ -169,7 +169,7 @@ Progress data is stored in `.humanize/rlcr/<timestamp>/` for each loop session.
 
 ## Environment Variables
 
-### HUMANIZE_CODEX_BYPASS_SANDBOX
+### DUO_CODEX_BYPASS_SANDBOX
 
 **WARNING: This is a dangerous option that disables security protections. Use only if you understand the implications.**
 
@@ -198,8 +198,8 @@ Progress data is stored in `.humanize/rlcr/<timestamp>/` for each loop session.
 **Usage example**:
 ```bash
 # Export before starting Claude Code
-export HUMANIZE_CODEX_BYPASS_SANDBOX=true
+export DUO_CODEX_BYPASS_SANDBOX=true
 
 # Or set for a single session
-HUMANIZE_CODEX_BYPASS_SANDBOX=true claude --plugin-dir /path/to/humanize
+DUO_CODEX_BYPASS_SANDBOX=true claude --plugin-dir /path/to/duo
 ```

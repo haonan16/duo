@@ -1,26 +1,26 @@
 ---
-name: humanize
+name: duo
 description: Iterative development with AI review. Provides RLCR (Ralph-Loop with Codex Review) for implementation planning and code review loops, plus PR review automation with bot monitoring.
 user-invocable: false
 ---
 
-# Humanize - Iterative Development with AI Review
+# Duo - Iterative Development with AI Review
 
-Humanize creates a feedback loop where AI implements your plan while another AI independently reviews the work, ensuring quality through continuous refinement.
+Duo creates a feedback loop where AI implements your plan while another AI independently reviews the work, ensuring quality through continuous refinement.
 
 ## Runtime Root
 
 The installer hydrates this skill with an absolute runtime root path:
 
 ```bash
-{{HUMANIZE_RUNTIME_ROOT}}
+{{DUO_RUNTIME_ROOT}}
 ```
 
-All command examples below use `{{HUMANIZE_RUNTIME_ROOT}}`.
+All command examples below use `{{DUO_RUNTIME_ROOT}}`.
 
 ## Core Philosophy
 
-**Iteration over Perfection**: Instead of expecting perfect output in one shot, Humanize leverages an iterative feedback loop where:
+**Iteration over Perfection**: Instead of expecting perfect output in one shot, Duo leverages an iterative feedback loop where:
 - AI implements your plan
 - Another AI independently reviews progress
 - Issues are caught and addressed early
@@ -44,7 +44,7 @@ The RLCR (Ralph-Loop with Codex Review) loop has two phases:
 - Issues marked with `[P0-9]` severity markers
 - If issues found → AI fixes them and continues
 - If no issues → loop completes with Finalize Phase
-- In skill mode, always run `{{HUMANIZE_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh` to enforce hook-equivalent transitions and blocking
+- In skill mode, always run `{{DUO_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh` to enforce hook-equivalent transitions and blocking
 
 ### 2. PR Loop - Automated PR Review Handling
 
@@ -73,15 +73,15 @@ Transforms a rough draft document into a structured implementation plan with:
 
 ```bash
 # With a plan file
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/setup-rlcr-loop.sh" path/to/plan.md
+"{{DUO_RUNTIME_ROOT}}/scripts/setup-rlcr-loop.sh" path/to/plan.md
 
 # Or without plan (review-only mode)
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/setup-rlcr-loop.sh" --skip-impl
+"{{DUO_RUNTIME_ROOT}}/scripts/setup-rlcr-loop.sh" --skip-impl
 ```
 
 ```bash
 # For each round, run the RLCR gate (required)
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh"
+"{{DUO_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh"
 ```
 
 **Common Options:**
@@ -100,22 +100,22 @@ Transforms a rough draft document into a structured implementation plan with:
 ### Cancel RLCR Loop
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/cancel-rlcr-loop.sh"
+"{{DUO_RUNTIME_ROOT}}/scripts/cancel-rlcr-loop.sh"
 # or force cancel during finalize phase
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/cancel-rlcr-loop.sh" --force
+"{{DUO_RUNTIME_ROOT}}/scripts/cancel-rlcr-loop.sh" --force
 ```
 
 ### Start PR Loop
 
 ```bash
 # Monitor claude[bot] reviews
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/setup-pr-loop.sh" --claude
+"{{DUO_RUNTIME_ROOT}}/scripts/setup-pr-loop.sh" --claude
 
 # Monitor chatgpt-codex-connector[bot] reviews
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/setup-pr-loop.sh" --codex
+"{{DUO_RUNTIME_ROOT}}/scripts/setup-pr-loop.sh" --codex
 
 # Monitor both
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/setup-pr-loop.sh" --claude --codex
+"{{DUO_RUNTIME_ROOT}}/scripts/setup-pr-loop.sh" --claude --codex
 ```
 
 **Common Options:**
@@ -126,13 +126,13 @@ Transforms a rough draft document into a structured implementation plan with:
 ### Cancel PR Loop
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/cancel-pr-loop.sh"
+"{{DUO_RUNTIME_ROOT}}/scripts/cancel-pr-loop.sh"
 ```
 
 ### Generate Plan from Draft
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/validate-gen-plan-io.sh" --input path/to/draft.md --output path/to/plan.md
+"{{DUO_RUNTIME_ROOT}}/scripts/validate-gen-plan-io.sh" --input path/to/draft.md --output path/to/plan.md
 ```
 
 Then follow the workflow in this skill to generate the structured plan content.
@@ -140,7 +140,7 @@ Then follow the workflow in this skill to generate the structured plan content.
 ### Ask Codex (One-shot Consultation)
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/ask-codex.sh" [--codex-model MODEL:EFFORT] [--codex-timeout SECONDS] "your question"
+"{{DUO_RUNTIME_ROOT}}/scripts/ask-codex.sh" [--codex-model MODEL:EFFORT] [--codex-timeout SECONDS] "your question"
 ```
 
 ## Plan File Structure
@@ -214,10 +214,10 @@ The RLCR loop uses a Goal Tracker to prevent goal drift:
 
 ## Directory Structure
 
-Humanize stores all data in `.humanize/`:
+Duo stores all data in `.duo/`:
 
 ```
-.humanize/
+.duo/
 ├── rlcr/           # RLCR loop data
 │   └── <timestamp>/
 │       ├── state.md
@@ -243,9 +243,9 @@ Humanize stores all data in `.humanize/`:
 Use the monitor script to track loop progress:
 
 ```bash
-source "{{HUMANIZE_RUNTIME_ROOT}}/scripts/humanize.sh"
-humanize monitor rlcr   # Monitor RLCR loop
-humanize monitor pr     # Monitor PR loop
+source "{{DUO_RUNTIME_ROOT}}/scripts/duo.sh"
+duo monitor rlcr   # Monitor RLCR loop
+duo monitor pr     # Monitor PR loop
 ```
 
 ## Exit Codes

@@ -3,7 +3,7 @@
 # Runtime Verification Tests for tests
 #
 # This test verifies:
-# - Clean exit with user-friendly message when .humanize deleted
+# - Clean exit with user-friendly message when .duo deleted
 # - Terminal state properly restored after graceful stop
 #
 # Tests the actual _graceful_stop() and _cleanup() functions at runtime
@@ -58,19 +58,19 @@ trap cleanup EXIT
 echo "Test 1: _graceful_stop outputs correct message"
 echo ""
 
-mkdir -p .humanize/rlcr/2026-01-16_10-00-00
-echo "current_round: 1" > .humanize/rlcr/2026-01-16_10-00-00/state.md
+mkdir -p .duo/rlcr/2026-01-16_10-00-00
+echo "current_round: 1" > .duo/rlcr/2026-01-16_10-00-00/state.md
 
-# Create a test script that sources humanize.sh and tests the graceful stop behavior
+# Create a test script that sources duo.sh and tests the graceful stop behavior
 cat > test_graceful_stop.sh << 'TESTSCRIPT'
 #!/bin/bash
 cd "$1"
 
 # Source the monitor script
-source "$2/scripts/humanize.sh"
+source "$2/scripts/duo.sh"
 
 # Simulate monitor environment variables
-loop_dir=".humanize/rlcr"
+loop_dir=".duo/rlcr"
 cleanup_done=false
 monitor_running=true
 tail_pid=""
@@ -91,7 +91,7 @@ _cleanup() {
     echo "CLEANUP_CALLED"
 }
 
-# Define _graceful_stop (from humanize.sh)
+# Define _graceful_stop (from duo.sh)
 _graceful_stop() {
     local reason="$1"
     [[ "$cleanup_done" == "true" ]] && return
@@ -101,7 +101,7 @@ _graceful_stop() {
 }
 
 # Call _graceful_stop and capture output
-output=$(_graceful_stop ".humanize/rlcr directory no longer exists")
+output=$(_graceful_stop ".duo/rlcr directory no longer exists")
 echo "$output"
 TESTSCRIPT
 
@@ -187,7 +187,7 @@ cat > test_loop_detection.sh << 'TESTSCRIPT'
 #!/bin/bash
 cd "$1"
 
-loop_dir=".humanize/rlcr"
+loop_dir=".duo/rlcr"
 cleanup_done=false
 
 _cleanup() {
@@ -202,10 +202,10 @@ _graceful_stop() {
     echo "GRACEFUL_STOP: $1"
 }
 
-# Simulate the main loop check pattern from humanize.sh
+# Simulate the main loop check pattern from duo.sh
 check_loop_dir() {
     if [[ ! -d "$loop_dir" ]]; then
-        _graceful_stop ".humanize/rlcr directory no longer exists"
+        _graceful_stop ".duo/rlcr directory no longer exists"
         return 0
     fi
     return 1
@@ -219,7 +219,7 @@ else
 fi
 
 # Delete directory
-rm -rf .humanize/rlcr
+rm -rf .duo/rlcr
 
 # Second check - directory gone
 if check_loop_dir; then
@@ -265,23 +265,23 @@ cat > test_terminal_restore.sh << 'TESTSCRIPT'
 # Test that _restore_terminal is defined and callable
 
 cd "$1"
-source "$2/scripts/humanize.sh"
+source "$2/scripts/duo.sh"
 
 # The function should be defined after sourcing
 # We can't actually test tput in non-interactive mode, but we can verify
 # the function definition exists in the source
 
-if grep -q "_restore_terminal()" "$2/scripts/humanize.sh"; then
+if grep -q "_restore_terminal()" "$2/scripts/duo.sh"; then
     echo "FUNCTION_DEFINED"
 fi
 
-if grep -q 'printf "\\033\[r"' "$2/scripts/humanize.sh"; then
+if grep -q 'printf "\\033\[r"' "$2/scripts/duo.sh"; then
     echo "SCROLL_REGION_RESET"
 fi
 
-if grep -q '_restore_terminal' "$2/scripts/humanize.sh" | grep -q '_cleanup'; then
+if grep -q '_restore_terminal' "$2/scripts/duo.sh" | grep -q '_cleanup'; then
     # Check that _cleanup calls _restore_terminal
-    if grep -A5 "_cleanup()" "$2/scripts/humanize.sh" | grep -q "_restore_terminal"; then
+    if grep -A5 "_cleanup()" "$2/scripts/duo.sh" | grep -q "_restore_terminal"; then
         echo "CLEANUP_CALLS_RESTORE"
     fi
 fi
@@ -304,7 +304,7 @@ fi
 
 # Verify _cleanup calls _restore_terminal by checking the source
 # Use -A30 to capture the full _cleanup function body
-if grep -A30 "^    _cleanup()" "$PROJECT_ROOT/scripts/humanize.sh" | grep -q "_restore_terminal"; then
+if grep -A30 "^    _cleanup()" "$PROJECT_ROOT/scripts/duo.sh" | grep -q "_restore_terminal"; then
     pass "_cleanup calls _restore_terminal"
 else
     fail "_cleanup -> _restore_terminal" "Call chain not found"
@@ -317,7 +317,7 @@ echo ""
 echo "Test 5: _graceful_stop calls _cleanup (R1.2 compliance)"
 echo ""
 
-if grep -A5 "_graceful_stop()" "$PROJECT_ROOT/scripts/humanize.sh" | grep -q "_cleanup"; then
+if grep -A5 "_graceful_stop()" "$PROJECT_ROOT/scripts/duo.sh" | grep -q "_cleanup"; then
     pass "_graceful_stop calls _cleanup per R1.2"
 else
     fail "_graceful_stop -> _cleanup" "Call not found"
@@ -344,7 +344,7 @@ _cleanup() {
     echo "CLEANUP_BY_SIGINT"
 }
 
-# Set up trap like humanize.sh does
+# Set up trap like duo.sh does
 trap '_cleanup' INT TERM
 
 # Send SIGINT to self after a brief moment
@@ -388,21 +388,21 @@ echo "Test 7: Signal handler setup verification (bash)"
 echo ""
 
 # Check that trap '_cleanup' INT TERM is in the source for bash
-if grep -E "trap '_cleanup' INT TERM" "$PROJECT_ROOT/scripts/humanize.sh" >/dev/null; then
+if grep -E "trap '_cleanup' INT TERM" "$PROJECT_ROOT/scripts/duo.sh" >/dev/null; then
     pass "Bash trap for INT TERM is set up"
 else
     fail "Bash trap setup" "trap '_cleanup' INT TERM not found"
 fi
 
 # Check that zsh TRAPINT is defined
-if grep -E "TRAPINT\(\)" "$PROJECT_ROOT/scripts/humanize.sh" >/dev/null; then
+if grep -E "TRAPINT\(\)" "$PROJECT_ROOT/scripts/duo.sh" >/dev/null; then
     pass "Zsh TRAPINT function is defined"
 else
     fail "Zsh TRAPINT" "TRAPINT() not found"
 fi
 
 # Check that zsh TRAPTERM is defined
-if grep -E "TRAPTERM\(\)" "$PROJECT_ROOT/scripts/humanize.sh" >/dev/null; then
+if grep -E "TRAPTERM\(\)" "$PROJECT_ROOT/scripts/duo.sh" >/dev/null; then
     pass "Zsh TRAPTERM function is defined"
 else
     fail "Zsh TRAPTERM" "TRAPTERM() not found"
@@ -416,7 +416,7 @@ echo "Test 8: Cleanup resets traps "
 echo ""
 
 # Check that cleanup resets traps
-if grep -A10 "_cleanup()" "$PROJECT_ROOT/scripts/humanize.sh" | grep -E "trap - INT TERM" >/dev/null; then
+if grep -A10 "_cleanup()" "$PROJECT_ROOT/scripts/duo.sh" | grep -E "trap - INT TERM" >/dev/null; then
     pass "_cleanup resets traps to prevent re-triggering"
 else
     fail "Trap reset in cleanup" "trap - INT TERM not found in _cleanup"

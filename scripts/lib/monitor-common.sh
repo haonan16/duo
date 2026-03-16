@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# monitor-common.sh - Shared utilities for humanize monitor functions
+# monitor-common.sh - Shared utilities for duo monitor functions
 #
 # This file contains common functions used by both RLCR and PR loop monitors.
-# It should be sourced by humanize.sh rather than executed directly.
+# It should be sourced by duo.sh rather than executed directly.
 
 # ========================================
 # ANSI Color Constants
@@ -296,7 +296,7 @@ get_pr_loop_phase() {
 
         # Cache file for tracking size changes (unique per session)
         local session_name=$(basename "$session_dir")
-        local cache_file="/tmp/humanize-phase-${session_name}-${highest_round}.size"
+        local cache_file="/tmp/duo-phase-${session_name}-${highest_round}.size"
 
         # Read previous size from cache
         local previous_size=0
@@ -464,8 +464,8 @@ parse_goal_tracker() {
 
 # Parse PR goal-tracker.md for issue statistics
 # Returns: total_issues|resolved_issues|remaining_issues|last_reviewer
-# Usage: humanize_parse_pr_goal_tracker "/path/to/goal-tracker.md"
-humanize_parse_pr_goal_tracker() {
+# Usage: duo_parse_pr_goal_tracker "/path/to/goal-tracker.md"
+duo_parse_pr_goal_tracker() {
     local tracker_file="$1"
     if [[ ! -f "$tracker_file" ]]; then
         echo "0|0|0|none"

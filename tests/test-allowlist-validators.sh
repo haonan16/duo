@@ -46,7 +46,7 @@ setup_test_loop() {
     current_branch=$(git rev-parse --abbrev-ref HEAD)
 
     # Create loop directory structure
-    LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
+    LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
     mkdir -p "$LOOP_DIR"
 
     # Create state file
@@ -354,7 +354,7 @@ fi
 
 # Test 24: Bash validator blocks round-1-todos.md in old loop directory
 echo "Test 24: Bash validator blocks round-1-todos.md in old loop directory"
-OLD_LOOP="$TEST_DIR/.humanize/rlcr/2023-01-01_00-00-00"
+OLD_LOOP="$TEST_DIR/.duo/rlcr/2023-01-01_00-00-00"
 mkdir -p "$OLD_LOOP"
 HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > '$OLD_LOOP'/round-1-todos.md"}}'
 set +e
@@ -370,7 +370,7 @@ fi
 # Test 25: Bash validator blocks same-basename different-root (security test)
 echo "Test 25: Bash validator blocks same-basename different-root"
 ACTIVE_LOOP_BASENAME=$(basename "$LOOP_DIR")
-DIFFERENT_ROOT="/tmp/.humanize/rlcr/${ACTIVE_LOOP_BASENAME}"
+DIFFERENT_ROOT="/tmp/.duo/rlcr/${ACTIVE_LOOP_BASENAME}"
 HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > '$DIFFERENT_ROOT'/round-1-todos.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)

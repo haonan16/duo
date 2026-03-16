@@ -20,11 +20,11 @@ run_stophook_tests() {
 # Test: Force push trigger validation - old triggers rejected after force push
 test_stophook_force_push_rejects_old_trigger() {
     local test_subdir="$TEST_DIR/stophook_force_push_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file with latest_commit_at set to AFTER the old trigger comment
     # This simulates: force push happened after the old trigger was posted
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -49,7 +49,7 @@ latest_commit_at: 2026-01-18T14:00:00Z
 EOF
 
     # Create resolve file
-    echo "# Resolution Summary" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-1-pr-resolve.md"
+    echo "# Resolution Summary" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-1-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -140,10 +140,10 @@ MOCK_GIT
 # Test: Step 7 Case 1 exception - no trigger required for startup_case=1, round=0
 test_stophook_case1_no_trigger_required() {
     local test_subdir="$TEST_DIR/stophook_case1_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file with startup_case=1 and round=0
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -168,7 +168,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 EOF
 
     # Create resolve file
-    echo "# Resolution Summary" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution Summary" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -246,10 +246,10 @@ MOCK_GIT
 # Test: Step 9 - APPROVE creates approve-state.md
 test_stophook_approve_creates_state() {
     local test_subdir="$TEST_DIR/stophook_approve_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file with empty active_bots (YAML list format, no items)
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -273,7 +273,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 EOF
 
     # Create resolve file (required by stop hook)
-    echo "# Resolution Summary" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-1-pr-resolve.md"
+    echo "# Resolution Summary" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-1-pr-resolve.md"
 
     export CLAUDE_PROJECT_DIR="$test_subdir"
 
@@ -310,7 +310,7 @@ MOCK_GIT
     hook_output=$(echo '{}' | "$PROJECT_ROOT/hooks/pr-loop-stop-hook.sh" 2>&1) || true
 
     # Check for approve-state.md creation
-    if [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+    if [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
         pass "T-STOPHOOK-3: APPROVE creates approve-state.md"
     else
         # Alternative: check output for approval message
@@ -327,10 +327,10 @@ MOCK_GIT
 # Test: Dynamic startup_case update when new comments arrive
 test_stophook_dynamic_startup_case() {
     local test_subdir="$TEST_DIR/stophook_dynamic_case_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Start with startup_case=1 (no comments)
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -356,7 +356,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -435,7 +435,7 @@ MOCK_GIT
 
     # Check if startup_case was updated in state file
     local new_case
-    new_case=$(grep "^startup_case:" "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" 2>/dev/null | sed 's/startup_case: *//' | tr -d ' ' || true)
+    new_case=$(grep "^startup_case:" "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" 2>/dev/null | sed 's/startup_case: *//' | tr -d ' ' || true)
 
     # With both bots commented and no new commits, should be Case 3
     if [[ "$new_case" == "3" ]]; then
@@ -452,10 +452,10 @@ MOCK_GIT
 # Test: Step 6 - unpushed commits block exit
 test_stophook_step6_unpushed_commits() {
     local test_subdir="$TEST_DIR/stophook_step6_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -479,7 +479,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -538,10 +538,10 @@ MOCK_GIT
 # Test: Step 6.5 - force push detection with actual history rewrite simulation
 test_stophook_step65_force_push_detection() {
     local test_subdir="$TEST_DIR/stophook_step65_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # State with old commit SHA
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -565,7 +565,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -642,10 +642,10 @@ MOCK_GIT
 # Test: Step 7 - missing trigger comment blocks (Case 4/5)
 test_stophook_step7_missing_trigger() {
     local test_subdir="$TEST_DIR/stophook_step7_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # State with startup_case=4 (requires trigger) but no trigger
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -669,7 +669,7 @@ latest_commit_at: 2026-01-18T12:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -754,10 +754,10 @@ MOCK_GIT
 # Test: Bot timeout auto-removes bot from active_bots
 test_stophook_bot_timeout_auto_remove() {
     local test_subdir="$TEST_DIR/stophook_timeout_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # State with short poll_timeout (2 seconds) to test timeout behavior
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -781,7 +781,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -854,7 +854,7 @@ MOCK_GIT
     # Should either mention timeout or create approve-state (if all bots timed out)
     if echo "$hook_output" | grep -qi "timeout\|timed out\|auto-remove\|approved"; then
         pass "T-STOPHOOK-8: Bot timeout handling"
-    elif [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+    elif [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
         pass "T-STOPHOOK-8: Bot timeout created approve-state.md"
     else
         fail "T-STOPHOOK-8: Bot timeout should trigger auto-remove" "timeout/approved message" "got: $hook_output"
@@ -865,14 +865,14 @@ MOCK_GIT
     # 1. approve-state.md exists with empty active_bots (all bots timed out)
     # 2. state.md has the timed-out bot removed from active_bots
     local state_file=""
-    if [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
-        state_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md"
-    elif [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" ]]; then
-        state_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md"
+    if [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+        state_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md"
+    elif [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" ]]; then
+        state_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md"
     fi
 
     # VERIFICATION: Check that approve-state.md was created with empty active_bots
-    local approve_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md"
+    local approve_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md"
     if [[ -f "$approve_file" ]]; then
         pass "T-STOPHOOK-8a: approve-state.md created - bot timeout led to loop completion"
         # Verify active_bots is empty (not containing 'codex')
@@ -896,10 +896,10 @@ MOCK_GIT
 # Test: Codex +1 detection removes codex from active_bots
 test_stophook_codex_thumbsup_approval() {
     local test_subdir="$TEST_DIR/stophook_thumbsup_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # State with startup_case=1 (required for +1 check) and only codex as active bot
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -923,7 +923,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -999,7 +999,7 @@ MOCK_GIT
     # Should detect +1 and create approve-state.md (since codex is only bot)
     if echo "$hook_output" | grep -qi "+1\|thumbsup\|approved"; then
         pass "T-STOPHOOK-9: Codex +1 detection"
-    elif [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+    elif [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
         pass "T-STOPHOOK-9: Codex +1 created approve-state.md"
     else
         fail "T-STOPHOOK-9: Codex +1 should be detected" "+1/approved message" "got: $hook_output"
@@ -1011,10 +1011,10 @@ MOCK_GIT
 # Test: Claude eyes timeout blocks exit
 test_stophook_claude_eyes_timeout() {
     local test_subdir="$TEST_DIR/stophook_eyes_timeout_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # State with claude configured and trigger required (round > 0)
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -1038,7 +1038,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-1-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-1-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -1145,7 +1145,7 @@ MOCK_GIT
 # Test: Dynamic startup_case update when comments arrive
 test_stophook_dynamic_startup_case_update() {
     local test_subdir="$TEST_DIR/stophook_dynamic_case_test2"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Use dynamic timestamps to ensure polling doesn't time out immediately
     # Timeline: commit -> trigger -> comment (all recent, all within poll_timeout)
@@ -1159,7 +1159,7 @@ test_stophook_dynamic_startup_case_update() {
 
     # Start with startup_case=1 (no comments initially), then comments arrive
     # Provide a trigger comment to proceed past timeout checks
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << EOF
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << EOF
 ---
 current_round: 0
 max_iterations: 42
@@ -1183,7 +1183,7 @@ latest_commit_at: $commit_ts
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -1340,10 +1340,10 @@ MOCK_GIT
 
     # Check if startup_case was updated in state file (or approve-state.md if all bots approved/timed out)
     local new_case state_file
-    if [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" ]]; then
-        state_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md"
-    elif [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
-        state_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md"
+    if [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" ]]; then
+        state_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md"
+    elif [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+        state_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md"
     else
         state_file=""
     fi
@@ -1390,10 +1390,10 @@ MOCK_GIT
 # Test: Fork PR support - stop hook resolves base repo from parent
 test_stophook_fork_pr_base_repo_resolution() {
     local test_subdir="$TEST_DIR/stophook_fork_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Create state file
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -1416,7 +1416,7 @@ latest_commit_at: 2026-01-18T10:00:00Z
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     local mock_bin="$test_subdir/bin"
     mkdir -p "$mock_bin"
@@ -1502,7 +1502,7 @@ MOCK_GIT
     # And since active_bots is empty, it should approve
     if echo "$hook_output" | grep -qi "approved\|complete"; then
         pass "T-STOPHOOK-12: Fork PR support - resolved PR from parent repo"
-    elif [[ -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+    elif [[ -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
         pass "T-STOPHOOK-12: Fork PR support - created approve-state.md"
     else
         # Check if it at least didn't fail with "PR not found"
@@ -1519,7 +1519,7 @@ MOCK_GIT
 # Test: Goal tracker - resolved count stays 0 when some bots have issues
 test_stophook_goal_tracker_mixed_approval() {
     local test_subdir="$TEST_DIR/stophook_goal_tracker_test"
-    mkdir -p "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00"
+    mkdir -p "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00"
 
     # Use dynamic timestamps to ensure polling doesn't time out immediately
     # Timeline: commit -> trigger -> bot comments (all recent, within poll_timeout)
@@ -1534,7 +1534,7 @@ test_stophook_goal_tracker_mixed_approval() {
     codex_ts=$(date -u -d "-4 seconds" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-4S +%Y-%m-%dT%H:%M:%SZ)
 
     # State with two bots configured
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md" << EOF
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md" << EOF
 ---
 current_round: 0
 max_iterations: 42
@@ -1560,10 +1560,10 @@ latest_commit_at: $commit_ts
 ---
 EOF
 
-    echo "# Resolution" > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
+    echo "# Resolution" > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-0-pr-resolve.md"
 
     # Create initial goal tracker
-    cat > "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/goal-tracker.md" << EOF
+    cat > "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/goal-tracker.md" << EOF
 # PR Loop Goal Tracker
 
 ## Stats
@@ -1713,7 +1713,7 @@ MOCK_CODEX
     # (because codex still has issues, even though claude approved)
 
     # Check the feedback file or check file for the correct issue counts
-    local check_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/round-1-pr-check.md"
+    local check_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/round-1-pr-check.md"
     if [[ -f "$check_file" ]]; then
         # Check that issues were found
         if grep -q "Issues Found\|ISSUES" "$check_file" 2>/dev/null; then
@@ -1737,14 +1737,14 @@ MOCK_CODEX
     # - codex has issues (stays in active_bots)
     # - loop should continue (not complete) because codex still has issues
 
-    if [[ ! -f "$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
+    if [[ ! -f "$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/approve-state.md" ]]; then
         pass "T-STOPHOOK-13a: Loop continues with mixed approval (not prematurely completed)"
     else
         fail "T-STOPHOOK-13a: Loop should not complete with mixed approval" "no approve-state.md" "approve-state.md exists"
     fi
 
     # Check that claude was removed from active_bots but codex remains
-    local state_file="$test_subdir/.humanize/pr-loop/2026-01-18_12-00-00/state.md"
+    local state_file="$test_subdir/.duo/pr-loop/2026-01-18_12-00-00/state.md"
     if [[ -f "$state_file" ]]; then
         local active_bots_content
         active_bots_content=$(sed -n '/^active_bots:/,/^[a-z_]*:/p' "$state_file" | grep -E '^\s*-' || true)

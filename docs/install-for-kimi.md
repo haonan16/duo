@@ -1,10 +1,10 @@
-# Install Humanize for Kimi CLI
+# Install Duo for Kimi CLI
 
-This guide explains how to install the Humanize skills for [Kimi Code CLI](https://github.com/MoonshotAI/kimi-cli).
+This guide explains how to install the Duo skills for [Kimi Code CLI](https://github.com/MoonshotAI/kimi-cli).
 
 ## Overview
 
-Humanize provides three Agent Skills for kimi:
+Duo provides three Agent Skills for kimi:
 
 | Skill | Type | Purpose |
 |-------|------|---------|
@@ -16,7 +16,7 @@ Humanize provides three Agent Skills for kimi:
 
 ### Quick Install (Recommended)
 
-From the Humanize repo root, run:
+From the Duo repo root, run:
 
 ```bash
 ./scripts/install-skills-kimi.sh
@@ -34,10 +34,10 @@ Common installer script (all targets):
 
 ### Manual Install
 
-### 1. Clone or navigate to the humanize repository
+### 1. Clone or navigate to the duo repository
 
 ```bash
-cd /path/to/humanize
+cd /path/to/duo
 ```
 
 ### 2. Copy skills and runtime bundle to kimi's skills directory
@@ -58,7 +58,7 @@ cp -r prompt-template ~/.config/agents/skills/duo/
 
 # Hydrate runtime root placeholders inside SKILL.md files
 for skill in duo duo-gen-plan duo-rlcr; do
-  sed -i.bak "s|{{HUMANIZE_RUNTIME_ROOT}}|$HOME/.config/agents/skills/duo|g" \
+  sed -i.bak "s|{{DUO_RUNTIME_ROOT}}|$HOME/.config/agents/skills/duo|g" \
     "$HOME/.config/agents/skills/$skill/SKILL.md"
 done
 ```
@@ -230,8 +230,8 @@ Common examples:
 ### Output files not found
 
 The skills save output to:
-- Cache: `~/.cache/humanize/<project>/<timestamp>/`
-- Loop data: `.humanize/rlcr/<timestamp>/`
+- Cache: `~/.cache/duo/<project>/<timestamp>/`
+- Loop data: `.duo/rlcr/<timestamp>/`
 
 Ensure these directories are writable.
 
@@ -240,4 +240,4 @@ Ensure these directories are writable.
 - [Kimi CLI Documentation](https://moonshotai.github.io/kimi-cli/)
 - [Agent Skills Format](https://agentskills.io/)
 - [Install for Codex](./install-for-codex.md)
-- [Humanize README](../README.md)
+- [Duo README](../README.md)

@@ -1,9 +1,9 @@
-# Git Add Blocked: .humanize Protection
+# Git Add Blocked: .duo Protection
 
-The `.humanize/` directory contains local loop state that should NOT be committed.
+The `.duo/` directory contains local loop state that should NOT be committed.
 This directory is already listed in `.gitignore`.
 
-Your command was blocked because it would add .humanize files to version control.
+Your command was blocked because it would add .duo files to version control.
 
 ## Allowed Commands
 
@@ -15,20 +15,20 @@ Use specific file paths instead of broad patterns:
 
 ## Blocked Commands
 
-These commands are blocked when .humanize exists:
+These commands are blocked when .duo exists:
 
-    git add .humanize      # direct reference
-    git add -A             # adds all including .humanize
-    git add --all          # adds all including .humanize
-    git add .              # may include .humanize if not gitignored
+    git add .duo      # direct reference
+    git add -A             # adds all including .duo
+    git add --all          # adds all including .duo
+    git add .              # may include .duo if not gitignored
     git add -f .           # force bypasses gitignore
 
-## Adding .humanize to .gitignore
+## Adding .duo to .gitignore
 
-If you need to add `.humanize*` to `.gitignore`, follow these steps:
+If you need to add `.duo*` to `.gitignore`, follow these steps:
 
-1. Edit `.gitignore` to append `.humanize*`
+1. Edit `.gitignore` to append `.duo*`
 2. Run: `git add .gitignore`
-3. Run: `git commit -m "Add humanize local folder into gitignore"`
+3. Run: `git commit -m "Add duo local folder into gitignore"`
 
-IMPORTANT: The commit message must NOT contain the literal string ".humanize" to avoid triggering this protection.
+IMPORTANT: The commit message must NOT contain the literal string ".duo" to avoid triggering this protection.

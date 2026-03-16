@@ -11,7 +11,7 @@
 # - Uses APPROVE marker for Codex approval
 # - Updates active_bots list based on per-bot approval
 #
-# State directory: .humanize/pr-loop/<timestamp>/
+# State directory: .duo/pr-loop/<timestamp>/
 # State file: state.md (current_round, pr_number, active_bots as YAML list, etc.)
 # Resolve file: round-N-pr-resolve.md (Claude's resolution summary)
 # Comment file: round-N-pr-comment.md (Fetched PR comments)
@@ -47,7 +47,7 @@ HOOK_INPUT=$(cat)
 # ========================================
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/pr-loop"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/pr-loop"
 
 # Source shared loop functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
@@ -293,17 +293,17 @@ Git status operation failed. Please check your repository state and try again."
         exit 0
     fi
 
-    # Filter out .humanize from status check
-    NON_HUMANIZE_STATUS=$(echo "$GIT_STATUS_CACHED" | grep -v '\.humanize' || true)
+    # Filter out .duo from status check
+    NON_DUO_STATUS=$(echo "$GIT_STATUS_CACHED" | grep -v '\.duo' || true)
 
-    if [[ -n "$NON_HUMANIZE_STATUS" ]]; then
+    if [[ -n "$NON_DUO_STATUS" ]]; then
         REASON="# Git Not Clean
 
 You have uncommitted changes. Please commit all changes before exiting.
 
 Changes detected:
 \`\`\`
-$NON_HUMANIZE_STATUS
+$NON_DUO_STATUS
 \`\`\`"
         jq -n --arg reason "$REASON" --arg msg "PR Loop: Uncommitted changes detected" \
             '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1328,9 +1328,9 @@ fi
 
 # Determine automation flag based on environment variable
 # Default: Use --full-auto (safe mode with sandbox)
-# If HUMANIZE_CODEX_BYPASS_SANDBOX is "true" or "1": Use --dangerously-bypass-approvals-and-sandbox
+# If DUO_CODEX_BYPASS_SANDBOX is "true" or "1": Use --dangerously-bypass-approvals-and-sandbox
 CODEX_AUTO_FLAG="--full-auto"
-if [[ "${HUMANIZE_CODEX_BYPASS_SANDBOX:-}" == "true" ]] || [[ "${HUMANIZE_CODEX_BYPASS_SANDBOX:-}" == "1" ]]; then
+if [[ "${DUO_CODEX_BYPASS_SANDBOX:-}" == "true" ]] || [[ "${DUO_CODEX_BYPASS_SANDBOX:-}" == "1" ]]; then
     CODEX_AUTO_FLAG="--dangerously-bypass-approvals-and-sandbox"
 fi
 

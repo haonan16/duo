@@ -30,7 +30,7 @@ INPUT=$(cat)
 HOOK_SESSION_ID=$(extract_session_id "$INPUT")
 
 # Find active loop using shared function (filtered by session_id)
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/rlcr"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/rlcr"
 LOOP_DIR=$(find_active_loop "$LOOP_BASE_DIR" "$HOOK_SESSION_ID")
 
 # If no active loop, allow exit
@@ -59,7 +59,7 @@ START_BRANCH="$STATE_START_BRANCH"
 # Helper function to output schema validation error
 schema_validation_error() {
     local field_name="$1"
-    local fallback="RLCR loop state file is missing required field: \`${field_name}\`\n\nThis indicates the loop was started with an older version of humanize.\n\n**Options:**\n1. Cancel the loop: \`/duo:stop\`\n2. Update humanize plugin to version 1.1.2+\n3. Restart the RLCR loop with the updated plugin"
+    local fallback="RLCR loop state file is missing required field: \`${field_name}\`\n\nThis indicates the loop was started with an older version of duo.\n\n**Options:**\n1. Cancel the loop: \`/duo:stop\`\n2. Update duo plugin to version 1.1.2+\n3. Restart the RLCR loop with the updated plugin"
 
     local reason
     reason=$(load_and_render_safe "$TEMPLATE_DIR" "block/schema-outdated.md" "$fallback" "FIELD_NAME=$field_name")

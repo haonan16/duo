@@ -121,13 +121,13 @@ STOPPING:
 
 MONITORING:
   # View current state:
-  cat .humanize/rlcr/*/state.md
+  cat .duo/rlcr/*/state.md
 
   # View latest summary:
-  cat .humanize/rlcr/*/round-*-summary.md | tail -50
+  cat .duo/rlcr/*/round-*-summary.md | tail -50
 
   # View Codex review:
-  cat .humanize/rlcr/*/round-*-review-result.md | tail -50
+  cat .duo/rlcr/*/round-*-review-result.md | tail -50
 HELP_EOF
     exit 0
 }
@@ -291,8 +291,8 @@ fi
 
 # Check for existing active loops (both RLCR and PR loops)
 # Only one loop type can be active at a time
-RLCR_LOOP_DIR=$(find_active_loop "$PROJECT_ROOT/.humanize/rlcr" 2>/dev/null || echo "")
-PR_LOOP_DIR=$(find_active_pr_loop "$PROJECT_ROOT/.humanize/pr-loop" 2>/dev/null || echo "")
+RLCR_LOOP_DIR=$(find_active_loop "$PROJECT_ROOT/.duo/rlcr" 2>/dev/null || echo "")
+PR_LOOP_DIR=$(find_active_pr_loop "$PROJECT_ROOT/.duo/pr-loop" 2>/dev/null || echo "")
 
 if [[ -n "$RLCR_LOOP_DIR" ]]; then
     echo "Error: An RLCR loop is already active" >&2
@@ -343,7 +343,7 @@ fi
 if [[ -z "$PLAN_FILE" ]]; then
     if [[ "$SKIP_IMPL" == "true" ]]; then
         # Use internal placeholder for skip-impl mode
-        PLAN_FILE=".humanize/skip-impl-placeholder.md"
+        PLAN_FILE=".duo/skip-impl-placeholder.md"
         SKIP_IMPL_NO_PLAN="true"
         # Force TRACK_PLAN_FILE to false since there's no real plan file to track
         if [[ "$TRACK_PLAN_FILE" == "true" ]]; then
@@ -747,7 +747,7 @@ echo "Base commit SHA captured: $BASE_COMMIT" >&2
 # Setup State Directory
 # ========================================
 
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/rlcr"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/rlcr"
 
 # Create timestamp for this loop session
 TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
@@ -774,7 +774,7 @@ The loop will:
 SKIP_IMPL_PLAN_EOF
     # Update PLAN_FILE to point to the actual placeholder location (repo-relative path)
     # Using relative path because git ls-files requires repo-relative paths
-    PLAN_FILE=".humanize/rlcr/$TIMESTAMP/plan.md"
+    PLAN_FILE=".duo/rlcr/$TIMESTAMP/plan.md"
 else
     ln -s "$FULL_PLAN_PATH" "$LOOP_DIR/plan.md"
 fi
@@ -817,10 +817,10 @@ EOF
 # The PostToolUse hook will only consume this signal when the Bash command
 # that triggered it matches the setup script marker, preventing other sessions
 # from accidentally claiming the signal.
-mkdir -p "$PROJECT_ROOT/.humanize"
+mkdir -p "$PROJECT_ROOT/.duo"
 # Write full resolved script path as command signature for strict verification
 SCRIPT_SELF_PATH="$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]:-$0}")"
-printf '%s\n%s\n' "$LOOP_DIR/state.md" "$SCRIPT_SELF_PATH" > "$PROJECT_ROOT/.humanize/.pending-session-id"
+printf '%s\n%s\n' "$LOOP_DIR/state.md" "$SCRIPT_SELF_PATH" > "$PROJECT_ROOT/.duo/.pending-session-id"
 
 # Create review phase marker file for skip-impl mode
 if [[ "$SKIP_IMPL" == "true" ]]; then

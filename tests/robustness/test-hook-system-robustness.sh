@@ -54,8 +54,8 @@ fi
 echo ""
 echo "Test 2: Edit to state.md blocked"
 # Create loop state directory with proper state file
-mkdir -p "$TEST_DIR/.humanize/rlcr/2026-01-19_00-00-00"
-cat > "$TEST_DIR/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/.duo/rlcr/2026-01-19_00-00-00"
+cat > "$TEST_DIR/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -65,7 +65,7 @@ base_branch: main
 ---
 EOF
 
-JSON='{"tool_name":"Edit","tool_input":{"file_path":"'"$TEST_DIR"'/.humanize/rlcr/2026-01-19_00-00-00/state.md","old_string":"1","new_string":"2"}}'
+JSON='{"tool_name":"Edit","tool_input":{"file_path":"'"$TEST_DIR"'/.duo/rlcr/2026-01-19_00-00-00/state.md","old_string":"1","new_string":"2"}}'
 set +e
 RESULT=$(echo "$JSON" | CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$PROJECT_ROOT/hooks/loop-edit-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -106,27 +106,27 @@ else
     fail "Missing file_path handling" "exit < 128" "exit $EXIT_CODE"
 fi
 
-# Test 5: Edit with path traversal - paths outside .humanize are allowed (delegated to Claude sandbox)
+# Test 5: Edit with path traversal - paths outside .duo are allowed (delegated to Claude sandbox)
 echo ""
-echo "Test 5: Edit allows paths outside .humanize (sandbox delegates security)"
+echo "Test 5: Edit allows paths outside .duo (sandbox delegates security)"
 JSON='{"tool_name":"Edit","tool_input":{"file_path":"../../../etc/passwd","old_string":"foo","new_string":"bar"}}'
 set +e
 RESULT=$(echo "$JSON" | CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$PROJECT_ROOT/hooks/loop-edit-validator.sh" 2>&1)
 EXIT_CODE=$?
 set -e
-# Paths outside .humanize/rlcr are allowed through - sandbox handles security
+# Paths outside .duo/rlcr are allowed through - sandbox handles security
 if [[ $EXIT_CODE -eq 0 ]] && ! echo "$RESULT" | grep -q '"decision".*:.*"block"'; then
-    pass "Edit allows paths outside .humanize (exit 0, no block)"
+    pass "Edit allows paths outside .duo (exit 0, no block)"
 else
-    fail "Path outside .humanize" "allowed through" "exit $EXIT_CODE, result: $RESULT"
+    fail "Path outside .duo" "allowed through" "exit $EXIT_CODE, result: $RESULT"
 fi
 
-# Test 5b: Path traversal inside .humanize to state.md is blocked
+# Test 5b: Path traversal inside .duo to state.md is blocked
 echo ""
-echo "Test 5b: Path traversal to state.md inside .humanize is blocked"
+echo "Test 5b: Path traversal to state.md inside .duo is blocked"
 # Create a valid RLCR state for the test
-mkdir -p "$TEST_DIR/.humanize/rlcr/2026-01-19_12-00-00"
-cat > "$TEST_DIR/.humanize/rlcr/2026-01-19_12-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/.duo/rlcr/2026-01-19_12-00-00"
+cat > "$TEST_DIR/.duo/rlcr/2026-01-19_12-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -141,8 +141,8 @@ review_started: false
 plan_tracked: false
 ---
 EOF
-# Try to access state.md via path traversal (still within .humanize structure)
-JSON='{"tool_name":"Edit","tool_input":{"file_path":"'"$TEST_DIR"'/.humanize/rlcr/2026-01-19_12-00-00/../2026-01-19_12-00-00/state.md","old_string":"current_round: 1","new_string":"current_round: 999"}}'
+# Try to access state.md via path traversal (still within .duo structure)
+JSON='{"tool_name":"Edit","tool_input":{"file_path":"'"$TEST_DIR"'/.duo/rlcr/2026-01-19_12-00-00/../2026-01-19_12-00-00/state.md","old_string":"current_round: 1","new_string":"current_round: 999"}}'
 set +e
 RESULT=$(echo "$JSON" | CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$PROJECT_ROOT/hooks/loop-edit-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -179,8 +179,8 @@ cd - > /dev/null
 
 echo "# Plan" > "$TEST_DIR/plan-test/plan.md"
 # Create loop state with all required fields (including review_started and plan_tracked)
-mkdir -p "$TEST_DIR/plan-test/.humanize/rlcr/2026-01-19_12-00-00"
-cat > "$TEST_DIR/plan-test/.humanize/rlcr/2026-01-19_12-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/plan-test/.duo/rlcr/2026-01-19_12-00-00"
+cat > "$TEST_DIR/plan-test/.duo/rlcr/2026-01-19_12-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -252,8 +252,8 @@ echo ""
 
 # Test 9: State file with extra whitespace
 echo "Test 9: State file with extra whitespace parsed"
-mkdir -p "$TEST_DIR/ws-state/.humanize/rlcr/2026-01-19_00-00-00"
-cat > "$TEST_DIR/ws-state/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/ws-state/.duo/rlcr/2026-01-19_00-00-00"
+cat > "$TEST_DIR/ws-state/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round:    5
 max_iterations:   42
@@ -261,7 +261,7 @@ plan_file:  plan.md
 ---
 EOF
 
-ROUND=$(get_current_round "$TEST_DIR/ws-state/.humanize/rlcr/2026-01-19_00-00-00/state.md")
+ROUND=$(get_current_round "$TEST_DIR/ws-state/.duo/rlcr/2026-01-19_00-00-00/state.md")
 if [[ "$ROUND" == "5" ]]; then
     pass "State with whitespace parsed correctly"
 else
@@ -271,8 +271,8 @@ fi
 # Test 10: State file with Unicode in path field
 echo ""
 echo "Test 10: State file with special characters in values"
-mkdir -p "$TEST_DIR/special-state/.humanize/rlcr/2026-01-19_00-00-00"
-cat > "$TEST_DIR/special-state/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/special-state/.duo/rlcr/2026-01-19_00-00-00"
+cat > "$TEST_DIR/special-state/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 3
 max_iterations: 42
@@ -280,7 +280,7 @@ plan_file: "path/to/plan-v2.md"
 ---
 EOF
 
-ROUND=$(get_current_round "$TEST_DIR/special-state/.humanize/rlcr/2026-01-19_00-00-00/state.md")
+ROUND=$(get_current_round "$TEST_DIR/special-state/.duo/rlcr/2026-01-19_00-00-00/state.md")
 if [[ "$ROUND" == "3" ]]; then
     pass "State with special path parsed correctly"
 else
@@ -290,15 +290,15 @@ fi
 # Test 11: State file with missing closing delimiter
 echo ""
 echo "Test 11: State file with missing closing delimiter"
-mkdir -p "$TEST_DIR/bad-state/.humanize/rlcr/2026-01-19_00-00-00"
-cat > "$TEST_DIR/bad-state/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/bad-state/.duo/rlcr/2026-01-19_00-00-00"
+cat > "$TEST_DIR/bad-state/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 7
 max_iterations: 42
 This is content without closing ---
 EOF
 
-ROUND=$(get_current_round "$TEST_DIR/bad-state/.humanize/rlcr/2026-01-19_00-00-00/state.md")
+ROUND=$(get_current_round "$TEST_DIR/bad-state/.duo/rlcr/2026-01-19_00-00-00/state.md")
 # Should return default 0 or parse what it can
 if [[ "$ROUND" == "0" ]] || [[ "$ROUND" == "7" ]]; then
     pass "Malformed state handled gracefully (round: $ROUND)"
@@ -317,8 +317,8 @@ echo ""
 # Test 12: Bash validator blocks state.md modification attempts
 echo "Test 12: Bash validator blocks state.md modification"
 # Create RLCR state for the test
-mkdir -p "$TEST_DIR/.humanize/rlcr/2026-01-19_12-00-00"
-cat > "$TEST_DIR/.humanize/rlcr/2026-01-19_12-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/.duo/rlcr/2026-01-19_12-00-00"
+cat > "$TEST_DIR/.duo/rlcr/2026-01-19_12-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42
@@ -334,7 +334,7 @@ plan_tracked: false
 ---
 EOF
 # Try to modify state.md - this SHOULD be blocked
-JSON='{"tool_name":"Bash","tool_input":{"command":"echo hacked >> '"$TEST_DIR"'/.humanize/rlcr/2026-01-19_12-00-00/state.md"}}'
+JSON='{"tool_name":"Bash","tool_input":{"command":"echo hacked >> '"$TEST_DIR"'/.duo/rlcr/2026-01-19_12-00-00/state.md"}}'
 set +e
 RESULT=$(echo "$JSON" | CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -354,7 +354,7 @@ fi
 echo ""
 echo "Test 12b: Bash validator blocks goal-tracker.md modification after round 0"
 # Try to modify goal-tracker.md when current_round > 0
-JSON='{"tool_name":"Bash","tool_input":{"command":"echo modified >> '"$TEST_DIR"'/.humanize/rlcr/2026-01-19_12-00-00/goal-tracker.md"}}'
+JSON='{"tool_name":"Bash","tool_input":{"command":"echo modified >> '"$TEST_DIR"'/.duo/rlcr/2026-01-19_12-00-00/goal-tracker.md"}}'
 set +e
 RESULT=$(echo "$JSON" | CLAUDE_PROJECT_DIR="$TEST_DIR" bash "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -420,8 +420,8 @@ echo ""
 
 # Test 15: Multiple hook invocations don't corrupt state
 echo "Test 15: Multiple concurrent hook invocations"
-mkdir -p "$TEST_DIR/concurrent-hooks/.humanize/rlcr/2026-01-19_00-00-00"
-cat > "$TEST_DIR/concurrent-hooks/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+mkdir -p "$TEST_DIR/concurrent-hooks/.duo/rlcr/2026-01-19_00-00-00"
+cat > "$TEST_DIR/concurrent-hooks/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 0
 max_iterations: 42
@@ -439,8 +439,8 @@ done
 wait
 
 # Check state file wasn't corrupted
-if [[ -f "$TEST_DIR/concurrent-hooks/.humanize/rlcr/2026-01-19_00-00-00/state.md" ]]; then
-    ROUND=$(get_current_round "$TEST_DIR/concurrent-hooks/.humanize/rlcr/2026-01-19_00-00-00/state.md")
+if [[ -f "$TEST_DIR/concurrent-hooks/.duo/rlcr/2026-01-19_00-00-00/state.md" ]]; then
+    ROUND=$(get_current_round "$TEST_DIR/concurrent-hooks/.duo/rlcr/2026-01-19_00-00-00/state.md")
     if [[ "$ROUND" == "0" ]]; then
         pass "Concurrent hook invocations preserve state"
     else
@@ -461,7 +461,7 @@ echo ""
 # Test 16: Stop hook handles missing state gracefully (allows exit)
 echo "Test 16: Stop hook allows exit when no state directory"
 mkdir -p "$TEST_DIR/no-state"
-# No .humanize directory - should allow exit (no block decision)
+# No .duo directory - should allow exit (no block decision)
 
 set +e
 OUTPUT=$(echo '{}' | CLAUDE_PROJECT_DIR="$TEST_DIR/no-state" bash "$PROJECT_ROOT/hooks/loop-codex-stop-hook.sh" 2>&1)
@@ -493,8 +493,8 @@ fi
 # Test 18: Stop hook with corrupted state file outputs block decision
 echo ""
 echo "Test 18: Stop hook with corrupted state outputs decision"
-mkdir -p "$TEST_DIR/corrupt-state/.humanize/rlcr/2026-01-19_00-00-00"
-echo "not yaml at all [[[" > "$TEST_DIR/corrupt-state/.humanize/rlcr/2026-01-19_00-00-00/state.md"
+mkdir -p "$TEST_DIR/corrupt-state/.duo/rlcr/2026-01-19_00-00-00"
+echo "not yaml at all [[[" > "$TEST_DIR/corrupt-state/.duo/rlcr/2026-01-19_00-00-00/state.md"
 
 set +e
 OUTPUT=$(echo '{}' | CLAUDE_PROJECT_DIR="$TEST_DIR/corrupt-state" bash "$PROJECT_ROOT/hooks/loop-codex-stop-hook.sh" 2>&1)
@@ -516,9 +516,9 @@ fi
 # Test 18b: Stop hook ends loop when state missing required fields (current_round/max_iterations)
 echo ""
 echo "Test 18b: Stop hook ends loop when missing critical required fields"
-mkdir -p "$TEST_DIR/incomplete-state/.humanize/rlcr/2026-01-19_00-00-00"
+mkdir -p "$TEST_DIR/incomplete-state/.duo/rlcr/2026-01-19_00-00-00"
 # State file missing current_round field (required)
-cat > "$TEST_DIR/incomplete-state/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+cat > "$TEST_DIR/incomplete-state/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 max_iterations: 42
 plan_file: plan.md
@@ -543,7 +543,7 @@ if [[ $EXIT_CODE -eq 0 ]]; then
     # Verify it mentions missing required field
     if echo "$OUTPUT" | grep -qi "missing required field\|current_round"; then
         # Verify state file was renamed to unexpected-state.md
-        if [[ -f "$TEST_DIR/incomplete-state/.humanize/rlcr/2026-01-19_00-00-00/unexpected-state.md" ]]; then
+        if [[ -f "$TEST_DIR/incomplete-state/.duo/rlcr/2026-01-19_00-00-00/unexpected-state.md" ]]; then
             pass "Stop hook ends loop (unexpected) when missing required fields"
         else
             pass "Stop hook allows exit with error when missing required fields"
@@ -559,9 +559,9 @@ fi
 # Test 18c: Stop hook blocks exit when state has all required fields (normal operation)
 echo ""
 echo "Test 18c: Stop hook blocks exit during active loop (normal operation)"
-mkdir -p "$TEST_DIR/active-loop/.humanize/rlcr/2026-01-19_00-00-00"
+mkdir -p "$TEST_DIR/active-loop/.duo/rlcr/2026-01-19_00-00-00"
 # Complete valid state file with all required fields
-cat > "$TEST_DIR/active-loop/.humanize/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
+cat > "$TEST_DIR/active-loop/.duo/rlcr/2026-01-19_00-00-00/state.md" << 'EOF'
 ---
 current_round: 1
 max_iterations: 42

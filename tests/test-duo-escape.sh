@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# Test script for humanize-escape fixes
+# Test script for duo-escape fixes
 #
 # Tests:
 # 1. Zsh safety for empty/dotfile directory scenarios
-# 2. git_adds_humanize path variant detection (./.humanize, quoted paths)
+# 2. git_adds_duo path variant detection (./.duo, quoted paths)
 #
 # These tests verify the fixes for:
 # - No zsh/bash "no matches found" errors
-# - Block git add .humanize (including path variants)
+# - Block git add .duo (including path variants)
 #
 
 set -euo pipefail
@@ -38,7 +38,7 @@ fail() {
 }
 
 # ========================================
-# Test Group 1: git_adds_humanize Path Variants
+# Test Group 1: git_adds_duo Path Variants
 # ========================================
 
 # Assert that a git add command SHOULD be blocked
@@ -48,7 +48,7 @@ assert_blocks() {
     local command_lower
     command_lower=$(to_lower "$command")
 
-    if git_adds_humanize "$command_lower"; then
+    if git_adds_duo "$command_lower"; then
         pass "$description"
     else
         fail "$description" "Command should be blocked: $command"
@@ -62,7 +62,7 @@ assert_allows() {
     local command_lower
     command_lower=$(to_lower "$command")
 
-    if git_adds_humanize "$command_lower"; then
+    if git_adds_duo "$command_lower"; then
         fail "$description" "Command should be allowed: $command"
     else
         pass "$description"
@@ -70,21 +70,21 @@ assert_allows() {
 }
 
 echo "========================================"
-echo "Testing humanize-escape Fixes"
+echo "Testing duo-escape Fixes"
 echo "========================================"
 echo ""
 
 # ========================================
-# Test Group 1: ./.humanize Path Variants
+# Test Group 1: ./.duo Path Variants
 # ========================================
-echo "Test Group 1: ./.humanize Path Variants"
+echo "Test Group 1: ./.duo Path Variants"
 echo ""
 
-assert_blocks "git add ./.humanize" "Block: ./.humanize prefix"
-assert_blocks "git add ./.humanize/" "Block: ./.humanize/ with trailing slash"
-assert_blocks "git add ./.humanize/file.md" "Block: ./.humanize/file.md"
-assert_blocks "git add path/to/.humanize" "Block: path/to/.humanize"
-assert_blocks "git add ../project/.humanize" "Block: ../project/.humanize"
+assert_blocks "git add ./.duo" "Block: ./.duo prefix"
+assert_blocks "git add ./.duo/" "Block: ./.duo/ with trailing slash"
+assert_blocks "git add ./.duo/file.md" "Block: ./.duo/file.md"
+assert_blocks "git add path/to/.duo" "Block: path/to/.duo"
+assert_blocks "git add ../project/.duo" "Block: ../project/.duo"
 
 # ========================================
 # Test Group 2: Quoted Path Variants
@@ -93,11 +93,11 @@ echo ""
 echo "Test Group 2: Quoted Path Variants"
 echo ""
 
-assert_blocks 'git add ".humanize"' "Block: double-quoted .humanize"
-assert_blocks "git add '.humanize'" "Block: single-quoted .humanize"
-assert_blocks 'git add "./.humanize"' "Block: double-quoted ./.humanize"
-assert_blocks "git add './.humanize'" "Block: single-quoted ./.humanize"
-assert_blocks 'git add "path/to/.humanize"' "Block: double-quoted path/to/.humanize"
+assert_blocks 'git add ".duo"' "Block: double-quoted .duo"
+assert_blocks "git add '.duo'" "Block: single-quoted .duo"
+assert_blocks 'git add "./.duo"' "Block: double-quoted ./.duo"
+assert_blocks "git add './.duo'" "Block: single-quoted ./.duo"
+assert_blocks 'git add "path/to/.duo"' "Block: double-quoted path/to/.duo"
 
 # ========================================
 # Test Group 3: Combined Force and Path Variants
@@ -106,9 +106,9 @@ echo ""
 echo "Test Group 3: Combined Force and Path Variants"
 echo ""
 
-assert_blocks "git add -f ./.humanize" "Block: -f with ./.humanize"
-assert_blocks "git add --force ./.humanize" "Block: --force with ./.humanize"
-assert_blocks 'git add -f ".humanize"' "Block: -f with quoted .humanize"
+assert_blocks "git add -f ./.duo" "Block: -f with ./.duo"
+assert_blocks "git add --force ./.duo" "Block: --force with ./.duo"
+assert_blocks 'git add -f ".duo"' "Block: -f with quoted .duo"
 
 # Force flag with broad scope (blocks gitignore bypass)
 assert_blocks "git add -f ." "Block: -f . (force with current dir)"
@@ -125,15 +125,15 @@ echo ""
 echo "Test Group 3b: git add -A / --all"
 echo ""
 
-# These tests require .humanize directory to exist for blocking to trigger
-# (git_adds_humanize only blocks -A/--all when .humanize exists)
-TEST_HUMANIZE_DIR="/tmp/test-humanize-git-add-$$"
-mkdir -p "$TEST_HUMANIZE_DIR/.humanize"
+# These tests require .duo directory to exist for blocking to trigger
+# (git_adds_duo only blocks -A/--all when .duo exists)
+TEST_DUO_DIR="/tmp/test-duo-git-add-$$"
+mkdir -p "$TEST_DUO_DIR/.duo"
 ORIGINAL_DIR="$(pwd)"
-cd "$TEST_HUMANIZE_DIR"
+cd "$TEST_DUO_DIR"
 
-assert_blocks "git add -A" "Block: -A (adds all including .humanize)"
-assert_blocks "git add --all" "Block: --all (adds all including .humanize)"
+assert_blocks "git add -A" "Block: -A (adds all including .duo)"
+assert_blocks "git add --all" "Block: --all (adds all including .duo)"
 assert_blocks "git add -A ." "Block: -A . (all in current dir)"
 assert_blocks "git add --all ." "Block: --all . (all in current dir)"
 assert_blocks "git add -A src/" "Block: -A src/ (all flag present)"
@@ -141,7 +141,7 @@ assert_blocks "git add --all src/" "Block: --all src/ (all flag present)"
 
 # Return to original directory and clean up
 cd "$ORIGINAL_DIR"
-rm -rf "$TEST_HUMANIZE_DIR"
+rm -rf "$TEST_DUO_DIR"
 
 # ========================================
 # Test Group 4: Chained Commands with Path Variants
@@ -150,9 +150,9 @@ echo ""
 echo "Test Group 4: Chained Commands with Path Variants"
 echo ""
 
-assert_blocks "cd repo && git add ./.humanize" "Block: cd && git add ./.humanize"
-assert_blocks "true; git add ./.humanize" "Block: true; git add ./.humanize"
-assert_blocks 'echo test && git add ".humanize"' "Block: echo && git add quoted"
+assert_blocks "cd repo && git add ./.duo" "Block: cd && git add ./.duo"
+assert_blocks "true; git add ./.duo" "Block: true; git add ./.duo"
+assert_blocks 'echo test && git add ".duo"' "Block: echo && git add quoted"
 
 # ========================================
 # Test Group 5: git -C with Path Variants
@@ -161,9 +161,9 @@ echo ""
 echo "Test Group 5: git -C with Path Variants"
 echo ""
 
-assert_blocks "git -C /path add ./.humanize" "Block: git -C with ./.humanize"
-assert_blocks 'git -C /path add ".humanize"' "Block: git -C with quoted .humanize"
-assert_blocks "git --git-dir=/repo add ./.humanize" "Block: --git-dir with ./.humanize"
+assert_blocks "git -C /path add ./.duo" "Block: git -C with ./.duo"
+assert_blocks 'git -C /path add ".duo"' "Block: git -C with quoted .duo"
+assert_blocks "git --git-dir=/repo add ./.duo" "Block: --git-dir with ./.duo"
 
 # ========================================
 # Test Group 6: Allowed Commands (should NOT block)
@@ -174,22 +174,22 @@ echo ""
 
 assert_allows "git add src/file.js" "Allow: specific file"
 assert_allows "git add ./src/file.js" "Allow: ./src/file.js"
-assert_allows "git add src/.gitkeep" "Allow: .gitkeep (not .humanize)"
+assert_allows "git add src/.gitkeep" "Allow: .gitkeep (not .duo)"
 assert_allows "git add .gitignore" "Allow: .gitignore"
 assert_allows "git add ./src/" "Allow: ./src/ directory"
-assert_allows "git status .humanize" "Allow: git status (not add)"
-assert_allows "git diff .humanize" "Allow: git diff (not add)"
-assert_allows "git log -- .humanize" "Allow: git log (not add)"
+assert_allows "git status .duo" "Allow: git status (not add)"
+assert_allows "git diff .duo" "Allow: git diff (not add)"
+assert_allows "git log -- .duo" "Allow: git log (not add)"
 
 # Patch mode is safe (interactive)
 assert_allows "git add -p" "Allow: -p (patch mode, interactive)"
 assert_allows "git add --patch" "Allow: --patch (patch mode)"
 assert_allows "git add -p src/" "Allow: -p src/ (patch mode with path)"
 
-# Files that start with .humanize but are NOT the .humanize directory
-assert_allows "git add .humanizeconfig" "Allow: .humanizeconfig (different file)"
-assert_allows "git add .humanize-backup" "Allow: .humanize-backup (different file)"
-assert_allows "git add src/.humanizerc" "Allow: src/.humanizerc (different file)"
+# Files that start with .duo but are NOT the .duo directory
+assert_allows "git add .duoconfig" "Allow: .duoconfig (different file)"
+assert_allows "git add .duo-backup" "Allow: .duo-backup (different file)"
+assert_allows "git add src/.duorc" "Allow: src/.duorc (different file)"
 
 # ========================================
 # Test Group 7: Zsh Empty Directory Safety
@@ -202,10 +202,10 @@ echo ""
 # These tests verify that the find-based iteration works correctly
 
 test_empty_dir() {
-    local test_dir="/tmp/test-humanize-empty-$$"
+    local test_dir="/tmp/test-duo-empty-$$"
     mkdir -p "$test_dir"
 
-    # Simulate the find-based iteration pattern used in humanize.sh
+    # Simulate the find-based iteration pattern used in duo.sh
     local found_count=0
     while IFS= read -r item; do
         [[ -z "$item" ]] && continue
@@ -223,7 +223,7 @@ test_empty_dir() {
 test_empty_dir
 
 test_dotfiles_only_dir() {
-    local test_dir="/tmp/test-humanize-dotfiles-$$"
+    local test_dir="/tmp/test-duo-dotfiles-$$"
     mkdir -p "$test_dir"
     touch "$test_dir/.cancel-requested"
     touch "$test_dir/.hidden-file"
@@ -246,7 +246,7 @@ test_dotfiles_only_dir() {
 test_dotfiles_only_dir
 
 test_no_state_md_files() {
-    local test_dir="/tmp/test-humanize-nostate-$$"
+    local test_dir="/tmp/test-duo-nostate-$$"
     mkdir -p "$test_dir"
     touch "$test_dir/other.txt"
     touch "$test_dir/readme.md"
@@ -269,7 +269,7 @@ test_no_state_md_files() {
 test_no_state_md_files
 
 test_state_md_detection() {
-    local test_dir="/tmp/test-humanize-state-$$"
+    local test_dir="/tmp/test-duo-state-$$"
     mkdir -p "$test_dir"
     touch "$test_dir/completed-state.md"
     touch "$test_dir/other.md"
@@ -301,7 +301,7 @@ echo "Test Group 8: Session Directory Detection"
 echo ""
 
 test_session_dir_detection() {
-    local test_dir="/tmp/test-humanize-sessions-$$"
+    local test_dir="/tmp/test-duo-sessions-$$"
     mkdir -p "$test_dir"
     mkdir -p "$test_dir/2026-01-16_10-30-00"
     mkdir -p "$test_dir/2026-01-16_11-00-00"

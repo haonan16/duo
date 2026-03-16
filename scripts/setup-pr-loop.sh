@@ -103,7 +103,7 @@ STOPPING:
   - All bots approve the changes
 
 MONITORING:
-  humanize monitor pr
+  duo monitor pr
 HELP_EOF
     exit 0
 }
@@ -219,8 +219,8 @@ BOT_MENTION_STRING=$(build_bot_mention_string "${ACTIVE_BOTS_ARRAY[@]}")
 
 # Check for existing active loops (both RLCR and PR loops)
 # Only one loop type can be active at a time
-RLCR_LOOP_DIR=$(find_active_loop "$PROJECT_ROOT/.humanize/rlcr" 2>/dev/null || echo "")
-PR_LOOP_DIR=$(find_active_pr_loop "$PROJECT_ROOT/.humanize/pr-loop" 2>/dev/null || echo "")
+RLCR_LOOP_DIR=$(find_active_loop "$PROJECT_ROOT/.duo/rlcr" 2>/dev/null || echo "")
+PR_LOOP_DIR=$(find_active_pr_loop "$PROJECT_ROOT/.duo/pr-loop" 2>/dev/null || echo "")
 
 if [[ -n "$RLCR_LOOP_DIR" ]]; then
     echo "Error: An RLCR loop is already active" >&2
@@ -410,7 +410,7 @@ fi
 # Setup State Directory
 # ========================================
 
-LOOP_BASE_DIR="$PROJECT_ROOT/.humanize/pr-loop"
+LOOP_BASE_DIR="$PROJECT_ROOT/.duo/pr-loop"
 
 # Create timestamp for this loop session
 TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
@@ -786,7 +786,7 @@ This PR has no review comments yet. The monitored bots ({{ACTIVE_BOTS_DISPLAY}})
 ## Important Rules
 
 1. **Do not comment to trigger review**: First reviews are automatic
-2. **Do not modify state files**: The .humanize/pr-loop/ files are managed by the system
+2. **Do not modify state files**: The .duo/pr-loop/ files are managed by the system
 3. **Trust the process**: The Stop Hook manages polling and Codex validation
 
 ---
@@ -831,7 +831,7 @@ else
 
 ## Important Rules
 
-1. **Do not modify state files**: The .humanize/pr-loop/ files are managed by the system
+1. **Do not modify state files**: The .duo/pr-loop/ files are managed by the system
 2. **Always push changes**: Your fixes must be pushed for bots to review them
 3. **Use the correct comment format**: Tag the bots to trigger their reviews
 4. **Be thorough**: Address all valid concerns from the reviewers

@@ -163,11 +163,11 @@ Test the RLCR loop
 - Requirement 2
 - Requirement 3
 EOF
-        # Add .humanize, bin, and .cache to gitignore (they are created by tests)
+        # Add .duo, bin, and .cache to gitignore (they are created by tests)
         cat >> .gitignore << 'GITIGNORE'
 plans/
-.humanize/
-.humanize*
+.duo/
+.duo*
 bin/
 transcript.jsonl
 .cache/
@@ -181,7 +181,7 @@ setup_loop_dir() {
     local round="$1"
     local max_iter="${2:-42}"
 
-    LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
+    LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
     mkdir -p "$LOOP_DIR"
 
     local current_branch
@@ -291,7 +291,7 @@ export CLAUDE_PROJECT_DIR="$TEST_DIR"
 mv "$LOOP_DIR/state.md" "$LOOP_DIR/finalize-state.md"
 
 echo "T-POS-3: finalize-state.md detected as active loop"
-ACTIVE_LOOP=$(find_active_loop "$TEST_DIR/.humanize/rlcr")
+ACTIVE_LOOP=$(find_active_loop "$TEST_DIR/.duo/rlcr")
 if [[ -n "$ACTIVE_LOOP" ]]; then
     pass "finalize-state.md detected as active loop"
 else
@@ -312,7 +312,7 @@ max_iterations: 42
 EOF
 
 echo "T-NEG-6: complete-state.md not detected as active loop"
-ACTIVE_LOOP=$(find_active_loop "$TEST_DIR/.humanize/rlcr")
+ACTIVE_LOOP=$(find_active_loop "$TEST_DIR/.duo/rlcr")
 if [[ -z "$ACTIVE_LOOP" ]]; then
     pass "complete-state.md not detected as active loop"
 else
@@ -327,7 +327,7 @@ rm -f "$LOOP_DIR/complete-state.md"
 setup_loop_dir 3
 
 echo "T-POS-5: state.md still detected as active loop"
-ACTIVE_LOOP=$(find_active_loop "$TEST_DIR/.humanize/rlcr")
+ACTIVE_LOOP=$(find_active_loop "$TEST_DIR/.duo/rlcr")
 if [[ -n "$ACTIVE_LOOP" ]]; then
     pass "state.md still detected as active loop"
 else
@@ -508,7 +508,7 @@ echo "=== T-POS-1 & T-NEG-1: COMPLETE Handling Tests ==="
 echo ""
 
 # Reset test environment for COMPLETE handling tests
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_test_repo
 setup_loop_dir 3 10  # current_round: 3, max_iterations: 10
 setup_mock_codex "All requirements met.
@@ -541,7 +541,7 @@ fi
 
 # T-NEG-1: Max iterations skips Finalize
 echo "T-NEG-1: Max iterations skips Finalize Phase"
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_loop_dir 10 10  # current_round: 10, max_iterations: 10 (at max)
 # Create summary for current round
 cat > "$LOOP_DIR/round-10-summary.md" << 'EOF'
@@ -566,7 +566,7 @@ echo ""
 # T-NEG-8a: COMPLETE triggers review, but codex review fails (non-zero exit)
 # Should block instead of skipping to finalize
 echo "T-NEG-8a: COMPLETE with codex review failure blocks exit (non-zero exit)"
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_test_repo
 setup_loop_dir 3 10  # current_round: 3, max_iterations: 10
 setup_mock_codex_review_failure "All requirements met.
@@ -625,7 +625,7 @@ echo ""
 # T-NEG-9a: COMPLETE triggers review, but codex review produces empty stdout
 # Should block instead of skipping to finalize
 echo "T-NEG-9a: COMPLETE with empty codex review output blocks exit"
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_test_repo
 setup_loop_dir 4 10  # current_round: 4, max_iterations: 10
 setup_mock_codex_review_empty_stdout "All requirements met.
@@ -659,10 +659,10 @@ fi
 # T-NEG-9b: Verify the log file exists and is empty (combined stdout+stderr)
 echo "T-NEG-9b: Codex review log file exists and is empty"
 # Compute the real cache dir using same logic as loop-codex-stop-hook.sh
-# Cache path: $XDG_CACHE_HOME/humanize/$SANITIZED_PROJECT_PATH/$LOOP_TIMESTAMP/round-N-codex-review.log
+# Cache path: $XDG_CACHE_HOME/duo/$SANITIZED_PROJECT_PATH/$LOOP_TIMESTAMP/round-N-codex-review.log
 LOOP_TIMESTAMP=$(basename "$LOOP_DIR")
 SANITIZED_PROJECT_PATH=$(echo "$TEST_DIR" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed 's/--*/-/g')
-REVIEW_CACHE_DIR="$XDG_CACHE_HOME/humanize/$SANITIZED_PROJECT_PATH/$LOOP_TIMESTAMP"
+REVIEW_CACHE_DIR="$XDG_CACHE_HOME/duo/$SANITIZED_PROJECT_PATH/$LOOP_TIMESTAMP"
 # Round 5 because we pass CURRENT_ROUND + 1 (4 + 1 = 5) to run_and_handle_code_review
 REVIEW_LOG="$REVIEW_CACHE_DIR/round-5-codex-review.log"
 if [[ -f "$REVIEW_LOG" ]] && [[ ! -s "$REVIEW_LOG" ]]; then
@@ -700,7 +700,7 @@ echo "=== T-NEG-4: Finalize Phase Requires Todos Complete ==="
 echo ""
 
 # Setup for T-NEG-4: Finalize Phase with incomplete todos
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_test_repo
 setup_loop_dir 5
 mv "$LOOP_DIR/state.md" "$LOOP_DIR/finalize-state.md"
@@ -745,7 +745,7 @@ echo "=== T-POS-5: Normal RLCR Rounds Unaffected (Stop Hook) ==="
 echo ""
 
 # Setup for T-POS-5: Normal round with non-COMPLETE Codex review
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_test_repo
 setup_loop_dir 3 10  # current_round: 3, max_iterations: 10
 
@@ -818,7 +818,7 @@ echo "=== Validator Finalize Phase State Parsing Tests ==="
 echo ""
 
 # Test that validators correctly parse finalize-state.md
-rm -rf "$TEST_DIR/.humanize"
+rm -rf "$TEST_DIR/.duo"
 setup_test_repo
 setup_loop_dir 5
 mv "$LOOP_DIR/state.md" "$LOOP_DIR/finalize-state.md"

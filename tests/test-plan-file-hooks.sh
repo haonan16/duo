@@ -79,7 +79,7 @@ setup_test_loop() {
     CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
     # Create loop directory structure
-    LOOP_DIR="$TEST_DIR/.humanize/rlcr/2024-01-01_12-00-00"
+    LOOP_DIR="$TEST_DIR/.duo/rlcr/2024-01-01_12-00-00"
     mkdir -p "$LOOP_DIR"
 
     # Create plan file (gitignored)
@@ -283,16 +283,16 @@ else
     fail "Bash validator blocking rm" "exit 2 with plan error" "exit $EXIT_CODE, output: $RESULT"
 fi
 
-# Test 8a: Bash validator blocks direct .humanize/rlcr/plan.md (no intermediate dir)
+# Test 8a: Bash validator blocks direct .duo/rlcr/plan.md (no intermediate dir)
 # This tests Fix #1 for the regex bypass vulnerability
-echo "Test 8a: Block bash modifications to direct .humanize/rlcr/plan.md"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo evil > .humanize/rlcr/plan.md"}}'
+echo "Test 8a: Block bash modifications to direct .duo/rlcr/plan.md"
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo evil > .duo/rlcr/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
 set -e
 if [[ $EXIT_CODE -eq 2 ]] && echo "$RESULT" | grep -qi "plan"; then
-    pass "Bash validator blocks direct .humanize/rlcr/plan.md"
+    pass "Bash validator blocks direct .duo/rlcr/plan.md"
 else
     fail "Bash validator direct plan.md" "exit 2 with plan error" "exit $EXIT_CODE, output: $RESULT"
 fi
@@ -303,7 +303,7 @@ echo ""
 
 # Test 8.1: Block command substitution bypass attempt
 echo "Test 8.1: Block command substitution bypass"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .humanize/rlcr/$(date +%Y)/plan.md"}}'
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .duo/rlcr/$(date +%Y)/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -316,7 +316,7 @@ fi
 
 # Test 8.2: Block glob expansion bypass attempt
 echo "Test 8.2: Block glob expansion bypass"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .humanize/rlcr/*/plan.md"}}'
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .duo/rlcr/*/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -329,7 +329,7 @@ fi
 
 # Test 8.3: Block brace expansion bypass attempt
 echo "Test 8.3: Block brace expansion bypass"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "tee .humanize/rlcr/{a,b,c}/plan.md"}}'
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "tee .duo/rlcr/{a,b,c}/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -342,7 +342,7 @@ fi
 
 # Test 8.4: Block piped command bypass attempt
 echo "Test 8.4: Block piped command bypass"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "cat input.txt | tee .humanize/rlcr/2024-01-01_12-00-00/plan.md"}}'
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "cat input.txt | tee .duo/rlcr/2024-01-01_12-00-00/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -355,7 +355,7 @@ fi
 
 # Test 8.5: Block backtick command substitution bypass
 echo "Test 8.5: Block backtick command substitution bypass"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .humanize/rlcr/`echo test`/plan.md"}}'
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .duo/rlcr/`echo test`/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
@@ -624,7 +624,7 @@ EOF
 git add tracked-plan.md
 git -c commit.gpgsign=false commit -q -m "Add plan"
 # Create loop directory
-TRACKED_LOOP_DIR="$PWD/.humanize/rlcr/2024-01-01_12-00-00"
+TRACKED_LOOP_DIR="$PWD/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$TRACKED_LOOP_DIR"
 cp tracked-plan.md "$TRACKED_LOOP_DIR/plan.md"
 cat > "$TRACKED_LOOP_DIR/state.md" << EOF
@@ -720,7 +720,7 @@ EOF
 git add tracked-plan.md
 git -c commit.gpgsign=false commit -q -m "Add plan"
 # Create loop directory and backup
-TRACKED_LOOP_DIR="$PWD/.humanize/rlcr/2024-01-01_12-00-00"
+TRACKED_LOOP_DIR="$PWD/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$TRACKED_LOOP_DIR"
 cp tracked-plan.md "$TRACKED_LOOP_DIR/plan.md"
 cat > "$TRACKED_LOOP_DIR/state.md" << EOF
@@ -788,8 +788,8 @@ git init -q
 git config user.email "test@test.com"
 git config user.name "Test"
 echo "init" > init.txt
-# Add .humanize to gitignore so it doesn't trigger uncommitted changes
-echo ".humanize*" > .gitignore
+# Add .duo to gitignore so it doesn't trigger uncommitted changes
+echo ".duo*" > .gitignore
 git add init.txt .gitignore
 git -c commit.gpgsign=false commit -q -m "Initial"
 TEST_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -804,7 +804,7 @@ EOF
 git add .gitignore
 git -c commit.gpgsign=false commit -q -m "Add gitignore"
 # Create loop directory
-LOOP_DIR_14_1="$PWD/.humanize/rlcr/2024-01-01_12-00-00"
+LOOP_DIR_14_1="$PWD/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$LOOP_DIR_14_1"
 cp plans/test-plan.md "$LOOP_DIR_14_1/plan.md"
 cat > "$LOOP_DIR_14_1/state.md" << EOF
@@ -862,7 +862,7 @@ git init -q
 git config user.email "test@test.com"
 git config user.name "Test"
 echo "init" > init.txt
-echo ".humanize*" > .gitignore
+echo ".duo*" > .gitignore
 git add init.txt .gitignore
 git -c commit.gpgsign=false commit -q -m "Initial"
 TEST_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -875,7 +875,7 @@ Test
 EOF
 git add .gitignore
 git -c commit.gpgsign=false commit -q -m "Add gitignore"
-LOOP_DIR_14_2="$PWD/.humanize/rlcr/2024-01-01_12-00-00"
+LOOP_DIR_14_2="$PWD/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$LOOP_DIR_14_2"
 cp plans/test-plan.md "$LOOP_DIR_14_2/plan.md"
 cat > "$LOOP_DIR_14_2/state.md" << EOF
@@ -933,7 +933,7 @@ git init -q
 git config user.email "test@test.com"
 git config user.name "Test"
 echo "init" > init.txt
-echo ".humanize*" > .gitignore
+echo ".duo*" > .gitignore
 git add init.txt .gitignore
 git -c commit.gpgsign=false commit -q -m "Initial"
 TEST_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -946,7 +946,7 @@ Test
 EOF
 git add .gitignore
 git -c commit.gpgsign=false commit -q -m "Add gitignore"
-LOOP_DIR_14_3="$PWD/.humanize/rlcr/2024-01-01_12-00-00"
+LOOP_DIR_14_3="$PWD/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$LOOP_DIR_14_3"
 cp plans/test-plan.md "$LOOP_DIR_14_3/plan.md"
 cat > "$LOOP_DIR_14_3/state.md" << EOF
@@ -1002,7 +1002,7 @@ git init -q
 git config user.email "test@test.com"
 git config user.name "Test"
 echo "init" > init.txt
-echo ".humanize*" > .gitignore
+echo ".duo*" > .gitignore
 git add init.txt .gitignore
 git -c commit.gpgsign=false commit -q -m "Initial"
 TEST_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -1015,7 +1015,7 @@ Test
 EOF
 git add .gitignore
 git -c commit.gpgsign=false commit -q -m "Add gitignore"
-LOOP_DIR_14_4="$PWD/.humanize/rlcr/2024-01-01_12-00-00"
+LOOP_DIR_14_4="$PWD/.duo/rlcr/2024-01-01_12-00-00"
 mkdir -p "$LOOP_DIR_14_4"
 cp plans/test-plan.md "$LOOP_DIR_14_4/plan.md"
 cat > "$LOOP_DIR_14_4/state.md" << EOF
@@ -1065,42 +1065,42 @@ echo ""
 echo "=== Test: Legacy Path Handling (NEGATIVE TESTS) ==="
 echo ""
 
-# Test 15: Bash validator ALLOWS writes to legacy .humanize-loop.local (it's not a loop dir anymore)
-echo "Test 15: Bash validator allows writes to legacy .humanize-loop.local"
-HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .humanize-loop.local/2024-01-01/plan.md"}}'
+# Test 15: Bash validator ALLOWS writes to legacy .duo-loop.local (it's not a loop dir anymore)
+echo "Test 15: Bash validator allows writes to legacy .duo-loop.local"
+HOOK_INPUT='{"tool_name": "Bash", "tool_input": {"command": "echo test > .duo-loop.local/2024-01-01/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-bash-validator.sh" 2>&1)
 EXIT_CODE=$?
 set -e
 # Should exit 0 (allowed) because legacy path is no longer treated as a loop directory
 if [[ $EXIT_CODE -eq 0 ]]; then
-    pass "Bash validator allows writes to legacy .humanize-loop.local"
+    pass "Bash validator allows writes to legacy .duo-loop.local"
 else
     fail "Bash validator legacy path" "exit 0 (allowed)" "exit $EXIT_CODE, output: $RESULT"
 fi
 
-# Test 16: Write validator ALLOWS writes to legacy .humanize-loop.local plan.md
-echo "Test 16: Write validator allows writes to legacy .humanize-loop.local plan.md"
-HOOK_INPUT='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.humanize-loop.local/2024-01-01/plan.md"}}'
+# Test 16: Write validator ALLOWS writes to legacy .duo-loop.local plan.md
+echo "Test 16: Write validator allows writes to legacy .duo-loop.local plan.md"
+HOOK_INPUT='{"tool_name": "Write", "tool_input": {"file_path": "'$TEST_DIR'/.duo-loop.local/2024-01-01/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-write-validator.sh" 2>&1)
 EXIT_CODE=$?
 set -e
 if [[ $EXIT_CODE -eq 0 ]]; then
-    pass "Write validator allows writes to legacy .humanize-loop.local plan.md"
+    pass "Write validator allows writes to legacy .duo-loop.local plan.md"
 else
     fail "Write validator legacy path" "exit 0 (allowed)" "exit $EXIT_CODE, output: $RESULT"
 fi
 
-# Test 17: Edit validator ALLOWS edits to legacy .humanize-loop.local plan.md
-echo "Test 17: Edit validator allows edits to legacy .humanize-loop.local plan.md"
-HOOK_INPUT='{"tool_name": "Edit", "tool_input": {"file_path": "'$TEST_DIR'/.humanize-loop.local/2024-01-01/plan.md"}}'
+# Test 17: Edit validator ALLOWS edits to legacy .duo-loop.local plan.md
+echo "Test 17: Edit validator allows edits to legacy .duo-loop.local plan.md"
+HOOK_INPUT='{"tool_name": "Edit", "tool_input": {"file_path": "'$TEST_DIR'/.duo-loop.local/2024-01-01/plan.md"}}'
 set +e
 RESULT=$(echo "$HOOK_INPUT" | "$PROJECT_ROOT/hooks/loop-edit-validator.sh" 2>&1)
 EXIT_CODE=$?
 set -e
 if [[ $EXIT_CODE -eq 0 ]]; then
-    pass "Edit validator allows edits to legacy .humanize-loop.local plan.md"
+    pass "Edit validator allows edits to legacy .duo-loop.local plan.md"
 else
     fail "Edit validator legacy path" "exit 0 (allowed)" "exit $EXIT_CODE, output: $RESULT"
 fi

@@ -1,16 +1,16 @@
-# Install Humanize Skills for Codex
+# Install Duo Skills for Codex
 
-This guide explains how to install the Humanize skills for Codex skill runtime (`$CODEX_HOME/skills`).
+This guide explains how to install the Duo skills for Codex skill runtime (`$CODEX_HOME/skills`).
 
 ## Quick Install (Recommended)
 
 One-line install from anywhere:
 
 ```bash
-tmp_dir="$(mktemp -d)" && git clone --depth 1 https://github.com/humania-org/humanize.git "$tmp_dir/humanize" && "$tmp_dir/humanize/scripts/install-skills-codex.sh"
+tmp_dir="$(mktemp -d)" && git clone --depth 1 https://github.com/duo-dev/duo.git "$tmp_dir/duo" && "$tmp_dir/duo/scripts/install-skills-codex.sh"
 ```
 
-From the Humanize repo root:
+From the Duo repo root:
 
 ```bash
 ./scripts/install-skills-codex.sh

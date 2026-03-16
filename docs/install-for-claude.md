@@ -1,4 +1,4 @@
-# Install Humanize for Claude Code
+# Install Duo for Claude Code
 
 ## Prerequisites
 
@@ -12,10 +12,10 @@ Start Claude Code and run:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add git@github.com:humania-org/humanize.git
+/plugin marketplace add git@github.com:duo-dev/duo.git
 
 # Install the plugin
-/plugin install humanize@humania
+/plugin install duo@duo-dev
 ```
 
 ## Option 2: Local Development
@@ -23,7 +23,7 @@ Start Claude Code and run:
 If you have the plugin cloned locally:
 
 ```bash
-claude --plugin-dir /path/to/humanize
+claude --plugin-dir /path/to/duo
 ```
 
 ## Option 3: Try Experimental Features (dev branch)
@@ -31,22 +31,22 @@ claude --plugin-dir /path/to/humanize
 The `dev` branch contains experimental features that are not yet released to `main`. To try them locally:
 
 ```bash
-git clone https://github.com/humania-org/humanize.git
-cd humanize
+git clone https://github.com/duo-dev/duo.git
+cd duo
 git checkout dev
 ```
 
 Then start Claude Code with the local plugin directory:
 
 ```bash
-claude --plugin-dir /path/to/humanize
+claude --plugin-dir /path/to/duo
 ```
 
 Note: The `dev` branch may contain unstable or incomplete features. For production use, stick with Option 1 (Git Marketplace) which tracks the stable `main` branch.
 
 ## Verify Installation
 
-After installing, you should see Humanize commands available:
+After installing, you should see Duo commands available:
 
 ```
 /duo:run
@@ -61,14 +61,14 @@ Add the monitoring helper to your shell for real-time progress tracking:
 
 ```bash
 # Add to your .bashrc or .zshrc
-source ~/.claude/plugins/cache/humania/humanize/<LATEST.VERSION>/scripts/humanize.sh
+source ~/.claude/plugins/cache/duo-dev/duo/<LATEST.VERSION>/scripts/duo.sh
 ```
 
 Then use:
 
 ```bash
-humanize monitor rlcr   # Monitor RLCR loop
-humanize monitor pr     # Monitor PR loop
+duo monitor rlcr   # Monitor RLCR loop
+duo monitor pr     # Monitor PR loop
 ```
 
 ## Other Install Guides

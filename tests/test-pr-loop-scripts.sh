@@ -216,7 +216,7 @@ run_cancel_tests() {
 
         # Create mock loop directory
         local timestamp="2026-01-18_12-00-00"
-        local loop_dir=".humanize/pr-loop/$timestamp"
+        local loop_dir=".duo/pr-loop/$timestamp"
         mkdir -p "$loop_dir"
 
         cat > "$loop_dir/state.md" << EOF

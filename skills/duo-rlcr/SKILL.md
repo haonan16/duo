@@ -1,17 +1,17 @@
 ---
-name: humanize-rlcr
+name: duo-rlcr
 description: Start RLCR (Ralph-Loop with Codex Review) with hook-equivalent enforcement from skill mode by reusing the existing stop-hook logic.
 type: flow
 user-invocable: false
 ---
 
-# Humanize RLCR Loop (Hook-Equivalent)
+# Duo RLCR Loop (Hook-Equivalent)
 
 Use this flow to run RLCR in environments without native hooks.  
 Do not re-implement review logic manually. Always call the RLCR stop gate wrapper:
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh"
+"{{DUO_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh"
 ```
 
 The wrapper executes `hooks/loop-codex-stop-hook.sh`, so skill-mode behavior stays aligned with hook-mode behavior.
@@ -21,10 +21,10 @@ The wrapper executes `hooks/loop-codex-stop-hook.sh`, so skill-mode behavior sta
 The installer hydrates this skill with an absolute runtime root path:
 
 ```bash
-{{HUMANIZE_RUNTIME_ROOT}}
+{{DUO_RUNTIME_ROOT}}
 ```
 
-All commands below assume `{{HUMANIZE_RUNTIME_ROOT}}`.
+All commands below assume `{{DUO_RUNTIME_ROOT}}`.
 
 ## Required Sequence
 
@@ -33,7 +33,7 @@ All commands below assume `{{HUMANIZE_RUNTIME_ROOT}}`.
 Start the loop with the setup script:
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/setup-rlcr-loop.sh" $ARGUMENTS
+"{{DUO_RUNTIME_ROOT}}/scripts/setup-rlcr-loop.sh" $ARGUMENTS
 ```
 
 If setup exits non-zero, stop and report the error.
@@ -42,16 +42,16 @@ If setup exits non-zero, stop and report the error.
 
 For each round:
 
-1. Read current loop prompt from `.humanize/rlcr/<timestamp>/round-<N>-prompt.md` (or `finalize` prompt files when in finalize phase).
+1. Read current loop prompt from `.duo/rlcr/<timestamp>/round-<N>-prompt.md` (or `finalize` prompt files when in finalize phase).
 2. Implement required changes.
 3. Commit changes.
 4. Write required summary file:
-   - Normal phase: `.humanize/rlcr/<timestamp>/round-<N>-summary.md`
-   - Finalize phase: `.humanize/rlcr/<timestamp>/finalize-summary.md`
+   - Normal phase: `.duo/rlcr/<timestamp>/round-<N>-summary.md`
+   - Finalize phase: `.duo/rlcr/<timestamp>/finalize-summary.md`
 5. Run gate command:
 
 ```bash
-GATE_CMD=("{{HUMANIZE_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh")
+GATE_CMD=("{{DUO_RUNTIME_ROOT}}/scripts/rlcr-stop-gate.sh")
 [[ -n "${CLAUDE_SESSION_ID:-}" ]] && GATE_CMD+=(--session-id "$CLAUDE_SESSION_ID")
 [[ -n "${CLAUDE_TRANSCRIPT_PATH:-}" ]] && GATE_CMD+=(--transcript-path "$CLAUDE_TRANSCRIPT_PATH")
 "${GATE_CMD[@]}"
@@ -114,17 +114,17 @@ Review phase `codex review` runs with `gpt-5.4:high`.
 
 ```bash
 # Start with plan file
-/flow:humanize-rlcr path/to/plan.md
+/flow:duo-rlcr path/to/plan.md
 
 # Review-only mode
-/flow:humanize-rlcr --skip-impl
+/flow:duo-rlcr --skip-impl
 
 # Load skill without auto-execution
-/skill:humanize-rlcr
+/skill:duo-rlcr
 ```
 
 ## Cancel
 
 ```bash
-"{{HUMANIZE_RUNTIME_ROOT}}/scripts/cancel-rlcr-loop.sh"
+"{{DUO_RUNTIME_ROOT}}/scripts/cancel-rlcr-loop.sh"
 ```

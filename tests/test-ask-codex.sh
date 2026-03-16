@@ -171,11 +171,11 @@ else
 fi
 
 # Test: successful run creates output.md in skill dir
-SKILL_DIRS_BEFORE=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+SKILL_DIRS_BEFORE=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
 reset_mock
 export MOCK_CODEX_STDOUT="Test output for file"
 run_ask_codex "file test" > /dev/null 2>&1
-SKILL_DIRS_AFTER=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+SKILL_DIRS_AFTER=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
 NEW_DIR=$(comm -13 <(echo "$SKILL_DIRS_BEFORE") <(echo "$SKILL_DIRS_AFTER") | head -1)
 if [[ -n "$NEW_DIR" ]] && [[ -f "$NEW_DIR/output.md" ]] && grep -q "Test output for file" "$NEW_DIR/output.md"; then
     pass "successful run creates output.md with codex response"
@@ -229,7 +229,7 @@ else
 fi
 
 # Test: codex error creates metadata with status: error
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && [[ -f "$LATEST_DIR/metadata.md" ]] && grep -q "status: error" "$LATEST_DIR/metadata.md"; then
     pass "codex error creates metadata with status: error"
 else
@@ -248,7 +248,7 @@ else
 fi
 
 # Test: empty response creates metadata with status: empty_response
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && [[ -f "$LATEST_DIR/metadata.md" ]] && grep -q "status: empty_response" "$LATEST_DIR/metadata.md"; then
     pass "empty response creates metadata with status: empty_response"
 else
@@ -267,7 +267,7 @@ else
 fi
 
 # Test: timeout creates metadata with status: timeout
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && [[ -f "$LATEST_DIR/metadata.md" ]] && grep -q "status: timeout" "$LATEST_DIR/metadata.md"; then
     pass "timeout creates metadata with status: timeout"
 else
@@ -283,7 +283,7 @@ echo "--- Directory Uniqueness Tests ---"
 echo ""
 
 # Test: two rapid calls produce different skill directories
-DIRS_BEFORE=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+DIRS_BEFORE=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
 
 reset_mock
 export MOCK_CODEX_STDOUT="call-concurrent"
@@ -294,7 +294,7 @@ PID2=$!
 wait "$PID1" 2>/dev/null || true
 wait "$PID2" 2>/dev/null || true
 
-DIRS_AFTER=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+DIRS_AFTER=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
 NEW_DIRS=$(comm -13 <(echo "$DIRS_BEFORE") <(echo "$DIRS_AFTER"))
 NEW_DIR_COUNT=$(echo "$NEW_DIRS" | grep -c . || true)
 
@@ -305,7 +305,7 @@ else
 fi
 
 # Test: cache directories are also unique
-CACHE_BASE="$TEST_DIR/cache/humanize"
+CACHE_BASE="$TEST_DIR/cache/duo"
 if [[ -d "$CACHE_BASE" ]]; then
     CACHE_DIRS=$(find "$CACHE_BASE" -maxdepth 2 -mindepth 2 -type d -name "skill-*" 2>/dev/null | sort)
     CACHE_DIR_COUNT=$(echo "$CACHE_DIRS" | grep -c . || true)
@@ -330,7 +330,7 @@ echo ""
 reset_mock
 export MOCK_CODEX_STDOUT="model-test"
 run_ask_codex --codex-model "custom-model:high" "model test" > /dev/null 2>&1
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && grep -q "Model: custom-model" "$LATEST_DIR/input.md" && grep -q "Effort: high" "$LATEST_DIR/input.md"; then
     pass "--codex-model MODEL:EFFORT parses model and effort"
 else
@@ -341,7 +341,7 @@ fi
 reset_mock
 export MOCK_CODEX_STDOUT="effort-default-test"
 run_ask_codex --codex-model "solo-model" "effort default test" > /dev/null 2>&1
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && grep -q "Model: solo-model" "$LATEST_DIR/input.md" && grep -q "Effort: xhigh" "$LATEST_DIR/input.md"; then
     pass "--codex-model MODEL without effort uses default xhigh"
 else
@@ -352,7 +352,7 @@ fi
 reset_mock
 export MOCK_CODEX_STDOUT="separator-test"
 run_ask_codex -- --not-a-flag "is question" > /dev/null 2>&1
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && grep -qF -- "--not-a-flag" "$LATEST_DIR/input.md"; then
     pass "-- separator passes remaining args as question text"
 else
@@ -363,7 +363,7 @@ fi
 reset_mock
 export MOCK_CODEX_STDOUT="timeout-val"
 run_ask_codex --codex-timeout 123 "timeout value test" > /dev/null 2>&1
-LATEST_DIR=$(find "$MOCK_PROJECT/.humanize/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
+LATEST_DIR=$(find "$MOCK_PROJECT/.duo/skill" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)
 if [[ -n "$LATEST_DIR" ]] && grep -q "Timeout: 123s" "$LATEST_DIR/input.md"; then
     pass "--codex-timeout value is recorded in input.md"
 else
