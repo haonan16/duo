@@ -443,7 +443,7 @@ Report: "Starting code review (skipping implementation)..."
 ### Case 2: No file argument provided
 
 Check for an existing loop state in the project:
-1. Look for `.duo/loop/*/state.md` (active loop state)
+1. Look for `.duo/rlcr/*/state.md` (active loop state -- on-disk path is `.duo/rlcr/`, not `.duo/loop/`)
 2. If found, report: "An active loop is already running. Use `/duo:stop` to cancel it first."
 3. If not found, report: "No file provided. Usage: `/duo:start <file.md>` or see `/duo:help` for all commands."
 
@@ -619,9 +619,33 @@ for tool in codex jq git gh; do
     fi
 done
 
+# --- scripts/setup.sh tests ---
+
+# Test 12: Standalone setup script exists and is executable
+STANDALONE_SETUP="$PROJECT_ROOT/scripts/setup.sh"
+if [[ -x "$STANDALONE_SETUP" ]]; then
+    pass "setup.sh exists and is executable"
+else
+    fail "setup.sh missing or not executable"
+fi
+
+# Test 13: Standalone script calls setup-environment.sh
+if grep -q 'setup-environment.sh' "$STANDALONE_SETUP"; then
+    pass "setup.sh calls setup-environment.sh"
+else
+    fail "setup.sh does not call setup-environment.sh"
+fi
+
+# Test 14: Standalone script has interactive prompts
+if grep -q 'read -r' "$STANDALONE_SETUP"; then
+    pass "setup.sh has interactive prompts"
+else
+    fail "setup.sh missing interactive prompts"
+fi
+
 # --- commands/setup.md tests ---
 
-# Test 12: Command file exists
+# Test 15: Command file exists
 if [[ -f "$SETUP_CMD" ]]; then
     pass "setup.md exists"
 else
@@ -1031,7 +1055,7 @@ git commit -m "feat: add /duo:setup command and standalone setup script"
 
 ## Task 4: Rename user-facing "rlcr" to "loop"
 
-Rename the state directory from `.duo/rlcr/` to `.duo/loop/` and update the monitor command from `duo monitor rlcr` to `duo monitor` (with `--pr` flag for PR loops).
+Replace user-facing "RLCR" terminology with "loop" in commands, docs, and monitor CLI. On-disk paths stay unchanged.
 
 **Files:**
 - Modify: `scripts/duo.sh` (monitor entry point: add default subcommand and --pr flag)
@@ -1056,7 +1080,7 @@ Rename the state directory from `.duo/rlcr/` to `.duo/loop/` and update the moni
 
 Update all `commands/*.md` files that contain user-facing "RLCR" text:
 - `commands/stop.md`: Change `description: "Cancel active RLCR loop"` to `description: "Cancel active development loop"`, change `# Cancel RLCR Loop` to `# Cancel Development Loop`, change "No active RLCR loop found" to "No active loop found"
-- `commands/pr-stop.md`: Change `.duo/rlcr/` to `.duo/loop/` and "RLCR loops" to "development loops"
+- `commands/pr-stop.md`: Change "RLCR loops" to "development loops" (keep the `.duo/rlcr/` path reference as-is since it is the real on-disk path)
 - `commands/run.md`: Change `# Start RLCR Loop` to `# Start Development Loop` and any user-facing "RLCR" in descriptions (keep internal references like `setup-rlcr-loop.sh` since those are script names)
 
 **Step 2c: Add dual-read migration for in-flight loops**
@@ -1097,10 +1121,14 @@ Expected: All tests pass. If any fail, fix them -- the failures will be from har
 
 **Step 5: Verify no user-facing "RLCR" remains in docs and commands**
 
-Run: `grep -ri 'rlcr' commands/ docs/ README.md | grep -v 'docs/plans/'`
-Expected: No matches. All user-facing text should say "loop" or "development loop" instead of "RLCR".
+Run: `grep -ri 'rlcr' commands/ docs/ README.md | grep -v 'docs/plans/' | grep -v 'setup-rlcr-loop\|cancel-rlcr-loop\|rlcr-stop-gate' | grep -v '\.duo/rlcr'`
+Expected: No matches. All user-facing descriptive text should say "loop" or "development loop" instead of "RLCR".
 
-Internal files (hooks/, scripts/, tests/, skills/) will still contain "rlcr" in variable names, script filenames, and `.duo/rlcr` paths -- this is expected and correct.
+Allowed exceptions in commands/*.md (filtered out above):
+- Internal script names like `setup-rlcr-loop.sh`, `cancel-rlcr-loop.sh`, `rlcr-stop-gate.sh` in allowed-tools frontmatter and bash invocations
+- On-disk path `.duo/rlcr/` references (the real storage path)
+
+Internal files (hooks/, scripts/, tests/, skills/) are not checked -- they will still contain "rlcr" throughout.
 
 **Step 6: Commit**
 
