@@ -12,10 +12,10 @@ Start Claude Code and run:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add git@github.com:duo-dev/duo.git
+/plugin marketplace add haonan16/duo
 
 # Install the plugin
-/plugin install duo@duo-dev
+/plugin install duo@haonan16
 ```
 
 ## Option 2: Local Development
@@ -31,7 +31,7 @@ claude --plugin-dir /path/to/duo
 The `dev` branch contains experimental features that are not yet released to `main`. To try them locally:
 
 ```bash
-git clone https://github.com/duo-dev/duo.git
+git clone https://github.com/haonan16/duo.git
 cd duo
 git checkout dev
 ```
@@ -66,7 +66,7 @@ Add the monitoring helper to your shell for real-time progress tracking:
 
 ```bash
 # Add to your .bashrc or .zshrc
-source ~/.claude/plugins/cache/duo-dev/duo/<LATEST.VERSION>/scripts/duo.sh
+source ~/.claude/plugins/cache/haonan16/duo/<LATEST.VERSION>/scripts/duo.sh
 ```
 
 Then use:

@@ -154,7 +154,7 @@ Set up the monitoring helper for real-time progress tracking:
 
 ```bash
 # Add to your .bashrc or .zshrc
-source ~/.claude/plugins/cache/duo-dev/duo/<LATEST.VERSION>/scripts/duo.sh
+source ~/.claude/plugins/cache/haonan16/duo/<LATEST.VERSION>/scripts/duo.sh
 
 # Monitor development loop progress
 duo monitor

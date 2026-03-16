@@ -1,12 +1,12 @@
 {
   "name": "duo",
   "description": "Duo - An iterative development plugin that uses Codex to review Claude's work. Creates a feedback loop where Claude implements plans and Codex independently reviews progress, ensuring quality through continuous refinement.",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "author": {
-    "name": "duo-dev"
+    "name": "haonan16"
   },
-  "repository": "https://github.com/duo-dev/duo",
-  "homepage": "https://github.com/duo-dev/duo#readme",
+  "repository": "https://github.com/haonan16/duo",
+  "homepage": "https://github.com/haonan16/duo#readme",
   "license": "MIT",
   "keywords": [
     "iterative-development",

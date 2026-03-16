@@ -1,6 +1,6 @@
 # Duo
 
-**Current Version: 1.17.0**
+**Current Version: 1.18.0**
 
 > Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 
@@ -27,12 +27,12 @@ The loop has two phases: **Implementation** (Claude works, Codex reviews summari
 ## Install
 
 ```bash
-# Add duo-dev marketplace
-/plugin marketplace add duo-dev/duo
+# Add haonan16 marketplace
+/plugin marketplace add haonan16/duo
 # If you want to use development branch for experimental features
-/plugin marketplace add duo-dev/duo#dev
+/plugin marketplace add haonan16/duo#dev
 # Then install duo plugin
-/plugin install duo@duo-dev
+/plugin install duo@haonan16
 ```
 
 Requires [codex CLI](https://github.com/openai/codex) for review. See the full [Installation Guide](docs/install-for-claude.md) for prerequisites and alternative setup options.

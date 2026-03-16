@@ -7,7 +7,7 @@ This guide explains how to install the Duo skills for Codex skill runtime (`$COD
 One-line install from anywhere:
 
 ```bash
-tmp_dir="$(mktemp -d)" && git clone --depth 1 https://github.com/duo-dev/duo.git "$tmp_dir/duo" && "$tmp_dir/duo/scripts/install-skills-codex.sh"
+tmp_dir="$(mktemp -d)" && git clone --depth 1 https://github.com/haonan16/duo.git "$tmp_dir/duo" && "$tmp_dir/duo/scripts/install-skills-codex.sh"
 ```
 
 From the Duo repo root:
