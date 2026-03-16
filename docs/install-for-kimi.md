@@ -111,7 +111,7 @@ Look for the "Skills" section in the help output.
 /skill:duo-gen-plan
 ```
 
-#### 2. Start RLCR development loop
+#### 2. Start development loop
 
 ```bash
 # Start with plan file
@@ -135,7 +135,7 @@ Look for the "Skills" section in the help output.
 
 ## Command Options
 
-### RLCR Loop Options
+### Development Loop Options
 
 | Option | Description | Default |
 |--------|-------------|---------|

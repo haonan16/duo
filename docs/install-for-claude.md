@@ -67,8 +67,8 @@ source ~/.claude/plugins/cache/duo-dev/duo/<LATEST.VERSION>/scripts/duo.sh
 Then use:
 
 ```bash
-duo monitor rlcr   # Monitor RLCR loop
-duo monitor pr     # Monitor PR loop
+duo monitor        # Monitor development loop
+duo monitor --pr   # Monitor PR loop
 ```
 
 ## Other Install Guides

@@ -1110,22 +1110,22 @@ duo() {
             local target="$1"
             shift 2>/dev/null || true
             case "$target" in
-                rlcr)
+                ""|rlcr)
                     _duo_monitor_codex "$@"
                     ;;
-                pr)
+                --pr|pr)
                     _duo_monitor_pr "$@"
                     ;;
-                skill)
+                --skill|skill)
                     _duo_monitor_skill "$@"
                     ;;
-                *)
-                    echo "Usage: duo monitor <rlcr|pr|skill>"
+                -h|--help|*)
+                    echo "Usage: duo monitor [--pr|--skill]"
                     echo ""
                     echo "Subcommands:"
-                    echo "  rlcr    Monitor the latest RLCR loop log from .duo/rlcr"
-                    echo "  pr      Monitor the latest PR loop from .duo/pr-loop"
-                    echo "  skill   Monitor ask-codex skill invocations from .duo/skill"
+                    echo "  (none)    Monitor the latest development loop from .duo/rlcr"
+                    echo "  --pr      Monitor the latest PR loop from .duo/pr-loop"
+                    echo "  --skill   Monitor ask-codex skill invocations from .duo/skill"
                     echo ""
                     echo "Features:"
                     echo "  - Fixed status bar showing session info, round progress, model config"
@@ -1140,9 +1140,9 @@ duo() {
             echo "Usage: duo <command> [args]"
             echo ""
             echo "Commands:"
-            echo "  monitor rlcr    Monitor the latest RLCR loop log"
-            echo "  monitor pr      Monitor the latest PR loop"
-            echo "  monitor skill   Monitor ask-codex skill invocations"
+            echo "  monitor          Monitor the latest development loop"
+            echo "  monitor --pr     Monitor the latest PR loop"
+            echo "  monitor --skill  Monitor ask-codex skill invocations"
             return 1
             ;;
     esac

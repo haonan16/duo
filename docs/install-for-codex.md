@@ -25,7 +25,7 @@ Or use the unified installer directly:
 This will:
 - Sync `duo`, `duo-gen-plan`, and `duo-rlcr` into `${CODEX_HOME:-~/.codex}/skills`
 - Copy runtime dependencies into `${CODEX_HOME:-~/.codex}/skills/duo`
-- Use RLCR defaults: `codex exec` with `gpt-5.4:xhigh`, `codex review` with `gpt-5.4:high`
+- Use development loop defaults: `codex exec` with `gpt-5.4:xhigh`, `codex review` with `gpt-5.4:high`
 
 ## Verify
 

@@ -8,7 +8,7 @@ allowed-tools:
 hide-from-slash-command-tool: "true"
 ---
 
-# Start RLCR Loop
+# Start Development Loop
 
 ## Plan Compliance Pre-Check
 
@@ -52,7 +52,7 @@ If any condition fails, skip the pre-check and let the setup script handle path 
 3. **Parse the result** (fail-closed):
    - If output contains `PASS`: continue to setup script below
    - If output contains `FAIL_RELEVANCE`: report "Plan compliance check failed: the plan does not appear to be related to this repository." Show the reason. **Stop the command.**
-   - If output contains `FAIL_BRANCH_SWITCH`: report "Plan compliance check failed: the plan contains branch-switching instructions, which are incompatible with RLCR. The RLCR loop requires the working branch to remain constant across all rounds." Show the details. **Stop the command.**
+   - If output contains `FAIL_BRANCH_SWITCH`: report "Plan compliance check failed: the plan contains branch-switching instructions, which are incompatible with the development loop. The loop requires the working branch to remain constant across all rounds." Show the details. **Stop the command.**
    - If output contains none of the above (malformed): report "Plan compliance check produced unexpected output. Cannot proceed." **Stop the command.**
 
 ---
@@ -111,7 +111,7 @@ This loop uses a **Goal Tracker** to prevent goal drift across iterations:
 
 ## Two-Phase System
 
-The RLCR loop has two phases within the active loop:
+The development loop has two phases within the active loop:
 
 1. **Implementation Phase**: Work on the plan, Codex reviews your summary
 2. **Review Phase**: After COMPLETE, `codex review` checks code quality with `[P0-9]` severity markers
@@ -133,6 +133,6 @@ In this mode:
 - Useful for reviewing existing changes without an implementation plan
 
 This is helpful when you want to:
-- Review code changes made outside of an RLCR loop
+- Review code changes made outside of a development loop
 - Get code quality feedback on existing work
 - Skip the implementation tracking overhead for simple tasks

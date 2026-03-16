@@ -1,10 +1,10 @@
 ---
-description: "Cancel active RLCR loop"
+description: "Cancel active development loop"
 allowed-tools: ["Bash(${CLAUDE_PLUGIN_ROOT}/scripts/cancel-rlcr-loop.sh)", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/cancel-rlcr-loop.sh --force)", "AskUserQuestion"]
 hide-from-slash-command-tool: "true"
 ---
 
-# Cancel RLCR Loop
+# Cancel Development Loop
 
 To cancel the active loop:
 
@@ -15,7 +15,7 @@ To cancel the active loop:
 ```
 
 2. Check the first line of output:
-   - **NO_LOOP** or **NO_ACTIVE_LOOP**: Say "No active RLCR loop found."
+   - **NO_LOOP** or **NO_ACTIVE_LOOP**: Say "No active loop found."
    - **CANCELLED**: Report the cancellation message from the output
    - **CANCELLED_FINALIZE**: Report the cancellation message from the output
    - **FINALIZE_NEEDS_CONFIRM**: The loop is in Finalize Phase. Continue to step 3

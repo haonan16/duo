@@ -139,7 +139,7 @@ OPTIONS:
 ```
 
 The ask-codex skill sends a one-shot question or task to Codex and returns the response
-inline. Unlike the RLCR loop, this is a single consultation without iteration -- useful
+inline. Unlike the development loop, this is a single consultation without iteration -- useful
 for getting a second opinion, reviewing a design, or asking domain-specific questions.
 
 Responses are saved to `.duo/skill/<timestamp>/` with `input.md`, `output.md`,
@@ -153,18 +153,18 @@ Set up the monitoring helper for real-time progress tracking:
 # Add to your .bashrc or .zshrc
 source ~/.claude/plugins/cache/duo-dev/duo/<LATEST.VERSION>/scripts/duo.sh
 
-# Monitor RLCR loop progress
-duo monitor rlcr
+# Monitor development loop progress
+duo monitor
 
 # Monitor PR loop progress
-duo monitor pr
+duo monitor --pr
 ```
 
 Progress data is stored in `.duo/rlcr/<timestamp>/` for each loop session.
 
 ## Cancellation
 
-- **RLCR loop**: `/duo:stop`
+- **Development loop**: `/duo:stop`
 - **PR loop**: `/duo:pr-stop`
 
 ## Environment Variables
