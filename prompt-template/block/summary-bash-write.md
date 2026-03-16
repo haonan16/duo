@@ -6,3 +6,5 @@ Do not use Bash commands to modify summary files.
 
 Bash commands like cat, echo, sed, awk, etc. bypass the validation hooks.
 Please use the proper tools to ensure correct round number validation.
+
+Tip: Write summaries only to the designated summary file.

@@ -10,3 +10,5 @@ The state file contains:
 - Polling settings
 
 Modifying it would corrupt the PR loop state.
+
+Tip: Use /duo:pr-stop to cancel the PR loop.

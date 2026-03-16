@@ -131,7 +131,7 @@ fi
 FILENAME=$(basename "$FILE_PATH")
 if [[ "$FILENAME" == "plan.md" ]]; then
     if [[ "$FILE_PATH" == *"/.duo/rlcr/"* ]]; then
-        FALLBACK="Editing plan.md backup is not allowed during RLCR loop."
+        FALLBACK="Editing plan.md backup is not allowed during the development loop. Tip: The plan file is read-only during the loop."
         REASON=$(load_and_render_safe "$TEMPLATE_DIR" "block/plan-backup-protected.md" "$FALLBACK")
         echo "$REASON" >&2
         exit 2

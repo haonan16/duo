@@ -10,3 +10,5 @@ If you need to change the plan:
 3. Start a new session: `/duo:run {{PLAN_FILE}}`
 
 Backup available at: `{{BACKUP_PATH}}`
+
+Tip: The plan file is read-only during the loop.

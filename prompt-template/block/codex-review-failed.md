@@ -16,3 +16,5 @@ The Codex review process failed to produce output.
 ```
 
 Please check the debug files for more details. The system will attempt another review when you exit.
+
+Tip: Use /duo:stop to cancel the active loop if this persists.

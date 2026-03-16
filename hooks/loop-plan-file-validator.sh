@@ -59,7 +59,7 @@ START_BRANCH="$STATE_START_BRANCH"
 # Helper function to output schema validation error
 schema_validation_error() {
     local field_name="$1"
-    local fallback="RLCR loop state file is missing required field: \`${field_name}\`\n\nThis indicates the loop was started with an older version of duo.\n\n**Options:**\n1. Cancel the loop: \`/duo:stop\`\n2. Update duo plugin to version 1.1.2+\n3. Restart the RLCR loop with the updated plugin"
+    local fallback="Loop state file is missing required field: \`${field_name}\`\n\nThis indicates the loop was started with an older version of duo.\n\n**Options:**\n1. Cancel the loop: \`/duo:stop\`\n2. Update duo plugin to version 1.1.2+\n3. Restart the loop with the updated plugin\n\nTip: Cancel the loop with /duo:stop and start a new one."
 
     local reason
     reason=$(load_and_render_safe "$TEMPLATE_DIR" "block/schema-outdated.md" "$fallback" "FIELD_NAME=$field_name")
@@ -99,7 +99,7 @@ if [[ $GIT_EXIT_CODE -ne 0 || -z "$CURRENT_BRANCH" ]]; then
     cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation failed or timed out.\\n\\nCannot verify branch consistency. Please check git status and try again."
+  "reason": "Git operation failed or timed out.\\n\\nCannot verify branch consistency. Please check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
     exit 0
@@ -108,7 +108,7 @@ if [[ -n "$START_BRANCH" && "$CURRENT_BRANCH" != "$START_BRANCH" ]]; then
     cat << EOF
 {
   "decision": "block",
-  "reason": "Git branch has changed during RLCR loop.\\n\\nStarted on: $START_BRANCH\\nCurrent: $CURRENT_BRANCH\\n\\nBranch switching is not allowed during an active RLCR loop. Please switch back to the original branch or cancel the loop with /duo:stop"
+  "reason": "Git branch has changed during the development loop.\\n\\nStarted on: $START_BRANCH\\nCurrent: $CURRENT_BRANCH\\n\\nBranch switching is not allowed during an active loop. Please switch back to the original branch or cancel the loop with /duo:stop\\n\\nTip: Switch back to the original branch or cancel with /duo:stop."
 }
 EOF
     exit 0
@@ -131,7 +131,7 @@ if [[ "$PLAN_TRACKED" == "true" ]]; then
         cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation timed out while checking plan file tracking status.\\n\\nPlease check git status and try again."
+  "reason": "Git operation timed out while checking plan file tracking status.\\n\\nPlease check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
         exit 0
@@ -140,7 +140,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation failed while checking plan file tracking status (exit code: $LS_FILES_EXIT).\\n\\nPlease check git status and try again."
+  "reason": "Git operation failed while checking plan file tracking status (exit code: $LS_FILES_EXIT).\\n\\nPlease check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
         exit 0
@@ -156,7 +156,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation timed out while checking plan file status.\\n\\nPlease check git status and try again."
+  "reason": "Git operation timed out while checking plan file status.\\n\\nPlease check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
         exit 0
@@ -165,7 +165,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation failed while checking plan file status (exit code: $STATUS_EXIT).\\n\\nPlease check git status and try again."
+  "reason": "Git operation failed while checking plan file status (exit code: $STATUS_EXIT).\\n\\nPlease check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
         exit 0
@@ -175,7 +175,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Plan file is no longer tracked in git.\\n\\nFile: $PLAN_FILE\\n\\nThis RLCR loop was started with --track-plan-file, but the plan file has been removed from git tracking."
+  "reason": "Plan file is no longer tracked in git.\\n\\nFile: $PLAN_FILE\\n\\nThis loop was started with --track-plan-file, but the plan file has been removed from git tracking.\\n\\nTip: The plan file is read-only during the loop."
 }
 EOF
         exit 0
@@ -185,7 +185,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Plan file has uncommitted modifications.\\n\\nFile: $PLAN_FILE\\nStatus: $PLAN_GIT_STATUS\\n\\nThis RLCR loop was started with --track-plan-file. Plan file modifications are not allowed during the loop."
+  "reason": "Plan file has uncommitted modifications.\\n\\nFile: $PLAN_FILE\\nStatus: $PLAN_GIT_STATUS\\n\\nThis loop was started with --track-plan-file. Plan file modifications are not allowed during the loop.\\n\\nTip: The plan file is read-only during the loop."
 }
 EOF
         exit 0
@@ -201,7 +201,7 @@ else
         cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation timed out while checking plan file tracking status.\\n\\nPlease check git status and try again."
+  "reason": "Git operation timed out while checking plan file tracking status.\\n\\nPlease check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
         exit 0
@@ -210,7 +210,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Git operation failed while checking plan file tracking status (exit code: $LS_FILES_EXIT).\\n\\nPlease check git status and try again."
+  "reason": "Git operation failed while checking plan file tracking status (exit code: $LS_FILES_EXIT).\\n\\nPlease check git status and try again.\\n\\nTip: Check git status and try again."
 }
 EOF
         exit 0
@@ -221,7 +221,7 @@ EOF
         cat << EOF
 {
   "decision": "block",
-  "reason": "Plan file is now tracked in git but loop was started without --track-plan-file.\\n\\nFile: $PLAN_FILE\\n\\nThe plan file must remain gitignored during this RLCR loop."
+  "reason": "Plan file is now tracked in git but loop was started without --track-plan-file.\\n\\nFile: $PLAN_FILE\\n\\nThe plan file must remain gitignored during this loop.\\n\\nTip: The plan file is read-only during the loop."
 }
 EOF
         exit 0

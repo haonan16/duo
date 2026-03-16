@@ -23,3 +23,5 @@ Use this format:
 ```
 
 Codex will review your request and update the Goal Tracker if the changes are justified.
+
+Tip: The goal tracker is managed by the loop system.

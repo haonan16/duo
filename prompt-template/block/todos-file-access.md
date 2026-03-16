@@ -6,3 +6,5 @@ Do NOT create or access `round-*-todos.md` files.
 
 The native task tools provide proper state tracking visible in the UI and
 integration with Claude Code's task management system.
+
+Tip: Use TaskCreate and TaskUpdate for task tracking during the loop.

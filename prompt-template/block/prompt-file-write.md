@@ -10,3 +10,5 @@ You cannot modify your own instructions. Your job is to:
 3. Write your results to the summary file
 
 If the prompt contains errors, document this in your summary file.
+
+Tip: Prompt files are read-only during the loop.

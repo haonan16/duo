@@ -16,3 +16,5 @@ You are in **Round 0** and the Goal Tracker has not been properly initialized.
 **IMPORTANT**: The IMMUTABLE SECTION can only be set in Round 0. After this round, it becomes read-only.
 
 After updating the Goal Tracker, you may attempt to exit again.
+
+Tip: The goal tracker is managed by the loop system.

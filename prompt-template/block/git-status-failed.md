@@ -8,3 +8,5 @@ Cannot verify repository state. This may indicate:
 - Large repository causing slow operations
 
 Please check git status manually and try again.
+
+Tip: Check git status and try again.

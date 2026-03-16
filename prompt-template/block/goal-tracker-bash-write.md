@@ -6,3 +6,5 @@ Do not use Bash commands to modify goal-tracker.md.
 
 Bash commands like cat, echo, sed, awk, etc. bypass the validation hooks.
 Please use the proper tools to modify the Goal Tracker.
+
+Tip: The goal tracker is managed by the loop system.

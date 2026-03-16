@@ -14,3 +14,5 @@ The summary should include:
 - Any remaining items
 
 After writing the summary, you may attempt to exit again.
+
+Tip: Write summaries only to the designated summary file.

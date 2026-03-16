@@ -98,8 +98,10 @@ if [[ -n "$ACTIVE_LOOP_DIR" ]]; then
         if [[ "$COMMAND_LOWER" =~ ^[[:space:]]*git[[:space:]]+push ]]; then
             FALLBACK="# Git Push Blocked
 
-Commits should stay local during the RLCR loop.
-Use --push-every-round flag when starting the loop if you need to push each round."
+Commits should stay local during the development loop.
+Use --push-every-round flag when starting the loop if you need to push each round.
+
+Tip: Use /duo:stop to cancel the active loop."
             load_and_render_safe "$TEMPLATE_DIR" "block/git-push.md" "$FALLBACK" >&2
             exit 2
         fi
@@ -334,7 +336,7 @@ fi
 # Use command_modifies_file helper for consistent pattern matching
 
 if command_modifies_file "$COMMAND_LOWER" "\.duo/rlcr(/[^/]+)?/plan\.md"; then
-    FALLBACK="Writing to plan.md backup is not allowed during RLCR loop."
+    FALLBACK="Writing to plan.md backup is not allowed during the development loop. Tip: The plan file is read-only during the loop."
     REASON=$(load_and_render_safe "$TEMPLATE_DIR" "block/plan-backup-protected.md" "$FALLBACK")
     echo "$REASON" >&2
     exit 2

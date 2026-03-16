@@ -10,3 +10,5 @@ git push origin {{CURRENT_BRANCH}}
 ```
 
 After pushing all commits, you may attempt to exit again.
+
+Tip: Push your commits before the loop can proceed.

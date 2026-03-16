@@ -179,14 +179,16 @@ fi
 # If schema is outdated, terminate loop as unexpected
 
 if [[ -z "$PLAN_TRACKED" || -z "$START_BRANCH" ]]; then
-    REASON="RLCR loop state file is missing required fields (plan_tracked or start_branch).
+    REASON="Loop state file is missing required fields (plan_tracked or start_branch).
 
 This indicates the loop was started with an older version of duo.
 
 **Options:**
 1. Cancel the loop: \`/duo:stop\`
 2. Update duo plugin to version 1.1.2+
-3. Restart the RLCR loop with the updated plugin"
+3. Restart the loop with the updated plugin
+
+Tip: Cancel the loop with /duo:stop and start a new one."
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
     exit 0
@@ -198,28 +200,32 @@ fi
 # Validate review_started and base_branch fields for v1.5.0+ state files
 
 if [[ -z "$REVIEW_STARTED" || ( "$REVIEW_STARTED" != "true" && "$REVIEW_STARTED" != "false" ) ]]; then
-    REASON="RLCR loop state file is missing or has invalid review_started field.
+    REASON="Loop state file is missing or has invalid review_started field.
 
 This indicates the loop was started with an older version of duo (pre-1.5.0).
 
 **Options:**
 1. Cancel the loop: \`/duo:stop\`
 2. Update duo plugin to version 1.5.0+
-3. Restart the RLCR loop with the updated plugin"
+3. Restart the loop with the updated plugin
+
+Tip: Cancel the loop with /duo:stop and start a new one."
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated (missing review_started)" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
     exit 0
 fi
 
 if [[ -z "$BASE_BRANCH" ]]; then
-    REASON="RLCR loop state file is missing base_branch field.
+    REASON="Loop state file is missing base_branch field.
 
 This indicates the loop was started with an older version of duo (pre-1.5.0).
 
 **Options:**
 1. Cancel the loop: \`/duo:stop\`
 2. Update duo plugin to version 1.5.0+
-3. Restart the RLCR loop with the updated plugin"
+3. Restart the loop with the updated plugin
+
+Tip: Cancel the loop with /duo:stop and start a new one."
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated (missing base_branch)" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
     exit 0
@@ -235,7 +241,7 @@ if [[ -z "$RAW_FULL_REVIEW_ROUND" ]]; then
     echo "Note: State file missing full_review_round field (introduced in v1.5.2)." >&2
     echo "  Using default value: 5 (Full Alignment Checks at rounds 4, 9, 14, ...)" >&2
     echo "  To use configurable Full Alignment Check intervals, upgrade to duo v1.5.2+" >&2
-    echo "  and restart the RLCR loop with --full-review-round <N> option." >&2
+    echo "  and restart the loop with --full-review-round <N> option." >&2
 fi
 
 # ========================================
@@ -253,19 +259,23 @@ Cannot verify branch consistency. This may indicate:
 - Repository is in an invalid state
 - Network issues (if remote operations are involved)
 
-Please check git status manually and try again."
+Please check git status manually and try again.
+
+Tip: Check git status and try again."
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - git operation failed" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
     exit 0
 fi
 
 if [[ -n "$START_BRANCH" && "$CURRENT_BRANCH" != "$START_BRANCH" ]]; then
-    REASON="Git branch changed during RLCR loop.
+    REASON="Git branch changed during the development loop.
 
 Started on: $START_BRANCH
 Current: $CURRENT_BRANCH
 
-Branch switching is not allowed. Switch back to $START_BRANCH or cancel the loop."
+Branch switching is not allowed. Switch back to $START_BRANCH or cancel the loop.
+
+Tip: Switch back to the original branch or cancel with /duo:stop."
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - branch changed" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
     exit 0
@@ -305,7 +315,9 @@ if [[ ! -f "$FULL_PLAN_PATH" ]]; then
 Original: $PLAN_FILE
 Backup available at: $BACKUP_PLAN
 
-You can restore from backup if needed. Plan file modifications are not allowed during RLCR loop."
+You can restore from backup if needed. Plan file modifications are not allowed during the loop.
+
+Tip: The plan file is read-only during the loop."
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - plan file deleted" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
     exit 0
@@ -323,7 +335,9 @@ if [[ "$PLAN_TRACKED" == "true" ]]; then
 File: $PLAN_FILE
 Status: $PLAN_GIT_STATUS
 
-This RLCR loop was started with --track-plan-file. Plan file modifications are not allowed during the loop."
+This loop was started with --track-plan-file. Plan file modifications are not allowed during the loop.
+
+Tip: The plan file is read-only during the loop."
         jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - plan file modified (uncommitted)" \
             '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
         exit 0
@@ -334,9 +348,9 @@ fi
 if ! diff -q "$FULL_PLAN_PATH" "$BACKUP_PLAN" &>/dev/null; then
     FALLBACK="# Plan File Modified
 
-The plan file \`$PLAN_FILE\` has been modified since the RLCR loop started.
+The plan file \`$PLAN_FILE\` has been modified since the loop started.
 
-**Modifying plan files is forbidden during an active RLCR loop.**
+**Modifying plan files is forbidden during an active loop.**
 
 If you need to change the plan:
 1. Cancel the current loop: \`/duo:stop\`
@@ -375,7 +389,9 @@ if [[ -f "$TODO_CHECKER" ]]; then
 Error: $TODO_RESULT
 
 This may indicate an issue with the hook input or transcript format.
-Please try again or cancel the loop if this persists."
+Please try again or cancel the loop if this persists.
+
+Tip: Use /duo:stop to cancel the active loop."
         jq -n \
             --arg reason "$REASON" \
             --arg msg "Loop: Blocked - task checker parse error" \
@@ -769,7 +785,7 @@ NEXT_ROUND=$((CURRENT_ROUND + 1))
 # - Finalize Phase: already received COMPLETE from codex
 # - Review Phase: must continue until [P?] issues are cleared, regardless of iteration count
 if [[ "$IS_FINALIZE_PHASE" != "true" ]] && [[ "$REVIEW_STARTED" != "true" ]] && [[ $NEXT_ROUND -gt $MAX_ITERATIONS ]]; then
-    echo "RLCR loop did not complete, but reached max iterations ($MAX_ITERATIONS). Exiting." >&2
+    echo "Development loop did not complete, but reached max iterations ($MAX_ITERATIONS). Exiting." >&2
     end_loop "$LOOP_DIR" "$STATE_FILE" "$EXIT_MAXITER"
     exit 0
 fi
@@ -898,13 +914,15 @@ if ! command -v codex &>/dev/null; then
     REASON="# Codex Not Found
 
 The 'codex' command is not installed or not in PATH.
-RLCR loop requires Codex CLI to perform code reviews.
+The development loop requires Codex CLI to perform code reviews.
 
 **To fix:**
 1. Install Codex CLI: https://github.com/openai/codex
 2. Retry the exit
 
-Or use \`/duo:stop\` to end the loop."
+Or use \`/duo:stop\` to end the loop.
+
+Tip: Use /duo:stop to cancel the active loop."
 
     cat <<EOF
 {
@@ -1137,7 +1155,7 @@ You are now in the **Finalize Phase**. Use the \`code-simplifier:code-simplifier
 - Only perform functionality-equivalent code refactoring and simplification
 
 ## Focus
-Focus on the code changes made during this RLCR session. Focus more on changes between branch from {{BASE_BRANCH}} to {{START_BRANCH}}.
+Focus on the code changes made during this development loop session. Focus more on changes between branch from {{BASE_BRANCH}} to {{START_BRANCH}}.
 
 ## Before Exiting
 1. Complete all todos
@@ -1182,7 +1200,7 @@ continue_review_loop_with_issues() {
 
     local fallback="# Code Review Findings
 
-You are in the **Review Phase** of the RLCR loop. Codex has performed a code review and found issues.
+You are in the **Review Phase** of the development loop. Codex has performed a code review and found issues.
 
 ## Review Results
 
@@ -1347,7 +1365,9 @@ $details
 - Stdout: $CODEX_STDOUT_FILE
 - Stderr: $CODEX_STDERR_FILE
 
-Please retry or use \`/duo:stop\` to end the loop."
+Please retry or use \`/duo:stop\` to end the loop.
+
+Tip: Use /duo:stop to cancel the active loop if this persists."
 
     cat <<EOF
 {
@@ -1506,7 +1526,9 @@ This can happen if the state file was manually edited.
 **To fix:**
 Reset the state by canceling and restarting the loop.
 
-Use \`/duo:stop\` to end this loop."
+Use \`/duo:stop\` to end this loop.
+
+Tip: Use /duo:stop to cancel the active loop."
         jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - invalid review phase state" \
             '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
         exit 0

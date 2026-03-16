@@ -269,7 +269,9 @@ Please write your resolution summary to: $RESOLVE_FILE
 The summary should include:
 - Issues addressed
 - Files modified
-- Tests added (if any)"
+- Tests added (if any)
+
+Tip: Write summaries only to the designated summary file."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Resolution summary missing for round $PR_CURRENT_ROUND" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -287,7 +289,9 @@ if command -v git &>/dev/null && run_with_timeout "$GIT_TIMEOUT" git rev-parse -
     if [[ $GIT_EXIT -ne 0 ]]; then
         REASON="# Git Status Failed
 
-Git status operation failed. Please check your repository state and try again."
+Git status operation failed. Please check your repository state and try again.
+
+Tip: Check git status and try again."
         jq -n --arg reason "$REASON" --arg msg "PR Loop: Git status failed" \
             '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
         exit 0
@@ -304,7 +308,9 @@ You have uncommitted changes. Please commit all changes before exiting.
 Changes detected:
 \`\`\`
 $NON_DUO_STATUS
-\`\`\`"
+\`\`\`
+
+Tip: Check git status and try again."
         jq -n --arg reason "$REASON" --arg msg "PR Loop: Uncommitted changes detected" \
             '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
         exit 0
@@ -859,7 +865,9 @@ Before polling for bot reviews, you must comment on the PR to trigger the bots.
 gh pr comment $PR_NUMBER --body \"$PR_BOT_MENTION_STRING please review the latest changes\"
 \`\`\`
 
-Then try exiting again."
+Then try exiting again.
+
+Tip: Use /duo:pr-stop to cancel the PR loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Missing trigger comment" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1172,7 +1180,9 @@ This might mean:
    gh pr comment $PR_NUMBER --body \"$PR_BOT_MENTION_STRING please review the latest changes\"
    \`\`\`
 2. Wait and try exiting again
-3. Cancel the loop: \`/duo:pr-stop\`"
+3. Cancel the loop: \`/duo:pr-stop\`
+
+Tip: Use /duo:pr-stop to cancel the PR loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Bot review timeout" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1313,7 +1323,9 @@ PR loop requires Codex CLI to validate bot reviews.
 1. Install Codex CLI
 2. Retry the exit
 
-Or use \`/duo:pr-stop\` to cancel the loop."
+Or use \`/duo:pr-stop\` to cancel the loop.
+
+Tip: Use /duo:pr-stop to cancel the PR loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Codex not found" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1347,7 +1359,9 @@ if [[ $CODEX_EXIT_CODE -ne 0 ]]; then
 
 Codex failed to validate bot reviews (exit code: $CODEX_EXIT_CODE).
 
-Please retry or cancel the loop."
+Please retry or cancel the loop.
+
+Tip: Use /duo:pr-stop to cancel the PR loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Codex review failed" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1359,7 +1373,9 @@ if [[ ! -s "$CHECK_FILE" ]]; then
 
 Codex produced no output when validating bot reviews.
 
-Please retry or cancel the loop."
+Please retry or cancel the loop.
+
+Tip: Use /duo:pr-stop to cancel the PR loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Codex review empty" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1404,7 +1420,9 @@ Some bots haven't posted their reviews yet.
    \`\`\`
 3. Cancel the loop: \`/duo:pr-stop\`
 
-**Note:** The round counter will NOT advance until all expected bots respond."
+**Note:** The round counter will NOT advance until all expected bots respond.
+
+Tip: Use /duo:pr-stop to cancel the PR loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Waiting for bot responses" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'

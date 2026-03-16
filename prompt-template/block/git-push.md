@@ -7,3 +7,5 @@ If you need to push, use `--push-every-round` when starting the loop:
 ```
 /duo:run plan.md --push-every-round
 ```
+
+Tip: Use /duo:stop to cancel the active loop.

@@ -5,3 +5,5 @@ You are trying to {{ACTION}} `round-{{CLAUDE_ROUND}}-{{FILE_TYPE}}.md`, but the 
 **Correct path**: `{{CORRECT_PATH}}`
 
 Do NOT increment the round number yourself.
+
+Tip: The round number is managed by the loop system.

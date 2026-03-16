@@ -5,3 +5,5 @@ The `plan.md` file in the loop directory is a backup of the original plan file a
 This backup ensures plan integrity throughout the session.
 
 If you need to reference the plan, read it instead of modifying it.
+
+Tip: The plan file is read-only during the loop.

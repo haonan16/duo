@@ -10,3 +10,5 @@ This indicates the session was started with an older version of duo.
 3. Restart with the updated plugin
 
 The session will be terminated as 'unexpected' to preserve state information.
+
+Tip: Cancel the loop with /duo:stop and start a new one.

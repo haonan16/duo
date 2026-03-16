@@ -15,3 +15,5 @@ Force pushes reset the review state because the commit history has been rewritte
 ```
 
 After posting a trigger comment, you may attempt to continue.
+
+Tip: Force push is not allowed during an active loop.
