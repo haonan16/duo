@@ -23,8 +23,8 @@ Or use the unified installer directly:
 ```
 
 This will:
-- Sync `humanize`, `humanize-gen-plan`, and `humanize-rlcr` into `${CODEX_HOME:-~/.codex}/skills`
-- Copy runtime dependencies into `${CODEX_HOME:-~/.codex}/skills/humanize`
+- Sync `duo`, `duo-gen-plan`, and `duo-rlcr` into `${CODEX_HOME:-~/.codex}/skills`
+- Copy runtime dependencies into `${CODEX_HOME:-~/.codex}/skills/duo`
 - Use RLCR defaults: `codex exec` with `gpt-5.4:xhigh`, `codex review` with `gpt-5.4:high`
 
 ## Verify
@@ -34,22 +34,22 @@ ls -la "${CODEX_HOME:-$HOME/.codex}/skills"
 ```
 
 Expected directories:
-- `humanize`
-- `humanize-gen-plan`
-- `humanize-rlcr`
+- `duo`
+- `duo-gen-plan`
+- `duo-rlcr`
 
-Runtime dependencies in `humanize/`:
+Runtime dependencies in `duo/`:
 - `scripts/`
 - `hooks/`
 - `prompt-template/`
 
 Installed files/directories:
-- `${CODEX_HOME:-~/.codex}/skills/humanize/SKILL.md`
-- `${CODEX_HOME:-~/.codex}/skills/humanize-gen-plan/SKILL.md`
-- `${CODEX_HOME:-~/.codex}/skills/humanize-rlcr/SKILL.md`
-- `${CODEX_HOME:-~/.codex}/skills/humanize/scripts/`
-- `${CODEX_HOME:-~/.codex}/skills/humanize/hooks/`
-- `${CODEX_HOME:-~/.codex}/skills/humanize/prompt-template/`
+- `${CODEX_HOME:-~/.codex}/skills/duo/SKILL.md`
+- `${CODEX_HOME:-~/.codex}/skills/duo-gen-plan/SKILL.md`
+- `${CODEX_HOME:-~/.codex}/skills/duo-rlcr/SKILL.md`
+- `${CODEX_HOME:-~/.codex}/skills/duo/scripts/`
+- `${CODEX_HOME:-~/.codex}/skills/duo/hooks/`
+- `${CODEX_HOME:-~/.codex}/skills/duo/prompt-template/`
 
 ## Optional: Install for Both Codex and Kimi
 
@@ -72,5 +72,5 @@ Installed files/directories:
 If scripts are not found from installed skills:
 
 ```bash
-ls -la "${CODEX_HOME:-$HOME/.codex}/skills/humanize/scripts"
+ls -la "${CODEX_HOME:-$HOME/.codex}/skills/duo/scripts"
 ```

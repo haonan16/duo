@@ -22,4 +22,4 @@ To cancel the active PR loop:
 
 The loop directory with comments, resolution summaries, and state information will be preserved for reference.
 
-**Note**: This command only affects PR loops. RLCR loops (.humanize/rlcr/) are not affected. Use `/humanize:cancel-rlcr-loop` to cancel RLCR loops.
+**Note**: This command only affects PR loops. RLCR loops (.humanize/rlcr/) are not affected. Use `/duo:stop` to cancel RLCR loops.

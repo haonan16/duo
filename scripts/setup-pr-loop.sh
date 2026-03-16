@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Setup script for start-pr-loop
+# Setup script for duo:pr
 #
 # Creates state files for the PR loop that monitors GitHub PR reviews from bots.
 #
@@ -57,10 +57,10 @@ BOT_CODEX="false"
 
 show_help() {
     cat << 'HELP_EOF'
-start-pr-loop - PR review loop with remote bot monitoring
+duo:pr - PR review loop with remote bot monitoring
 
 USAGE:
-  /humanize:start-pr-loop --claude|--codex [OPTIONS]
+  /duo:pr --claude|--codex [OPTIONS]
 
 BOT FLAGS (at least one required):
   --claude   Monitor reviews from claude[bot] (trigger: @claude)
@@ -93,12 +93,12 @@ DESCRIPTION:
   6. If all bots approve, loop ends
 
 EXAMPLES:
-  /humanize:start-pr-loop --claude
-  /humanize:start-pr-loop --codex --max 20
-  /humanize:start-pr-loop --claude --codex
+  /duo:pr --claude
+  /duo:pr --codex --max 20
+  /duo:pr --claude --codex
 
 STOPPING:
-  - /humanize:cancel-pr-loop   Cancel the active PR loop
+  - /duo:pr-stop   Cancel the active PR loop
   - Reach --max iterations
   - All bots approve the changes
 
@@ -180,13 +180,13 @@ done
 if [[ "$BOT_CLAUDE" != "true" && "$BOT_CODEX" != "true" ]]; then
     echo "Error: At least one bot flag is required" >&2
     echo "" >&2
-    echo "Usage: /humanize:start-pr-loop --claude|--codex [OPTIONS]" >&2
+    echo "Usage: /duo:pr --claude|--codex [OPTIONS]" >&2
     echo "" >&2
     echo "Bot flags:" >&2
     echo "  --claude   Monitor reviews from claude[bot] (trigger: @claude)" >&2
     echo "  --codex    Monitor reviews from chatgpt-codex-connector[bot] (trigger: @codex)" >&2
     echo "" >&2
-    echo "For help: /humanize:start-pr-loop --help" >&2
+    echo "For help: /duo:pr --help" >&2
     exit 1
 fi
 
@@ -227,7 +227,7 @@ if [[ -n "$RLCR_LOOP_DIR" ]]; then
     echo "  Active loop: $RLCR_LOOP_DIR" >&2
     echo "" >&2
     echo "Only one loop can be active at a time." >&2
-    echo "Cancel the RLCR loop first with: /humanize:cancel-rlcr-loop" >&2
+    echo "Cancel the RLCR loop first with: /duo:stop" >&2
     exit 1
 fi
 
@@ -236,7 +236,7 @@ if [[ -n "$PR_LOOP_DIR" ]]; then
     echo "  Active loop: $PR_LOOP_DIR" >&2
     echo "" >&2
     echo "Only one loop can be active at a time." >&2
-    echo "Cancel the PR loop first with: /humanize:cancel-pr-loop" >&2
+    echo "Cancel the PR loop first with: /duo:pr-stop" >&2
     exit 1
 fi
 
@@ -254,7 +254,7 @@ fi
 
 # Check gh CLI is installed
 if ! command -v gh &>/dev/null; then
-    echo "Error: start-pr-loop requires the GitHub CLI (gh) to be installed" >&2
+    echo "Error: duo:pr requires the GitHub CLI (gh) to be installed" >&2
     echo "" >&2
     echo "Please install the GitHub CLI: https://cli.github.com/" >&2
     exit 1
@@ -270,7 +270,7 @@ fi
 
 # Check codex is available
 if ! command -v codex &>/dev/null; then
-    echo "Error: start-pr-loop requires codex to run" >&2
+    echo "Error: duo:pr requires codex to run" >&2
     echo "" >&2
     echo "Please install Codex CLI: https://openai.com/codex" >&2
     exit 1
@@ -858,7 +858,7 @@ echo "$TASK_CONTENT" >> "$LOOP_DIR/round-0-prompt.md"
 trap 'exit 0' PIPE
 
 cat << EOF
-=== start-pr-loop activated ===
+=== duo:pr activated ===
 
 PR Number: #$PR_NUMBER
 Branch: $START_BRANCH
@@ -878,7 +878,7 @@ The PR loop is now active. When you try to exit:
 3. If issues remain, you'll receive feedback and continue
 4. If all bots approve, the loop ends
 
-To cancel: /humanize:cancel-pr-loop
+To cancel: /duo:pr-stop
 
 ---
 

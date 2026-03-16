@@ -184,7 +184,7 @@ if [[ -z "$PLAN_TRACKED" || -z "$START_BRANCH" ]]; then
 This indicates the loop was started with an older version of humanize.
 
 **Options:**
-1. Cancel the loop: \`/humanize:cancel-rlcr-loop\`
+1. Cancel the loop: \`/duo:stop\`
 2. Update humanize plugin to version 1.1.2+
 3. Restart the RLCR loop with the updated plugin"
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated" \
@@ -203,7 +203,7 @@ if [[ -z "$REVIEW_STARTED" || ( "$REVIEW_STARTED" != "true" && "$REVIEW_STARTED"
 This indicates the loop was started with an older version of humanize (pre-1.5.0).
 
 **Options:**
-1. Cancel the loop: \`/humanize:cancel-rlcr-loop\`
+1. Cancel the loop: \`/duo:stop\`
 2. Update humanize plugin to version 1.5.0+
 3. Restart the RLCR loop with the updated plugin"
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated (missing review_started)" \
@@ -217,7 +217,7 @@ if [[ -z "$BASE_BRANCH" ]]; then
 This indicates the loop was started with an older version of humanize (pre-1.5.0).
 
 **Options:**
-1. Cancel the loop: \`/humanize:cancel-rlcr-loop\`
+1. Cancel the loop: \`/duo:stop\`
 2. Update humanize plugin to version 1.5.0+
 3. Restart the RLCR loop with the updated plugin"
     jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - state schema outdated (missing base_branch)" \
@@ -339,9 +339,9 @@ The plan file \`$PLAN_FILE\` has been modified since the RLCR loop started.
 **Modifying plan files is forbidden during an active RLCR loop.**
 
 If you need to change the plan:
-1. Cancel the current loop: \`/humanize:cancel-rlcr-loop\`
+1. Cancel the current loop: \`/duo:stop\`
 2. Update the plan file
-3. Start a new loop: \`/humanize:start-rlcr-loop $PLAN_FILE\`
+3. Start a new loop: \`/duo:run $PLAN_FILE\`
 
 Backup available at: \`$BACKUP_PLAN\`"
     REASON=$(load_and_render_safe "$TEMPLATE_DIR" "block/plan-file-modified.md" "$FALLBACK" \
@@ -904,7 +904,7 @@ RLCR loop requires Codex CLI to perform code reviews.
 1. Install Codex CLI: https://github.com/openai/codex
 2. Retry the exit
 
-Or use \`/cancel-rlcr-loop\` to end the loop."
+Or use \`/duo:stop\` to end the loop."
 
     cat <<EOF
 {
@@ -1254,7 +1254,7 @@ Steps to retry:
 2. Write your summary to the expected file
 3. Attempt to exit again
 
-If this error persists, consider canceling and restarting the loop: \`/humanize:cancel-rlcr-loop\`
+If this error persists, consider canceling and restarting the loop: \`/duo:stop\`
 
 ## Debug Information
 
@@ -1347,7 +1347,7 @@ $details
 - Stdout: $CODEX_STDOUT_FILE
 - Stderr: $CODEX_STDERR_FILE
 
-Please retry or use \`/cancel-rlcr-loop\` to end the loop."
+Please retry or use \`/duo:stop\` to end the loop."
 
     cat <<EOF
 {
@@ -1506,7 +1506,7 @@ This can happen if the state file was manually edited.
 **To fix:**
 Reset the state by canceling and restarting the loop.
 
-Use \`/humanize:cancel-rlcr-loop\` to end this loop."
+Use \`/duo:stop\` to end this loop."
         jq -n --arg reason "$REASON" --arg msg "Loop: Blocked - invalid review phase state" \
             '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
         exit 0

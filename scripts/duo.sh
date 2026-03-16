@@ -739,7 +739,7 @@ _humanize_monitor_codex() {
     # Check if we have a valid session directory
     if [[ -z "$current_session_dir" ]]; then
         echo "No session directories found in $loop_dir"
-        echo "Start an RLCR loop first with /humanize:start-rlcr-loop"
+        echo "Start an RLCR loop first with /duo:run"
         return 1
     fi
 

@@ -473,7 +473,7 @@ echo ""
 # Test 19: Help flag displays usage
 echo "Test 19: PR loop help flag displays usage"
 OUTPUT=$("$PROJECT_ROOT/scripts/setup-pr-loop.sh" --help 2>&1) || true
-if echo "$OUTPUT" | grep -q "USAGE\|start-pr-loop"; then
+if echo "$OUTPUT" | grep -q "USAGE\|duo:pr"; then
     pass "PR loop help flag displays usage"
 else
     fail "PR loop help" "USAGE text" "no usage found"

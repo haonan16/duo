@@ -59,4 +59,4 @@ Use whatever bot mentions are shown in the initial prompt - they match the flags
 
 - Reach the maximum iteration count
 - All monitored bots approve the changes
-- User runs `/humanize:cancel-pr-loop`
+- User runs `/duo:pr-stop`

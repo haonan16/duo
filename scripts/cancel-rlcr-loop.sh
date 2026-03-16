@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Cancel script for cancel-rlcr-loop
+# Cancel script for duo:stop
 #
 # Cancels an active RLCR loop by creating a cancel signal file
 # and renaming the state file to cancel-state.md.
 #
 # Usage:
-#   cancel-rlcr-loop.sh [--force]
+#   duo:stop [--force]
 #
 # Exit codes:
 #   0 - Successfully cancelled
@@ -31,10 +31,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -h|--help)
             cat << 'HELP_EOF'
-cancel-rlcr-loop - Cancel active RLCR loop
+duo:stop - Cancel active RLCR loop
 
 USAGE:
-  cancel-rlcr-loop.sh [OPTIONS]
+  duo:stop [OPTIONS]
 
 OPTIONS:
   --force        Force cancel even during Finalize Phase
@@ -75,12 +75,12 @@ source "$SCRIPT_DIR/../hooks/lib/loop-common.sh"
 
 # PRODUCT DECISION: Cancel operates globally (no session_id filtering).
 #
-# Cancel is invoked as a standalone Bash command via /cancel-rlcr-loop slash command.
+# Cancel is invoked as a standalone Bash command via /duo:stop slash command.
 # Unlike hooks (PreToolUse, PostToolUse, Stop) which receive JSON with session_id,
 # this script has no access to the calling session's session_id.
 #
 # This is intentional per AC-6: cancel is an explicit user action that should always
-# succeed regardless of which session invokes it. If a user types /cancel-rlcr-loop,
+# succeed regardless of which session invokes it. If a user types /duo:stop,
 # they want to cancel whatever loop is running in the current project directory.
 #
 # Find newest active loop directory (any session) using the same lookup as hooks

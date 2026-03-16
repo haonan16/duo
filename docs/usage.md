@@ -15,20 +15,20 @@ The loop continues until all acceptance criteria are met or no issues remain.
 
 | Command | Purpose |
 |---------|---------|
-| `/start-rlcr-loop <plan.md>` | Start iterative development with Codex review |
-| `/cancel-rlcr-loop` | Cancel active loop |
-| `/gen-plan --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
-| `/start-plan-loop --input <draft.md> --output <plan.md>` | Generate and iteratively refine plan with Codex |
-| `/start-pr-loop --claude\|--codex` | Start PR review loop with bot monitoring |
-| `/cancel-pr-loop` | Cancel active PR loop |
-| `/ask-codex [question]` | One-shot consultation with Codex |
+| `/run <plan.md>` | Start iterative development with Codex review |
+| `/stop` | Cancel active loop |
+| `/draft --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
+| `/plan --input <draft.md> --output <plan.md>` | Generate and iteratively refine plan with Codex |
+| `/pr --claude\|--codex` | Start PR review loop with bot monitoring |
+| `/pr-stop` | Cancel active PR loop |
+| `/ask [question]` | One-shot consultation with Codex |
 
 ## Command Reference
 
-### start-rlcr-loop
+### run
 
 ```
-/humanize:start-rlcr-loop [path/to/plan.md | --plan-file path/to/plan.md] [OPTIONS]
+/duo:run [path/to/plan.md | --plan-file path/to/plan.md] [OPTIONS]
 
 OPTIONS:
   --plan-file <path>     Explicit plan file path (alternative to positional arg)
@@ -54,17 +54,17 @@ OPTIONS:
   -h, --help             Show help message
 ```
 
-### gen-plan
+### draft
 
 ```
-/humanize:gen-plan --input <path/to/draft.md> --output <path/to/plan.md>
+/duo:draft --input <path/to/draft.md> --output <path/to/plan.md>
 
 OPTIONS:
   --input   Path to the input draft file (required)
   --output  Path to the output plan file (required)
   -h, --help             Show help message
 
-The gen-plan command transforms rough draft documents into structured implementation plans.
+The draft command transforms rough draft documents into structured implementation plans.
 
 Workflow:
 1. Validates input/output paths
@@ -74,10 +74,10 @@ Workflow:
 5. Generates a structured plan.md with acceptance criteria
 ```
 
-### start-plan-loop
+### plan
 
 ```
-/humanize:start-plan-loop --input <path/to/draft.md> --output <path/to/plan.md> [OPTIONS]
+/duo:plan --input <path/to/draft.md> --output <path/to/plan.md> [OPTIONS]
 
 OPTIONS:
   --input <path>         Path to the input draft file (required)
@@ -92,10 +92,10 @@ OPTIONS:
 
 Generates an implementation plan from a draft document (Round 0), then iteratively refines it with Codex review (Round 1+). The loop stops when Codex outputs APPROVED or max rounds are reached.
 
-### start-pr-loop
+### pr
 
 ```
-/humanize:start-pr-loop --claude|--codex [OPTIONS]
+/duo:pr --claude|--codex [OPTIONS]
 
 BOT FLAGS (at least one required):
   --claude   Monitor reviews from claude[bot] (trigger with @claude)
@@ -128,7 +128,7 @@ The PR loop automates the process of handling GitHub PR reviews from remote bots
 ### ask-codex
 
 ```
-/humanize:ask-codex [OPTIONS] <question or task>
+/duo:ask [OPTIONS] <question or task>
 
 OPTIONS:
   --codex-model <MODEL:EFFORT>
@@ -164,8 +164,8 @@ Progress data is stored in `.humanize/rlcr/<timestamp>/` for each loop session.
 
 ## Cancellation
 
-- **RLCR loop**: `/humanize:cancel-rlcr-loop`
-- **PR loop**: `/humanize:cancel-pr-loop`
+- **RLCR loop**: `/duo:stop`
+- **PR loop**: `/duo:pr-stop`
 
 ## Environment Variables
 

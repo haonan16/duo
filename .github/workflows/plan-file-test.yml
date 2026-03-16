@@ -13,7 +13,7 @@ on:
       - 'tests/test-plan-file-*.sh'
       - 'tests/test-state-exit-naming.sh'
       - 'tests/test-cancel-signal-file.sh'
-      - 'commands/cancel-rlcr-loop.md'
+      - 'commands/stop.md'
   pull_request:
     paths:
       - 'scripts/setup-rlcr-loop.sh'
@@ -26,7 +26,7 @@ on:
       - 'tests/test-plan-file-*.sh'
       - 'tests/test-state-exit-naming.sh'
       - 'tests/test-cancel-signal-file.sh'
-      - 'commands/cancel-rlcr-loop.md'
+      - 'commands/stop.md'
 
 jobs:
   test:

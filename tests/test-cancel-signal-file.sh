@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Tests for cancel-rlcr-loop signal file mechanism
+# Tests for duo:stop signal file mechanism
 #
 # Tests:
 # - POSITIVE: mv state.md to cancel-state.md allowed when signal file exists

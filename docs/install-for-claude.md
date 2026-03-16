@@ -49,10 +49,10 @@ Note: The `dev` branch may contain unstable or incomplete features. For producti
 After installing, you should see Humanize commands available:
 
 ```
-/humanize:start-rlcr-loop
-/humanize:gen-plan
-/humanize:start-plan-loop
-/humanize:ask-codex
+/duo:run
+/duo:draft
+/duo:plan
+/duo:ask
 ```
 
 ## Monitor Setup (Optional)

@@ -8,9 +8,9 @@ Humanize provides three Agent Skills for kimi:
 
 | Skill | Type | Purpose |
 |-------|------|---------|
-| `humanize` | Standard | General guidance for all workflows |
-| `humanize-gen-plan` | Flow | Generate structured plan from draft |
-| `humanize-rlcr` | Flow | Iterative development with Codex review |
+| `duo` | Standard | General guidance for all workflows |
+| `duo-gen-plan` | Flow | Generate structured plan from draft |
+| `duo-rlcr` | Flow | Iterative development with Codex review |
 
 ## Installation
 
@@ -23,8 +23,8 @@ From the Humanize repo root, run:
 ```
 
 This command will:
-- Sync `humanize`, `humanize-gen-plan`, and `humanize-rlcr` into `~/.config/agents/skills`
-- Copy runtime dependencies into `~/.config/agents/skills/humanize`
+- Sync `duo`, `duo-gen-plan`, and `duo-rlcr` into `~/.config/agents/skills`
+- Copy runtime dependencies into `~/.config/agents/skills/duo`
 
 Common installer script (all targets):
 
@@ -47,18 +47,18 @@ cd /path/to/humanize
 mkdir -p ~/.config/agents/skills
 
 # Copy all three skills
-cp -r skills/humanize ~/.config/agents/skills/
-cp -r skills/humanize-gen-plan ~/.config/agents/skills/
-cp -r skills/humanize-rlcr ~/.config/agents/skills/
+cp -r skills/duo ~/.config/agents/skills/
+cp -r skills/duo-gen-plan ~/.config/agents/skills/
+cp -r skills/duo-rlcr ~/.config/agents/skills/
 
 # Copy runtime dependencies used by the skills
-cp -r scripts ~/.config/agents/skills/humanize/
-cp -r hooks ~/.config/agents/skills/humanize/
-cp -r prompt-template ~/.config/agents/skills/humanize/
+cp -r scripts ~/.config/agents/skills/duo/
+cp -r hooks ~/.config/agents/skills/duo/
+cp -r prompt-template ~/.config/agents/skills/duo/
 
 # Hydrate runtime root placeholders inside SKILL.md files
-for skill in humanize humanize-gen-plan humanize-rlcr; do
-  sed -i.bak "s|{{HUMANIZE_RUNTIME_ROOT}}|$HOME/.config/agents/skills/humanize|g" \
+for skill in duo duo-gen-plan duo-rlcr; do
+  sed -i.bak "s|{{HUMANIZE_RUNTIME_ROOT}}|$HOME/.config/agents/skills/duo|g" \
     "$HOME/.config/agents/skills/$skill/SKILL.md"
 done
 ```
@@ -70,9 +70,9 @@ done
 ls -la ~/.config/agents/skills/
 
 # Should show:
-# humanize/
-# humanize-gen-plan/
-# humanize-rlcr/
+# duo/
+# duo-gen-plan/
+# duo-rlcr/
 ```
 
 ### 4. Restart kimi (if already running)
@@ -105,32 +105,32 @@ Look for the "Skills" section in the help output.
 
 ```bash
 # Start the flow (will ask for input/output paths)
-/flow:humanize-gen-plan
+/flow:duo-gen-plan
 
 # Or load as standard skill
-/skill:humanize-gen-plan
+/skill:duo-gen-plan
 ```
 
 #### 2. Start RLCR development loop
 
 ```bash
 # Start with plan file
-/flow:humanize-rlcr path/to/plan.md
+/flow:duo-rlcr path/to/plan.md
 
 # With options
-/flow:humanize-rlcr path/to/plan.md --max 20 --push-every-round
+/flow:duo-rlcr path/to/plan.md --max 20 --push-every-round
 
 # Skip implementation, go directly to code review
-/flow:humanize-rlcr --skip-impl
+/flow:duo-rlcr --skip-impl
 
 # Load as standard skill (no auto-execution)
-/skill:humanize-rlcr
+/skill:duo-rlcr
 ```
 
 #### 3. Get general guidance
 
 ```bash
-/skill:humanize
+/skill:duo
 ```
 
 ## Command Options
@@ -170,9 +170,9 @@ The skills will use `gpt-5.4` with `xhigh` effort level by default.
 To remove the skills:
 
 ```bash
-rm -rf ~/.config/agents/skills/humanize
-rm -rf ~/.config/agents/skills/humanize-gen-plan
-rm -rf ~/.config/agents/skills/humanize-rlcr
+rm -rf ~/.config/agents/skills/duo
+rm -rf ~/.config/agents/skills/duo-gen-plan
+rm -rf ~/.config/agents/skills/duo-rlcr
 ```
 
 ## Troubleshooting
@@ -186,7 +186,7 @@ rm -rf ~/.config/agents/skills/humanize-rlcr
 
 2. Ensure SKILL.md files are present:
    ```bash
-   cat ~/.config/agents/skills/humanize/SKILL.md | head -5
+   cat ~/.config/agents/skills/duo/SKILL.md | head -5
    ```
 
 3. Restart kimi completely
@@ -206,7 +206,7 @@ export OPENAI_API_KEY="your-api-key"
 If skills report missing scripts like `setup-rlcr-loop.sh`, verify:
 
 ```bash
-ls -la ~/.config/agents/skills/humanize/scripts
+ls -la ~/.config/agents/skills/duo/scripts
 ```
 
 ### Installer options

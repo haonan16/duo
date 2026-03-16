@@ -1,5 +1,5 @@
 ---
-name: humanize-gen-plan
+name: duo-gen-plan
 description: Generate a structured implementation plan from a draft document. Validates input, checks relevance, analyzes for issues, and generates a complete plan.md with acceptance criteria.
 type: flow
 user-invocable: false
@@ -109,7 +109,7 @@ Minimum viable implementation
 
 ```bash
 # Start the flow
-/flow:humanize-gen-plan
+/flow:duo-gen-plan
 
 # The flow will ask for:
 # - Input draft file path
@@ -119,5 +119,5 @@ Minimum viable implementation
 Or with the skill only (no auto-execution):
 
 ```bash
-/skill:humanize-gen-plan
+/skill:duo-gen-plan
 ```

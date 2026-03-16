@@ -1172,7 +1172,7 @@ This might mean:
    gh pr comment $PR_NUMBER --body \"$PR_BOT_MENTION_STRING please review the latest changes\"
    \`\`\`
 2. Wait and try exiting again
-3. Cancel the loop: \`/humanize:cancel-pr-loop\`"
+3. Cancel the loop: \`/duo:pr-stop\`"
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Bot review timeout" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1313,7 +1313,7 @@ PR loop requires Codex CLI to validate bot reviews.
 1. Install Codex CLI
 2. Retry the exit
 
-Or use \`/humanize:cancel-pr-loop\` to cancel the loop."
+Or use \`/duo:pr-stop\` to cancel the loop."
 
     jq -n --arg reason "$REASON" --arg msg "PR Loop: Codex not found" \
         '{"decision": "block", "reason": $reason, "systemMessage": $msg}'
@@ -1402,7 +1402,7 @@ Some bots haven't posted their reviews yet.
    \`\`\`bash
    gh pr comment $PR_NUMBER --body \"$PR_BOT_MENTION_STRING please review the latest changes\"
    \`\`\`
-3. Cancel the loop: \`/humanize:cancel-pr-loop\`
+3. Cancel the loop: \`/duo:pr-stop\`
 
 **Note:** The round counter will NOT advance until all expected bots respond."
 

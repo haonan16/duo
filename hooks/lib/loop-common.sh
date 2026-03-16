@@ -10,7 +10,7 @@
 # - loop-plan-file-validator.sh
 # - loop-codex-stop-hook.sh
 # - setup-rlcr-loop.sh
-# - cancel-rlcr-loop.sh
+# - cancel-rlcr-loop.sh (duo:stop)
 #
 
 # Source guard: prevent double-sourcing (readonly vars would fail)
@@ -52,7 +52,7 @@ readonly MARKER_STOP="STOP"
 
 # Exit reasons (used with end_loop function)
 # complete   - Codex confirmed all goals achieved (normal success)
-# cancel     - User cancelled with /cancel-rlcr-loop
+# cancel     - User cancelled with /duo:stop
 # maxiter    - Reached maximum iterations limit
 # stop       - Codex triggered circuit breaker (stagnation detected)
 # unexpected - System error or invalid state (e.g., corrupted state file)

@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Cancel script for cancel-pr-loop
+# Cancel script for duo:pr-stop
 #
 # Cancels an active PR loop by creating a cancel signal file
 # and renaming the state file to cancel-state.md.
 #
 # Usage:
-#   cancel-pr-loop.sh [--force]
+#   duo:pr-stop [--force]
 #
 # Exit codes:
 #   0 - Successfully cancelled
@@ -31,10 +31,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -h|--help)
             cat << 'HELP_EOF'
-cancel-pr-loop.sh - Cancel active PR loop
+duo:pr-stop - Cancel active PR loop
 
 USAGE:
-  cancel-pr-loop.sh [OPTIONS]
+  duo:pr-stop [OPTIONS]
 
 OPTIONS:
   --force        Force cancel (currently has no additional effect)

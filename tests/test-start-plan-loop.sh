@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Tests for start-plan-loop command and plan-review template
+# Tests for plan command and plan-review template
 #
 # Validates:
 #   - plan-review.md template exists and has required structure
-#   - start-plan-loop.md command exists with valid frontmatter
+#   - plan.md command exists with valid frontmatter
 #   - Template placeholder substitution works correctly
 #   - Integration contracts with reused scripts
 #   - Draft preservation through the pipeline
@@ -107,11 +107,11 @@ echo ""
 echo "--- Command Tests ---"
 echo ""
 echo "PT-6: Command file structure validation"
-PLAN_LOOP_CMD="$COMMANDS_DIR/start-plan-loop.md"
+PLAN_LOOP_CMD="$COMMANDS_DIR/plan.md"
 if [[ -f "$PLAN_LOOP_CMD" ]]; then
-    pass "start-plan-loop.md command file exists"
+    pass "plan.md command file exists"
 else
-    fail "start-plan-loop.md command file exists" "File exists" "File not found"
+    fail "plan.md command file exists" "File exists" "File not found"
 fi
 
 # ========================================
@@ -364,10 +364,10 @@ done
 # ========================================
 echo ""
 echo "NT-2: Command name follows naming convention"
-if [[ "start-plan-loop" =~ ^[a-z][a-z0-9-]*$ ]]; then
-    pass "start-plan-loop follows valid naming convention"
+if [[ "plan" =~ ^[a-z][a-z0-9-]*$ ]]; then
+    pass "plan follows valid naming convention"
 else
-    fail "start-plan-loop has invalid name format"
+    fail "plan has invalid name format"
 fi
 
 # ========================================
@@ -400,15 +400,15 @@ echo "NT-4: Documentation references new command"
 USAGE_MD="$PROJECT_ROOT/docs/usage.md"
 INSTALL_MD="$PROJECT_ROOT/docs/install-for-claude.md"
 if [[ -f "$USAGE_MD" ]]; then
-    if grep -q 'start-plan-loop' "$USAGE_MD"; then
-        pass "docs/usage.md references start-plan-loop"
+    if grep -q 'plan' "$USAGE_MD"; then
+        pass "docs/usage.md references plan command"
     else
-        fail "docs/usage.md references start-plan-loop"
+        fail "docs/usage.md references plan command"
     fi
 fi
 
 if [[ -f "$README_MD" ]]; then
-    if grep -q 'start-plan-loop\|plan-loop\|plan refinement' "$README_MD"; then
+    if grep -q 'plan\|plan-loop\|plan refinement' "$README_MD"; then
         pass "README.md references plan loop feature"
     else
         fail "README.md references plan loop feature"
@@ -416,10 +416,10 @@ if [[ -f "$README_MD" ]]; then
 fi
 
 if [[ -f "$INSTALL_MD" ]]; then
-    if grep -q 'start-plan-loop' "$INSTALL_MD"; then
-        pass "docs/install-for-claude.md references start-plan-loop"
+    if grep -q 'plan' "$INSTALL_MD"; then
+        pass "docs/install-for-claude.md references plan command"
     else
-        fail "docs/install-for-claude.md references start-plan-loop"
+        fail "docs/install-for-claude.md references plan command"
     fi
 fi
 

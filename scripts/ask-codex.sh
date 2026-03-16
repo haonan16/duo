@@ -51,7 +51,7 @@ show_help() {
 ask-codex - One-shot consultation with Codex
 
 USAGE:
-  /humanize:ask-codex [OPTIONS] <question or task>
+  /duo:ask [OPTIONS] <question or task>
 
 OPTIONS:
   --codex-model <MODEL:EFFORT>
@@ -67,9 +67,9 @@ DESCRIPTION:
   The response is saved to .humanize/skill/<unique-id>/output.md for reference.
 
 EXAMPLES:
-  /humanize:ask-codex How should I structure the authentication module?
-  /humanize:ask-codex --codex-model gpt-5.4:high What are the performance bottlenecks?
-  /humanize:ask-codex --codex-timeout 300 Review the error handling in src/api/
+  /duo:ask How should I structure the authentication module?
+  /duo:ask --codex-model gpt-5.4:high What are the performance bottlenecks?
+  /duo:ask --codex-timeout 300 Review the error handling in src/api/
 
 ENVIRONMENT:
   HUMANIZE_CODEX_BYPASS_SANDBOX
@@ -155,7 +155,7 @@ if ! command -v codex &>/dev/null; then
     echo "Error: 'codex' command is not installed or not in PATH" >&2
     echo "" >&2
     echo "Please install Codex CLI: https://github.com/openai/codex" >&2
-    echo "Then retry: /humanize:ask-codex <your question>" >&2
+    echo "Then retry: /duo:ask <your question>" >&2
     exit 1
 fi
 
@@ -163,9 +163,9 @@ fi
 if [[ -z "$QUESTION" ]]; then
     echo "Error: No question or task provided" >&2
     echo "" >&2
-    echo "Usage: /humanize:ask-codex [OPTIONS] <question or task>" >&2
+    echo "Usage: /duo:ask [OPTIONS] <question or task>" >&2
     echo "" >&2
-    echo "For help: /humanize:ask-codex --help" >&2
+    echo "For help: /duo:ask --help" >&2
     exit 1
 fi
 
@@ -310,7 +310,7 @@ if [[ $CODEX_EXIT_CODE -eq 124 ]]; then
     echo "Error: Codex timed out after ${CODEX_TIMEOUT} seconds" >&2
     echo "" >&2
     echo "Try increasing the timeout:" >&2
-    echo "  /humanize:ask-codex --codex-timeout $((CODEX_TIMEOUT * 2)) <your question>" >&2
+    echo "  /duo:ask --codex-timeout $((CODEX_TIMEOUT * 2)) <your question>" >&2
     echo "" >&2
     echo "Debug logs: $CACHE_DIR" >&2
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Setup script for start-rlcr-loop
+# Setup script for duo:run
 #
 # Creates state files for the loop that uses Codex to review Claude's work.
 #
@@ -53,10 +53,10 @@ AGENT_TEAMS="false"
 
 show_help() {
     cat <<HELP_EOF
-start-rlcr-loop - Iterative development with Codex review
+duo:run - Iterative development with Codex review
 
 USAGE:
-  /humanize:start-rlcr-loop <path/to/plan.md> [OPTIONS]
+  /duo:run <path/to/plan.md> [OPTIONS]
 
 ARGUMENTS:
   <path/to/plan.md>    Path to a markdown file containing the implementation plan
@@ -109,13 +109,13 @@ DESCRIPTION:
   8. When no issues found, enters Finalize Phase and loop ends
 
 EXAMPLES:
-  /humanize:start-rlcr-loop docs/feature-plan.md
-  /humanize:start-rlcr-loop docs/impl.md --max 20
-  /humanize:start-rlcr-loop plan.md --codex-model ${DEFAULT_CODEX_MODEL}:${DEFAULT_CODEX_EFFORT}
-  /humanize:start-rlcr-loop plan.md --codex-timeout 7200  # 2 hour timeout
+  /duo:run docs/feature-plan.md
+  /duo:run docs/impl.md --max 20
+  /duo:run plan.md --codex-model ${DEFAULT_CODEX_MODEL}:${DEFAULT_CODEX_EFFORT}
+  /duo:run plan.md --codex-timeout 7200  # 2 hour timeout
 
 STOPPING:
-  - /humanize:cancel-rlcr-loop   Cancel the active loop
+  - /duo:stop   Cancel the active loop
   - Reach --max iterations
   - Pass code review (no [P0-9] issues) after COMPLETE
 
@@ -299,7 +299,7 @@ if [[ -n "$RLCR_LOOP_DIR" ]]; then
     echo "  Active loop: $RLCR_LOOP_DIR" >&2
     echo "" >&2
     echo "Only one loop can be active at a time." >&2
-    echo "Cancel the RLCR loop first with: /humanize:cancel-rlcr-loop" >&2
+    echo "Cancel the RLCR loop first with: /duo:stop" >&2
     exit 1
 fi
 
@@ -308,7 +308,7 @@ if [[ -n "$PR_LOOP_DIR" ]]; then
     echo "  Active loop: $PR_LOOP_DIR" >&2
     echo "" >&2
     echo "Only one loop can be active at a time." >&2
-    echo "Cancel the PR loop first with: /humanize:cancel-pr-loop" >&2
+    echo "Cancel the PR loop first with: /duo:pr-stop" >&2
     exit 1
 fi
 
@@ -353,9 +353,9 @@ if [[ -z "$PLAN_FILE" ]]; then
     else
         echo "Error: No plan file provided" >&2
         echo "" >&2
-        echo "Usage: /humanize:start-rlcr-loop <path/to/plan.md> [OPTIONS]" >&2
+        echo "Usage: /duo:run <path/to/plan.md> [OPTIONS]" >&2
         echo "" >&2
-        echo "For help: /humanize:start-rlcr-loop --help" >&2
+        echo "For help: /duo:run --help" >&2
         exit 1
     fi
 fi
@@ -1070,7 +1070,7 @@ Throughout your work, you MUST maintain the Goal Tracker:
 
 ---
 
-Note: You MUST NOT try to exit \`start-rlcr-loop\` loop by lying or edit loop state file or try to execute \`cancel-rlcr-loop\`
+Note: You MUST NOT try to exit \`duo:run\` loop by lying or edit loop state file or try to execute \`duo:stop\`
 
 After completing the work, please:
 0. If you have access to the \`code-simplifier\` agent, use it to review and optimize the code you just wrote
@@ -1099,7 +1099,7 @@ trap 'exit 0' PIPE
 
 if [[ "$SKIP_IMPL" == "true" ]]; then
     cat << EOF
-=== start-rlcr-loop activated (SKIP-IMPL MODE) ===
+=== duo:run activated (SKIP-IMPL MODE) ===
 
 Mode: Code Review Only (--skip-impl)
 Start Branch: $START_BRANCH
@@ -1118,14 +1118,14 @@ The loop will:
 2. If issues are found ([P0-9] markers), you'll need to fix them
 3. When no issues remain, enters Finalize Phase and loop ends
 
-To cancel: /humanize:cancel-rlcr-loop
+To cancel: /duo:stop
 
 ---
 
 EOF
 else
     cat << EOF
-=== start-rlcr-loop activated ===
+=== duo:run activated ===
 
 Plan File: $PLAN_FILE ($LINE_COUNT lines)
 Plan Tracked: $TRACK_PLAN_FILE
@@ -1147,7 +1147,7 @@ The loop is now active. When you try to exit:
 4. Code review checks for [P0-9] issues; if found, you fix them
 5. When no issues found, enters Finalize Phase and loop ends
 
-To cancel: /humanize:cancel-rlcr-loop
+To cancel: /duo:stop
 
 ---
 

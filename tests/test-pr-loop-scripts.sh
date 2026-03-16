@@ -4,7 +4,7 @@
 #
 # Tests for script argument parsing and validation:
 # - setup-pr-loop.sh
-# - cancel-pr-loop.sh
+# - cancel-pr-loop.sh (duo:pr-stop)
 # - fetch-pr-comments.sh
 # - poll-pr-reviews.sh
 #
@@ -28,7 +28,7 @@ run_setup_tests() {
     test_setup_help() {
         local output
         output=$("$SETUP_SCRIPT" --help 2>&1) || true
-        if echo "$output" | grep -q "start-pr-loop"; then
+        if echo "$output" | grep -q "duo:pr"; then
             pass "T-POS-1: --help displays usage information"
         else
             fail "T-POS-1: --help should display usage information"
@@ -166,13 +166,13 @@ run_setup_tests() {
 }
 
 # ========================================
-# cancel-pr-loop.sh Tests
+# duo:pr-stop Tests
 # ========================================
 
 run_cancel_tests() {
     echo ""
     echo "========================================"
-    echo "Testing cancel-pr-loop.sh"
+    echo "Testing duo:pr-stop"
     echo "========================================"
     echo ""
 
@@ -182,7 +182,7 @@ run_cancel_tests() {
     test_cancel_help() {
         local output
         output=$("$CANCEL_SCRIPT" --help 2>&1) || true
-        if echo "$output" | grep -q "cancel-pr-loop"; then
+        if echo "$output" | grep -q "duo:pr-stop"; then
             pass "T-POS-8: --help displays usage information"
         else
             fail "T-POS-8: --help should display usage information"

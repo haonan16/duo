@@ -3,8 +3,8 @@
 # Install/upgrade Humanize skills for Kimi and/or Codex.
 #
 # What this does:
-# 1) Sync skills/{humanize,humanize-gen-plan,humanize-rlcr} to target skills dir(s)
-# 2) Copy runtime dependencies into <skills-dir>/humanize/{scripts,hooks,prompt-template}
+# 1) Sync skills/{duo,duo-gen-plan,duo-rlcr} to target skills dir(s)
+# 2) Copy runtime dependencies into <skills-dir>/duo/{scripts,hooks,prompt-template}
 # 3) Hydrate SKILL.md command paths with concrete runtime root paths
 #
 # Usage:
@@ -31,9 +31,9 @@ LEGACY_SKILLS_DIR=""
 DRY_RUN="false"
 
 SKILL_NAMES=(
-    "humanize"
-    "humanize-gen-plan"
-    "humanize-rlcr"
+    "duo"
+    "duo-gen-plan"
+    "duo-rlcr"
 )
 
 usage() {
@@ -110,7 +110,7 @@ sync_one_skill() {
 
 install_runtime_bundle() {
     local target_dir="$1"
-    local runtime_root="$target_dir/humanize"
+    local runtime_root="$target_dir/duo"
     local component
 
     log "syncing runtime bundle into: $runtime_root"
@@ -122,7 +122,7 @@ install_runtime_bundle() {
 
 hydrate_skill_runtime_root() {
     local target_dir="$1"
-    local runtime_root="$target_dir/humanize"
+    local runtime_root="$target_dir/duo"
     local skill
     local skill_file
     local tmp
@@ -304,7 +304,7 @@ fi
 cat <<EOF
 
 Runtime root per target:
-  <skills-dir>/humanize
+  <skills-dir>/duo
 
 No shell profile changes were made.
 EOF

@@ -41,17 +41,17 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
 
 1. **Generate a plan** from your draft:
    ```bash
-   /humanize:gen-plan --input draft.md --output docs/plan.md
+   /duo:draft --input draft.md --output docs/plan.md
    ```
 
    Or use the **plan refinement loop** for iterative improvement:
    ```bash
-   /humanize:start-plan-loop --input draft.md --output docs/plan.md
+   /duo:plan --input draft.md --output docs/plan.md
    ```
 
 2. **Run the loop**:
    ```bash
-   /humanize:start-rlcr-loop docs/plan.md
+   /duo:run docs/plan.md
    ```
 
 3. **Monitor progress**:

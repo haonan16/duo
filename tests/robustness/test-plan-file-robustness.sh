@@ -80,7 +80,7 @@ test_plan_validation() {
     fi
 
     # Check for successful loop creation - all validations passed
-    if grep -q "start-rlcr-loop activated" "$result_file"; then
+    if grep -q "duo:run activated" "$result_file"; then
         rm -f "$result_file"
         return 0
     fi
