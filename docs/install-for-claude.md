@@ -49,11 +49,16 @@ Note: The `dev` branch may contain unstable or incomplete features. For producti
 After installing, you should see Duo commands available:
 
 ```
+/duo:start
 /duo:run
 /duo:draft
 /duo:plan
 /duo:ask
+/duo:setup
+/duo:help
 ```
+
+After installing, run `/duo:setup` to verify prerequisites and configure monitoring.
 
 ## Monitor Setup (Optional)
 

@@ -175,6 +175,10 @@ rm -rf ~/.config/agents/skills/duo-gen-plan
 rm -rf ~/.config/agents/skills/duo-rlcr
 ```
 
+## Cross-Platform Setup
+
+You can also install Kimi skills from Claude Code by running `/duo:setup`, which provides an option to install skills for Kimi.
+
 ## Troubleshooting
 
 ### Skills not showing up

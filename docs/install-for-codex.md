@@ -67,6 +67,10 @@ Installed files/directories:
 ./scripts/install-skills-codex.sh --codex-skills-dir /custom/codex/skills
 ```
 
+## Cross-Platform Setup
+
+You can also install Codex skills from Claude Code by running `/duo:setup`, which provides an option to install skills for Codex.
+
 ## Troubleshooting
 
 If scripts are not found from installed skills:

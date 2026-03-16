@@ -15,6 +15,7 @@ The loop continues until all acceptance criteria are met or no issues remain.
 
 | Command | Purpose |
 |---------|---------|
+| `/start <file.md>` | Smart start (auto-detects draft vs plan) |
 | `/run <plan.md>` | Start iterative development with Codex review |
 | `/stop` | Cancel active loop |
 | `/draft --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
@@ -22,6 +23,8 @@ The loop continues until all acceptance criteria are met or no issues remain.
 | `/pr --claude\|--codex` | Start PR review loop with bot monitoring |
 | `/pr-stop` | Cancel active PR loop |
 | `/ask [question]` | One-shot consultation with Codex |
+| `/setup` | Install, configure, verify prerequisites |
+| `/help` | Show all commands |
 
 ## Command Reference
 

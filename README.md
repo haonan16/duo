@@ -39,26 +39,45 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
 
 ## Quick Start
 
-1. **Generate a plan** from your draft:
+1. **Start development** from your draft:
    ```bash
-   /duo:draft --input draft.md --output docs/plan.md
+   /duo:start draft.md
    ```
 
-   Or use the **plan refinement loop** for iterative improvement:
-   ```bash
-   /duo:plan --input draft.md --output docs/plan.md
-   ```
-
-2. **Run the loop**:
-   ```bash
-   /duo:run docs/plan.md
-   ```
-
-3. **Monitor progress**:
+2. **Monitor progress**:
    ```bash
    source <path/to/duo>/scripts/duo.sh
    duo monitor
    ```
+
+### Power User Commands
+
+For more control, use the individual commands:
+
+- **Generate a plan** from your draft:
+  ```bash
+  /duo:draft --input draft.md --output docs/plan.md
+  ```
+
+- **Iteratively refine** a plan with Codex review:
+  ```bash
+  /duo:plan --input draft.md --output docs/plan.md
+  ```
+
+- **Run the loop** with an existing plan:
+  ```bash
+  /duo:run docs/plan.md
+  ```
+
+- **Setup and verify** prerequisites:
+  ```bash
+  /duo:setup
+  ```
+
+- **Show all commands**:
+  ```bash
+  /duo:help
+  ```
 
 ## Monitor Dashboard
 
