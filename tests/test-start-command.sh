@@ -172,8 +172,8 @@ else
     fail "missing --review-only flag support"
 fi
 
-# Test 15: Does not contain rlcr in user-facing text (exclude allowed-tools and script refs)
-if grep -v '^allowed-tools\|scripts/\|setup-rlcr\|cancel-rlcr\|rlcr-stop' "$START_FILE" | grep -v '^\s*-\s*"Bash' | grep -qi 'rlcr'; then
+# Test 15: Does not contain rlcr in user-facing text (exclude allowed-tools, script refs, and on-disk paths)
+if grep -v '^allowed-tools\|scripts/\|setup-rlcr\|cancel-rlcr\|rlcr-stop\|\.duo/rlcr' "$START_FILE" | grep -v '^\s*-\s*"Bash' | grep -qi 'rlcr'; then
     fail "contains rlcr in user-facing text"
 else
     pass "no rlcr in user-facing text"

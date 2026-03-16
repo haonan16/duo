@@ -43,7 +43,7 @@ Report: "Starting code review (skipping implementation)..."
 ### Case 2: No file argument provided
 
 Check for an existing loop state in the project:
-1. Look for `.duo/loop/*/state.md` (active loop state files)
+1. Look for `.duo/rlcr/*/state.md` (active loop state)
 2. If found, report: "An active loop is already running. Use `/duo:stop` to cancel it first."
 3. If not found, report: "No file provided. Usage: `/duo:start <file.md>` or see `/duo:help` for all commands."
 
