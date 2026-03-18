@@ -133,8 +133,8 @@ and `metadata.md` for reference.
 Set up the monitoring helper for real-time progress tracking:
 
 ```bash
-# Add to your .bashrc or .zshrc
-source ~/.claude/plugins/cache/haonan16/duo/<LATEST.VERSION>/scripts/duo.sh
+# Run /duo:setup to install the helper, then add to your .bashrc or .zshrc:
+source ~/.duo/duo.sh
 
 # Monitor development loop progress
 duo monitor
