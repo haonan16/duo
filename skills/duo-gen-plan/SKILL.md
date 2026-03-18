@@ -107,16 +107,20 @@ Minimum viable implementation
 
 ## Usage
 
-```bash
-# Start the flow
-/flow:duo-gen-plan
+Plan generation is now part of `/duo:start`:
 
-# The flow will ask for:
-# - Input draft file path
-# - Output plan file path
+```bash
+# Generate plan with Codex refinement (default)
+/duo:start draft.md --plan-only
+
+# Generate plan without Codex refinement
+/duo:start draft.md --plan-only --skip-review
+
+# Generate plan with custom refinement settings
+/duo:start draft.md --plan-only --max 3 --codex-model o4-mini:high
 ```
 
-Or with the skill only (no auto-execution):
+Or use the skill directly (no auto-execution):
 
 ```bash
 /skill:duo-gen-plan

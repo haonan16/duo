@@ -35,11 +35,20 @@ else
 fi
 
 # Test 4: Lists all core commands
-for cmd in "/duo:start" "/duo:run" "/duo:plan" "/duo:draft" "/duo:stop" "/duo:pr" "/duo:pr-stop" "/duo:ask" "/duo:setup" "/duo:help"; do
+for cmd in "/duo:start" "/duo:run" "/duo:stop" "/duo:pr" "/duo:pr-stop" "/duo:ask" "/duo:setup" "/duo:help"; do
     if grep -q "$cmd" "$HELP_FILE"; then
         pass "lists $cmd"
     else
         fail "missing $cmd"
+    fi
+done
+
+# Test 4b: Removed commands should not appear
+for cmd in "/duo:plan" "/duo:draft"; do
+    if grep -q "$cmd" "$HELP_FILE"; then
+        fail "removed command $cmd still present"
+    else
+        pass "removed command $cmd not listed"
     fi
 done
 

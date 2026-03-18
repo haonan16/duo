@@ -1,6 +1,6 @@
 ---
 name: draft-relevance-checker
-description: Checks if a draft document is relevant to the current repository. Use when validating draft content for duo:plan command.
+description: Checks if a draft document is relevant to the current repository. Use when validating draft content for plan generation in duo:start.
 model: haiku
 tools: Read, Glob, Grep
 ---

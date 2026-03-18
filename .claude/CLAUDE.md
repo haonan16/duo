@@ -6,8 +6,7 @@ A Claude Code plugin that provides iterative development with independent AI rev
 
 | Command | Purpose |
 |---------|---------|
-| `/duo:start` | Smart entry point -- accepts file path or inline text, auto-detects draft vs plan |
-| `/duo:plan` | Generate plan from draft (with optional Codex refinement via `--skip-review`) |
+| `/duo:start` | Smart entry point -- accepts file path or inline text, auto-detects draft vs plan, generates plans with optional Codex refinement |
 | `/duo:run` | Start iterative development loop with Codex review |
 | `/duo:stop` | Cancel active development loop |
 | `/duo:pr` | Start PR review loop with bot monitoring |
@@ -20,7 +19,7 @@ A Claude Code plugin that provides iterative development with independent AI rev
 - Everything about this project, including but not limited to implementations, comments, tests and documentations should be in English. No Emoji or CJK char is allowed.
 - If under `main` branch, every commit MUST include a version bump in `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `README.md` (the "Current Version" line). If not under `main` branch, please make sure that the current branch's `version` in those three files has a incremental update compared to that of `main` branch. The `version` must be identical in those three files.
 - Version number must be in format of `X.Y.Z` where X/Y/Z is numeric number. Version MUST NOT include anything other than `X.Y.Z`. For example, a good version is `9.732.42`; Bad version examples (MUST NOT USE): `3.22.7-alpha` (extra "-alpha" string), `9.77.2 (2026-01-07)` (useless date/timestamp).
-- The plan generation rules in `commands/plan.md` (Phase 5) reference the template at `prompt-template/plan/gen-plan-template.md`. When modifying either file, ensure both stay consistent.
+- The plan generation rules in `commands/start.md` (Phase 5 under "Plan Generation Workflow") reference the template at `prompt-template/plan/gen-plan-template.md`. When modifying either file, ensure both stay consistent.
 
 ## Key Structure
 

@@ -15,10 +15,9 @@ The loop continues until all acceptance criteria are met or no issues remain.
 
 | Command | Purpose |
 |---------|---------|
-| `/duo:start <file.md or text>` | Smart start (file path or inline text, auto-detects draft vs plan) |
+| `/duo:start <file.md or text>` | Smart start (file path or inline text, auto-detects draft vs plan). Also generates plans with `--plan-only`. |
 | `/duo:run <plan.md>` | Start iterative development with Codex review |
 | `/duo:stop` | Cancel active loop |
-| `/duo:plan --input <draft.md> --output <plan.md>` | Generate plan from draft (with optional Codex refinement) |
 | `/duo:pr --claude\|--codex` | Start PR review loop with bot monitoring |
 | `/duo:pr-stop` | Cancel active PR loop |
 | `/duo:ask [question]` | One-shot consultation with Codex |
@@ -56,21 +55,22 @@ OPTIONS:
   -h, --help             Show help message
 ```
 
-### plan
+### start (plan generation mode)
+
+When given a draft file (or inline text) with `--plan-only`, `/duo:start` acts as the plan generator:
 
 ```
-/duo:plan --input <path/to/draft.md> --output <path/to/plan.md> [OPTIONS]
+/duo:start <draft.md or text> --plan-only [OPTIONS]
 
-OPTIONS:
-  --input <path>         Path to the input draft file (required)
-  --output <path>        Path to the output plan file (required)
+PLAN GENERATION OPTIONS:
+  --plan-only            Generate plan and stop (do not start development loop)
+  --draft-only           Alias for --plan-only (backward compatibility)
   --skip-review          Generate plan only, skip Codex refinement loop
   --max <N>              Maximum refinement rounds (default: 5)
   --codex-model <MODEL:EFFORT>
                          Codex model and reasoning effort (default: gpt-5.4:xhigh)
   --codex-timeout <SECONDS>
                          Timeout for each Codex review in seconds (default: 5400)
-  -h, --help             Show help message
 ```
 
 Generates an implementation plan from a draft document (Round 0). By default, iteratively refines the plan with Codex review (Round 1+) until Codex outputs APPROVED or max rounds are reached. Use `--skip-review` to generate the plan without Codex refinement.
