@@ -40,10 +40,13 @@ You should see Duo commands available:
 ```
 /duo:start
 /duo:run
-/duo:ask
 /duo:setup
 /duo:help
 ```
+
+## Per-Project Setup
+
+Run `/duo:setup` once in each project where you use Duo. It adds Duo's script permissions to `.claude/settings.local.json` so Claude does not prompt for approval every time Duo runs its scripts. Without this step, Claude will ask for access on each invocation.
 
 ## Other Install Guides
 

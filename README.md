@@ -33,6 +33,8 @@ The loop has two phases: **Implementation** (Claude works, Codex reviews summari
 
 Requires [codex CLI](https://github.com/openai/codex) for review. See the full [Installation Guide](docs/install-for-claude.md) for prerequisites.
 
+> **Per-project setup:** Run `/duo:setup` once in each project to grant Duo script permissions. Without it, Claude will prompt for approval on every run.
+
 ## Quick Start
 
 1. **Start development** from a draft file or inline text:
