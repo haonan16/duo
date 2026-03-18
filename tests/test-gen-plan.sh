@@ -40,7 +40,7 @@ fail() {
 }
 
 echo "========================================"
-echo "Testing draft Command Structure"
+echo "Testing plan Command Structure"
 echo "========================================"
 echo ""
 
@@ -56,11 +56,11 @@ echo "========================================"
 # ----------------------------------------
 echo ""
 echo "PT-1: Command file structure validation"
-DRAFT_CMD="$COMMANDS_DIR/draft.md"
+DRAFT_CMD="$COMMANDS_DIR/plan.md"
 if [[ -f "$DRAFT_CMD" ]]; then
-    pass "draft.md command file exists"
+    pass "plan.md command file exists"
 else
-    fail "draft.md command file exists" "File exists" "File not found"
+    fail "plan.md command file exists" "File exists" "File not found"
 fi
 
 # ----------------------------------------
@@ -71,9 +71,9 @@ echo "PT-2: Command description validation"
 if [[ -f "$DRAFT_CMD" ]]; then
     DESC=$(sed -n '/^---$/,/^---$/{ /^description:/{ s/^description:[[:space:]]*//p; q; } }' "$DRAFT_CMD")
     if [[ -n "$DESC" ]]; then
-        pass "draft.md has description: ${DESC:0:50}..."
+        pass "plan.md has description: ${DESC:0:50}..."
     else
-        fail "draft.md description validation" "Non-empty description" "(empty)"
+        fail "plan.md description validation" "Non-empty description" "(empty)"
     fi
 fi
 
@@ -84,9 +84,9 @@ echo ""
 echo "PT-3: Allowed tools validation"
 if [[ -f "$DRAFT_CMD" ]]; then
     if grep -q "allowed-tools:" "$DRAFT_CMD"; then
-        pass "draft.md has allowed-tools specification"
+        pass "plan.md has allowed-tools specification"
     else
-        fail "draft.md allowed-tools validation" "allowed-tools present" "Not found"
+        fail "plan.md allowed-tools validation" "allowed-tools present" "Not found"
     fi
 fi
 
@@ -97,9 +97,9 @@ echo ""
 echo "PT-4: Argument hint validation"
 if [[ -f "$DRAFT_CMD" ]]; then
     if grep -q "argument-hint:" "$DRAFT_CMD"; then
-        pass "draft.md has argument-hint specification"
+        pass "plan.md has argument-hint specification"
     else
-        fail "draft.md argument-hint validation" "argument-hint present" "Not found"
+        fail "plan.md argument-hint validation" "argument-hint present" "Not found"
     fi
 fi
 
@@ -277,12 +277,12 @@ else
     fail "NT-2b: Should reject no frontmatter" "No frontmatter rejected" "Accepted"
 fi
 
-# Verify draft.md has required fields
+# Verify plan.md has required fields
 if [[ -f "$DRAFT_CMD" ]]; then
     if check_yaml_frontmatter "$DRAFT_CMD"; then
-        pass "NT-2c: draft.md has all required frontmatter fields"
+        pass "NT-2c: plan.md has all required frontmatter fields"
     else
-        fail "NT-2c: draft.md missing required frontmatter"
+        fail "NT-2c: plan.md missing required frontmatter"
     fi
 fi
 
@@ -332,12 +332,12 @@ else
     fail "NT-3a: Should reject malformed YAML" "Invalid YAML rejected" "Accepted"
 fi
 
-# Verify draft.md has valid YAML
+# Verify plan.md has valid YAML
 if [[ -f "$DRAFT_CMD" ]]; then
     if check_yaml_syntax "$DRAFT_CMD"; then
-        pass "NT-3b: draft.md has valid YAML syntax"
+        pass "NT-3b: plan.md has valid YAML syntax"
     else
-        fail "NT-3b: draft.md has invalid YAML syntax"
+        fail "NT-3b: plan.md has invalid YAML syntax"
     fi
 fi
 
@@ -408,9 +408,9 @@ echo "Content validation: No Emoji or CJK characters"
 
 if [[ -f "$DRAFT_CMD" ]]; then
     if grep -Pq '[\p{Han}]|[\x{1F300}-\x{1F9FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]' "$DRAFT_CMD" 2>/dev/null; then
-        fail "draft.md: Contains Emoji or CJK characters"
+        fail "plan.md: Contains Emoji or CJK characters"
     else
-        pass "draft.md: Content is English only"
+        pass "plan.md: Content is English only"
     fi
 fi
 

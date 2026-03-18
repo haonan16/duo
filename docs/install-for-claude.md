@@ -40,7 +40,6 @@ You should see Duo commands available:
 ```
 /duo:start
 /duo:run
-/duo:draft
 /duo:plan
 /duo:ask
 /duo:setup

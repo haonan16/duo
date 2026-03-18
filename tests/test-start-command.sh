@@ -158,11 +158,11 @@ else
     fail "missing reference to validate-gen-plan-io.sh"
 fi
 
-# Test 13: Supports --draft-only flag
-if grep -q 'draft-only' "$START_FILE"; then
-    pass "supports --draft-only flag"
+# Test 13: Supports --plan-only flag (and --draft-only backward compat alias)
+if grep -q 'plan-only' "$START_FILE" && grep -q 'draft-only' "$START_FILE"; then
+    pass "supports --plan-only flag (with --draft-only alias)"
 else
-    fail "missing --draft-only flag support"
+    fail "missing --plan-only or --draft-only flag support"
 fi
 
 # Test 14: Supports --review-only flag

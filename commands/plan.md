@@ -1,6 +1,6 @@
 ---
-description: "Start plan refinement loop with Codex review"
-argument-hint: "--input <path/to/draft.md> --output <path/to/plan.md> [--max N] [--codex-model MODEL:EFFORT] [--codex-timeout SECONDS]"
+description: "Generate implementation plan from draft, optionally refine with Codex review"
+argument-hint: "--input <path/to/draft.md> --output <path/to/plan.md> [--skip-review] [--max N] [--codex-model MODEL:EFFORT] [--codex-timeout SECONDS]"
 allowed-tools:
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/ask-codex.sh:*)"
@@ -14,9 +14,9 @@ allowed-tools:
 hide-from-slash-command-tool: "true"
 ---
 
-# Start Plan Refinement Loop
+# Generate Plan
 
-This command generates an implementation plan from a draft document and iteratively refines it using Codex critique. Claude writes/refines the plan, Codex reviews it, and the loop continues until Codex approves or max rounds are reached.
+This command generates an implementation plan from a draft document. By default, it then iteratively refines the plan using Codex critique until Codex approves or max rounds are reached. Use `--skip-review` to generate the plan without Codex refinement.
 
 ## Argument Parsing
 
@@ -26,6 +26,7 @@ Parse the following arguments from `$ARGUMENTS`:
 |----------|----------|---------|-------------|
 | `--input` | Yes | - | Path to the input draft file |
 | `--output` | Yes | - | Path to the output plan file |
+| `--skip-review` | No | false | Skip Codex refinement loop, generate plan only (Round 0) |
 | `--max` | No | 5 | Maximum number of refinement rounds (including Round 0) |
 | `--codex-model` | No | - | Codex model and effort level (e.g., `o4-mini:high`) |
 | `--codex-timeout` | No | - | Timeout in seconds for Codex calls |
@@ -198,7 +199,17 @@ The output file already contains the plan template structure and the original dr
 
 3. If inconsistencies are found, fix them using the Edit tool.
 
-4. Report "Round 0 complete" with a summary of the generated plan.
+4. Check if the updated plan file contains multiple languages (e.g., mixed English and Chinese content).
+   If multiple languages are detected:
+   - Use **AskUserQuestion** to ask the user whether they want to unify the language and which language to use
+   - If the user chooses to unify, translate all content to the chosen language using the Edit tool
+   - If the user declines, leave the document as-is
+
+5. Report "Round 0 complete" with a summary of the generated plan (path, number of acceptance criteria, whether language was unified).
+
+---
+
+**If `--skip-review` is set**: Stop here. Report the output path and summary. Do not proceed to Round 1+.
 
 ---
 

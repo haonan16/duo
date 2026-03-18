@@ -15,11 +15,10 @@ The loop continues until all acceptance criteria are met or no issues remain.
 
 | Command | Purpose |
 |---------|---------|
-| `/duo:start <file.md>` | Smart start (auto-detects draft vs plan) |
+| `/duo:start <file.md or text>` | Smart start (file path or inline text, auto-detects draft vs plan) |
 | `/duo:run <plan.md>` | Start iterative development with Codex review |
 | `/duo:stop` | Cancel active loop |
-| `/duo:draft --input <draft.md> --output <plan.md>` | Generate structured plan from draft |
-| `/duo:plan --input <draft.md> --output <plan.md>` | Generate and iteratively refine plan with Codex |
+| `/duo:plan --input <draft.md> --output <plan.md>` | Generate plan from draft (with optional Codex refinement) |
 | `/duo:pr --claude\|--codex` | Start PR review loop with bot monitoring |
 | `/duo:pr-stop` | Cancel active PR loop |
 | `/duo:ask [question]` | One-shot consultation with Codex |
@@ -57,26 +56,6 @@ OPTIONS:
   -h, --help             Show help message
 ```
 
-### draft
-
-```
-/duo:draft --input <path/to/draft.md> --output <path/to/plan.md>
-
-OPTIONS:
-  --input   Path to the input draft file (required)
-  --output  Path to the output plan file (required)
-  -h, --help             Show help message
-
-The draft command transforms rough draft documents into structured implementation plans.
-
-Workflow:
-1. Validates input/output paths
-2. Checks if draft is relevant to the repository
-3. Analyzes draft for clarity, consistency, completeness, and functionality
-4. Engages user to resolve any issues found
-5. Generates a structured plan.md with acceptance criteria
-```
-
 ### plan
 
 ```
@@ -85,6 +64,7 @@ Workflow:
 OPTIONS:
   --input <path>         Path to the input draft file (required)
   --output <path>        Path to the output plan file (required)
+  --skip-review          Generate plan only, skip Codex refinement loop
   --max <N>              Maximum refinement rounds (default: 5)
   --codex-model <MODEL:EFFORT>
                          Codex model and reasoning effort (default: gpt-5.4:xhigh)
@@ -93,7 +73,7 @@ OPTIONS:
   -h, --help             Show help message
 ```
 
-Generates an implementation plan from a draft document (Round 0), then iteratively refines it with Codex review (Round 1+). The loop stops when Codex outputs APPROVED or max rounds are reached.
+Generates an implementation plan from a draft document (Round 0). By default, iteratively refines the plan with Codex review (Round 1+) until Codex outputs APPROVED or max rounds are reached. Use `--skip-review` to generate the plan without Codex refinement.
 
 ### pr
 

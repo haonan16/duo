@@ -1,6 +1,6 @@
 # Duo
 
-**Current Version: 1.20.0**
+**Current Version: 1.22.0**
 
 > Based on [humanize](https://github.com/humania-org/humanize). Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 
@@ -35,9 +35,10 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
 
 ## Quick Start
 
-1. **Start development** from your draft:
+1. **Start development** from a draft file or inline text:
    ```bash
    /duo:start draft.md
+   /duo:start Add a caching layer for API responses
    ```
 
 2. **Monitor progress**:
@@ -50,14 +51,14 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
 
 For more control, use the individual commands:
 
-- **Generate a plan** from your draft:
-  ```bash
-  /duo:draft --input draft.md --output docs/plan.md
-  ```
-
-- **Iteratively refine** a plan with Codex review:
+- **Generate a plan** from your draft (with Codex refinement):
   ```bash
   /duo:plan --input draft.md --output docs/plan.md
+  ```
+
+- **Generate a plan** without Codex refinement:
+  ```bash
+  /duo:plan --input draft.md --output docs/plan.md --skip-review
   ```
 
 - **Run the loop** with an existing plan:

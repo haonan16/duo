@@ -35,7 +35,7 @@ else
 fi
 
 # Test 4: Lists all core commands
-for cmd in "/duo:start" "/duo:run" "/duo:draft" "/duo:plan" "/duo:stop" "/duo:pr" "/duo:pr-stop" "/duo:ask" "/duo:setup" "/duo:help"; do
+for cmd in "/duo:start" "/duo:run" "/duo:plan" "/duo:draft" "/duo:stop" "/duo:pr" "/duo:pr-stop" "/duo:ask" "/duo:setup" "/duo:help"; do
     if grep -q "$cmd" "$HELP_FILE"; then
         pass "lists $cmd"
     else
