@@ -62,7 +62,22 @@ If the user approves adding to a file:
 
 Report: "Monitor configured. Run `source <file>` or open a new terminal to use `duo monitor`."
 
-## Phase 4: Print Getting Started
+## Phase 4: Configure Permissions
+
+Run the permissions check:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-environment.sh" --configure-permissions
+```
+
+Parse the output:
+- `ALREADY_CONFIGURED`: Report that Duo script permissions are already in `.claude/settings.local.json`
+- `CONFIGURED:<file>`: Report that permissions were added to the file. The user will no longer be prompted to approve Duo's scripts during `/duo:start` and `/duo:run`.
+- `ERROR:<message>`: Report the error
+
+This adds Duo's own shell scripts (detect-plan-structure.sh, setup-rlcr-loop.sh, ask-codex.sh, etc.) to the project's allowed tools list. It does NOT add broad permissions like Read/Write/Edit -- only the specific Bash commands that Duo orchestrates.
+
+## Phase 5: Print Getting Started
 
 After all phases, print:
 

@@ -231,6 +231,62 @@ add_to_shell_rc() {
     echo "Added to $rc_file"
 }
 
+configure_permissions() {
+    local settings_file=".claude/settings.local.json"
+    local settings_dir=".claude"
+
+    # Check if already configured (look for a Duo-specific script pattern)
+    if [[ -f "$settings_file" ]] && grep -qF "setup-rlcr-loop.sh" "$settings_file" 2>/dev/null; then
+        echo "ALREADY_CONFIGURED"
+        return 0
+    fi
+
+    # Build the permissions list (Duo script patterns only)
+    # Uses wildcard prefix to match any plugin cache path
+    local duo_permissions='[
+    "Bash(*/scripts/detect-plan-structure.sh:*)",
+    "Bash(*/scripts/setup-rlcr-loop.sh:*)",
+    "Bash(*/scripts/setup-pr-loop.sh:*)",
+    "Bash(*/scripts/cancel-rlcr-loop.sh:*)",
+    "Bash(*/scripts/cancel-pr-loop.sh:*)",
+    "Bash(*/scripts/validate-gen-plan-io.sh:*)",
+    "Bash(*/scripts/ask-codex.sh:*)",
+    "Bash(*/scripts/setup-environment.sh:*)",
+    "Bash(mkdir:*)"
+  ]'
+
+    mkdir -p "$settings_dir"
+
+    if [[ -f "$settings_file" ]]; then
+        # Merge into existing settings using jq
+        if command -v jq >/dev/null 2>&1; then
+            local existing
+            existing=$(cat "$settings_file")
+            local existing_allow
+            existing_allow=$(echo "$existing" | jq -r '.permissions.allow // []' 2>/dev/null)
+
+            # Merge: add duo permissions that are not already present
+            echo "$existing" | jq --argjson duo "$duo_permissions" '
+                .permissions.allow = ((.permissions.allow // []) + $duo | unique)
+            ' > "${settings_file}.tmp" && mv "${settings_file}.tmp" "$settings_file"
+            echo "CONFIGURED:$settings_file"
+        else
+            echo "ERROR:jq not installed, cannot merge permissions"
+            return 1
+        fi
+    else
+        # Create new settings file
+        cat > "$settings_file" << SETTINGS_EOF
+{
+  "permissions": {
+    "allow": $duo_permissions
+  }
+}
+SETTINGS_EOF
+        echo "CONFIGURED:$settings_file"
+    fi
+}
+
 install_skills() {
     local target="${1:-}"
 
@@ -261,6 +317,9 @@ case "${1:-}" in
     --install-cli)
         install_wrapper
         ;;
+    --configure-permissions)
+        configure_permissions
+        ;;
     --install-skills)
         install_skills "${2:-}"
         ;;
@@ -274,6 +333,7 @@ Usage:
   setup-environment.sh --configure-shell   Check shell RC status
   setup-environment.sh --add-to-rc <file>  Add monitor to RC file
   setup-environment.sh --install-cli       Install wrapper and CLI only (no RC changes)
+  setup-environment.sh --configure-permissions  Add Duo script permissions to .claude/settings.local.json
   setup-environment.sh --install-skills <target>  Install skills
 EOF
         ;;
