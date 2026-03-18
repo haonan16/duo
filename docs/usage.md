@@ -20,7 +20,6 @@ The loop continues until all acceptance criteria are met or no issues remain.
 | `/duo:stop` | Cancel active loop |
 | `/duo:pr --claude\|--codex` | Start PR review loop with bot monitoring |
 | `/duo:pr-stop` | Cancel active PR loop |
-| `/duo:ask [question]` | One-shot consultation with Codex |
 | `/duo:setup` | Install, configure, verify prerequisites |
 | `/duo:help` | Show all commands |
 
@@ -107,26 +106,6 @@ The PR loop automates the process of handling GitHub PR reviews from remote bots
 - GitHub CLI (`gh`) must be installed and authenticated
 - Codex CLI must be installed
 - Current branch must have an associated open PR
-
-### ask-codex
-
-```
-/duo:ask [OPTIONS] <question or task>
-
-OPTIONS:
-  --codex-model <MODEL:EFFORT>
-                         Codex model and reasoning effort (default: gpt-5.4:xhigh)
-  --codex-timeout <SECONDS>
-                         Timeout for the Codex query in seconds (default: 3600)
-  -h, --help             Show help message
-```
-
-The ask-codex skill sends a one-shot question or task to Codex and returns the response
-inline. Unlike the development loop, this is a single consultation without iteration -- useful
-for getting a second opinion, reviewing a design, or asking domain-specific questions.
-
-Responses are saved to `.duo/skill/<timestamp>/` with `input.md`, `output.md`,
-and `metadata.md` for reference.
 
 ## Monitoring
 
