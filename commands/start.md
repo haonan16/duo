@@ -6,6 +6,7 @@ allowed-tools:
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/ask-codex.sh:*)"
+  - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-environment.sh:*)"
   - "Bash(mkdir:*)"
   - "Read"
   - "Glob"
@@ -39,6 +40,16 @@ Build a `CODEX_OPTS` string from the optional codex flags:
 - If neither is provided, `CODEX_OPTS` remains empty
 
 **Implicit plan-only behavior**: If any of `--max`, `--codex-model`, or `--codex-timeout` are passed WITHOUT `--plan-only`, they imply `--plan-only`. The rationale is that these flags only affect plan generation refinement, so passing them signals intent to focus on plan generation rather than starting a development loop.
+
+## Auto-Setup
+
+Before proceeding with any other logic, check if the Duo CLI is installed:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-environment.sh" --install-cli
+```
+
+This silently installs the wrapper (`~/.duo/duo.sh`) and standalone CLI (`~/.duo/bin/duo`) if they don't already exist. It does NOT modify shell RC files -- that only happens during `/duo:setup`. This ensures `duo monitor` works if the user manually adds `~/.duo/bin` to their PATH, even without running `/duo:setup` first.
 
 ## Distinguishing File Paths From Inline Text
 

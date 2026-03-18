@@ -22,11 +22,13 @@ Print the following reference card to the user exactly as shown:
 | `/duo:setup` | Install, configure, verify prerequisites |
 | `/duo:help` | This reference card |
 
-**Monitor** (run in a separate terminal):
+**Monitor** (run in a separate terminal, auto-installed on first `/duo:start`):
 
 ```
-duo monitor          # Development loop progress
-duo monitor --pr     # PR loop progress
+~/.duo/bin/duo monitor          # Development loop progress
+~/.duo/bin/duo monitor --pr     # PR loop progress
 ```
+
+Run `/duo:setup` to add `~/.duo/bin` to PATH, then use `duo monitor` directly.
 
 **Docs:** See `docs/usage.md` for full command reference and options.

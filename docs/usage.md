@@ -130,16 +130,20 @@ and `metadata.md` for reference.
 
 ## Monitoring
 
-Set up the monitoring helper for real-time progress tracking:
+The monitor CLI is auto-installed on first `/duo:start`. Use it in a separate terminal:
 
 ```bash
-# Run /duo:setup to install the helper, then add to your .bashrc or .zshrc:
-source ~/.duo/duo.sh
-
 # Monitor development loop progress
-duo monitor
+~/.duo/bin/duo monitor
 
 # Monitor PR loop progress
+~/.duo/bin/duo monitor --pr
+```
+
+To use `duo monitor` without the full path, run `/duo:setup` which adds `~/.duo/bin` to your PATH. After that:
+
+```bash
+duo monitor
 duo monitor --pr
 ```
 

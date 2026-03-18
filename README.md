@@ -1,6 +1,6 @@
 # Duo
 
-**Current Version: 1.24.0**
+**Current Version: 1.25.0**
 
 > Based on [humanize](https://github.com/humania-org/humanize). Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 
@@ -41,11 +41,11 @@ Requires [codex CLI](https://github.com/openai/codex) for review. See the full [
    /duo:start Add a caching layer for API responses
    ```
 
-2. **Monitor progress** (run `/duo:setup` first to install the helper):
+2. **Monitor progress** in a separate terminal:
    ```bash
-   source ~/.duo/duo.sh
-   duo monitor
+   ~/.duo/bin/duo monitor
    ```
+   The CLI is auto-installed on first `/duo:start`. Run `/duo:setup` to add it to your PATH permanently.
 
 ### Power User Commands
 
