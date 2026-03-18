@@ -18,7 +18,6 @@ Print the following reference card to the user exactly as shown:
 | `/duo:stop` | Cancel active development loop |
 | `/duo:pr --claude\|--codex` | Start PR review loop |
 | `/duo:pr-stop` | Cancel PR review loop |
-| `/duo:ask <question>` | One-shot Codex consultation |
 | `/duo:setup` | Install, configure, verify prerequisites |
 | `/duo:help` | This reference card |
 
