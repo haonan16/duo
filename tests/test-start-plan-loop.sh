@@ -106,12 +106,19 @@ fi
 echo ""
 echo "--- Command Tests ---"
 echo ""
-echo "PT-6: Command file structure validation"
-PLAN_LOOP_CMD="$COMMANDS_DIR/plan.md"
+echo "PT-6: Command file structure validation (plan merged into start)"
+PLAN_LOOP_CMD="$COMMANDS_DIR/start.md"
 if [[ -f "$PLAN_LOOP_CMD" ]]; then
-    pass "plan.md command file exists"
+    pass "start.md command file exists (contains plan generation workflow)"
 else
-    fail "plan.md command file exists" "File exists" "File not found"
+    fail "start.md command file exists" "File exists" "File not found"
+fi
+
+# Verify plan.md was removed
+if [[ ! -f "$COMMANDS_DIR/plan.md" ]]; then
+    pass "plan.md has been removed (merged into start.md)"
+else
+    fail "plan.md should not exist" "File removed" "File still exists"
 fi
 
 # ========================================
@@ -348,7 +355,7 @@ echo ""
 echo "--- Negative Tests ---"
 echo ""
 echo "NT-1: No Emoji or CJK characters in new files"
-for CHECK_FILE in "$PLAN_REVIEW_TEMPLATE" "$PLAN_LOOP_CMD"; do
+for CHECK_FILE in "$PLAN_REVIEW_TEMPLATE" "$PLAN_LOOP_CMD" ; do
     if [[ -f "$CHECK_FILE" ]]; then
         BASENAME=$(basename "$CHECK_FILE")
         if grep -Pq '[\p{Han}]|[\x{1F300}-\x{1F9FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]' "$CHECK_FILE" 2>/dev/null; then
@@ -416,10 +423,10 @@ if [[ -f "$README_MD" ]]; then
 fi
 
 if [[ -f "$INSTALL_MD" ]]; then
-    if grep -q 'plan' "$INSTALL_MD"; then
-        pass "docs/install-for-claude.md references plan command"
+    if grep -q 'start' "$INSTALL_MD"; then
+        pass "docs/install-for-claude.md references start command"
     else
-        fail "docs/install-for-claude.md references plan command"
+        fail "docs/install-for-claude.md references start command"
     fi
 fi
 

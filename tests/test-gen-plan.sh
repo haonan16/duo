@@ -52,15 +52,22 @@ echo "Positive Tests - Must Pass"
 echo "========================================"
 
 # ----------------------------------------
-# PT-1: Command file structure validation
+# PT-1: Plan generation is in start.md (plan.md was merged into start.md)
 # ----------------------------------------
 echo ""
-echo "PT-1: Command file structure validation"
-DRAFT_CMD="$COMMANDS_DIR/plan.md"
+echo "PT-1: Plan generation command structure validation"
+DRAFT_CMD="$COMMANDS_DIR/start.md"
 if [[ -f "$DRAFT_CMD" ]]; then
-    pass "plan.md command file exists"
+    pass "start.md command file exists (contains plan generation workflow)"
 else
-    fail "plan.md command file exists" "File exists" "File not found"
+    fail "start.md command file exists" "File exists" "File not found"
+fi
+
+# Verify plan.md was removed
+if [[ ! -f "$COMMANDS_DIR/plan.md" ]]; then
+    pass "plan.md has been removed (merged into start.md)"
+else
+    fail "plan.md should not exist" "File removed" "File still exists"
 fi
 
 # ----------------------------------------
@@ -71,9 +78,9 @@ echo "PT-2: Command description validation"
 if [[ -f "$DRAFT_CMD" ]]; then
     DESC=$(sed -n '/^---$/,/^---$/{ /^description:/{ s/^description:[[:space:]]*//p; q; } }' "$DRAFT_CMD")
     if [[ -n "$DESC" ]]; then
-        pass "plan.md has description: ${DESC:0:50}..."
+        pass "start.md has description: ${DESC:0:50}..."
     else
-        fail "plan.md description validation" "Non-empty description" "(empty)"
+        fail "start.md description validation" "Non-empty description" "(empty)"
     fi
 fi
 
@@ -84,9 +91,9 @@ echo ""
 echo "PT-3: Allowed tools validation"
 if [[ -f "$DRAFT_CMD" ]]; then
     if grep -q "allowed-tools:" "$DRAFT_CMD"; then
-        pass "plan.md has allowed-tools specification"
+        pass "start.md has allowed-tools specification"
     else
-        fail "plan.md allowed-tools validation" "allowed-tools present" "Not found"
+        fail "start.md allowed-tools validation" "allowed-tools present" "Not found"
     fi
 fi
 
@@ -97,9 +104,9 @@ echo ""
 echo "PT-4: Argument hint validation"
 if [[ -f "$DRAFT_CMD" ]]; then
     if grep -q "argument-hint:" "$DRAFT_CMD"; then
-        pass "plan.md has argument-hint specification"
+        pass "start.md has argument-hint specification"
     else
-        fail "plan.md argument-hint validation" "argument-hint present" "Not found"
+        fail "start.md argument-hint validation" "argument-hint present" "Not found"
     fi
 fi
 
@@ -277,12 +284,12 @@ else
     fail "NT-2b: Should reject no frontmatter" "No frontmatter rejected" "Accepted"
 fi
 
-# Verify plan.md has required fields
+# Verify start.md has required fields
 if [[ -f "$DRAFT_CMD" ]]; then
     if check_yaml_frontmatter "$DRAFT_CMD"; then
-        pass "NT-2c: plan.md has all required frontmatter fields"
+        pass "NT-2c: start.md has all required frontmatter fields"
     else
-        fail "NT-2c: plan.md missing required frontmatter"
+        fail "NT-2c: start.md missing required frontmatter"
     fi
 fi
 
@@ -332,12 +339,12 @@ else
     fail "NT-3a: Should reject malformed YAML" "Invalid YAML rejected" "Accepted"
 fi
 
-# Verify plan.md has valid YAML
+# Verify start.md has valid YAML
 if [[ -f "$DRAFT_CMD" ]]; then
     if check_yaml_syntax "$DRAFT_CMD"; then
-        pass "NT-3b: plan.md has valid YAML syntax"
+        pass "NT-3b: start.md has valid YAML syntax"
     else
-        fail "NT-3b: plan.md has invalid YAML syntax"
+        fail "NT-3b: start.md has invalid YAML syntax"
     fi
 fi
 
@@ -408,9 +415,9 @@ echo "Content validation: No Emoji or CJK characters"
 
 if [[ -f "$DRAFT_CMD" ]]; then
     if grep -Pq '[\p{Han}]|[\x{1F300}-\x{1F9FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]' "$DRAFT_CMD" 2>/dev/null; then
-        fail "plan.md: Contains Emoji or CJK characters"
+        fail "start.md: Contains Emoji or CJK characters"
     else
-        pass "plan.md: Content is English only"
+        pass "start.md: Content is English only"
     fi
 fi
 
