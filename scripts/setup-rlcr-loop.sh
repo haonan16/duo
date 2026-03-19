@@ -51,6 +51,7 @@ SKIP_IMPL_NO_PLAN="false"
 ASK_CODEX_QUESTION="true"
 AGENT_TEAMS="false"
 PROBE_MODE="false"   # --probe: read-only conflict check, exits before any setup
+DO_RESUME=""      # --do-resume <loop_dir>: bypass setup, resume existing loop
 
 show_help() {
     cat <<HELP_EOF
@@ -233,6 +234,14 @@ while [[ $# -gt 0 ]]; do
             PROBE_MODE="true"
             shift
             ;;
+        --do-resume)
+            if [[ -z "${2:-}" ]]; then
+                echo "Error: --do-resume requires a loop directory path" >&2
+                exit 1
+            fi
+            DO_RESUME="$2"
+            shift 2
+            ;;
         -*)
             echo "Unknown option: $1" >&2
             echo "Use --help for usage information" >&2
@@ -280,6 +289,71 @@ if [[ "$PROBE_MODE" == "true" ]]; then
         echo "CLEAR"
         exit 0
     fi
+fi
+
+# ========================================
+# Handle --do-resume: transfer ownership and resume existing loop
+# ========================================
+if [[ -n "$DO_RESUME" ]]; then
+    if [[ ! -d "$DO_RESUME" ]]; then
+        echo "Error: Loop directory not found: $DO_RESUME" >&2
+        exit 1
+    fi
+
+    RESUME_STATE_FILE=$(resolve_active_state_file "$DO_RESUME" 2>/dev/null || echo "")
+    if [[ -z "$RESUME_STATE_FILE" || ! -f "$RESUME_STATE_FILE" ]]; then
+        echo "Error: No active state file found in: $DO_RESUME" >&2
+        exit 1
+    fi
+
+    # Read state values
+    RESUME_ROUND=$(grep -E '^current_round:' "$RESUME_STATE_FILE" | sed 's/^current_round:[[:space:]]*//' | tr -d ' ')
+    RESUME_PLAN=$(grep -E '^plan_file:' "$RESUME_STATE_FILE" | sed 's/^plan_file:[[:space:]]*//' | tr -d ' ')
+    RESUME_BASE=$(grep -E '^base_branch:' "$RESUME_STATE_FILE" | sed 's/^base_branch:[[:space:]]*//' | tr -d ' ')
+    RESUME_MAX=$(grep -E '^max_iterations:' "$RESUME_STATE_FILE" | sed 's/^max_iterations:[[:space:]]*//' | tr -d ' ')
+    RESUME_GOAL_TRACKER="$DO_RESUME/goal-tracker.md"
+    RESUME_PROMPT_FILE="$DO_RESUME/round-${RESUME_ROUND:-0}-prompt.md"
+
+    # Write .pending-session-id with force=true to transfer ownership safely.
+    # The hook will replace the existing session_id (even if non-empty) with the
+    # new session's id. This avoids an empty-session-id window where the loop
+    # could be claimed by an unrelated session.
+    SCRIPT_SELF_PATH="$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]:-$0}")"
+    mkdir -p "$PROJECT_ROOT/.duo"
+    printf '%s\n%s\nforce=true\n' "$RESUME_STATE_FILE" "$SCRIPT_SELF_PATH" \
+        > "$PROJECT_ROOT/.duo/.pending-session-id"
+
+    # Output resume banner
+    echo "=== duo:run resumed (round ${RESUME_ROUND:-0}) ==="
+    echo ""
+    echo "Resuming loop from round ${RESUME_ROUND:-0} of ${RESUME_MAX:-42}."
+    echo "Plan: $RESUME_PLAN"
+    echo "Base Branch: $RESUME_BASE"
+    echo "Loop Directory: $DO_RESUME"
+    echo ""
+    echo "Goal Tracker: $RESUME_GOAL_TRACKER"
+    echo ""
+    echo "---"
+    echo ""
+
+    # Output the current round's prompt if it exists; fall back otherwise
+    if [[ -f "$RESUME_PROMPT_FILE" ]]; then
+        cat "$RESUME_PROMPT_FILE"
+    else
+        cat << EOF
+## Resumed at Round ${RESUME_ROUND:-0}
+
+The loop was interrupted before a round prompt was written.
+
+Read the goal tracker and the last available round summary for context,
+then continue working on the plan from where you left off.
+
+- Goal Tracker: @$RESUME_GOAL_TRACKER
+- Plan: @$RESUME_PLAN
+EOF
+    fi
+
+    exit 0
 fi
 
 # loop-common.sh already sourced above (provides find_active_loop, find_active_pr_loop, etc.)
