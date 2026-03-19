@@ -10,6 +10,40 @@ hide-from-slash-command-tool: "true"
 
 # Start Development Loop
 
+## Resume Check
+
+Before validating the plan, check if an interrupted loop exists.
+
+**Skip this entire section if** any of these conditions are true:
+- `$ARGUMENTS` contains `--skip-impl`
+- `$ARGUMENTS` contains `-h` or `--help`
+
+Run the probe:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh" --probe $ARGUMENTS
+```
+
+**Parse the probe output (first line):**
+
+- If the first line is `RESUME_PROMPT`:
+  - Read `loop_dir:` from the output (second line, value after `loop_dir: `)
+  - Read `current_round:` from the output (third line, value after `current_round: `)
+  - Print: `Resuming interrupted loop at round <current_round>.`
+  - Run the resume:
+    ```bash
+    "${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh" --do-resume <loop_dir>
+    ```
+  - **Stop here.** Do not run the compliance check or normal setup.
+
+- If the first line is `CLEAR` (or the probe exits with code 0 for any reason):
+  - Continue to the Plan Compliance Pre-Check section below.
+
+- If the probe fails (non-zero exit, not exit 4):
+  - Continue to the Plan Compliance Pre-Check section — treat probe failure as CLEAR.
+
+---
+
 ## Plan Compliance Pre-Check
 
 Before running the setup script, validate the plan file for compliance. This is a fool-proofing mechanism that catches obviously wrong plan files early.
