@@ -249,7 +249,6 @@ configure_permissions() {
     "Bash(*/scripts/setup-pr-loop.sh:*)",
     "Bash(*/scripts/cancel-rlcr-loop.sh:*)",
     "Bash(*/scripts/cancel-pr-loop.sh:*)",
-    "Bash(*/scripts/validate-gen-plan-io.sh:*)",
     "Bash(*/scripts/ask-codex.sh:*)",
     "Bash(*/scripts/setup-environment.sh:*)",
     "Bash(mkdir:*)"

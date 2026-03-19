@@ -151,28 +151,21 @@ else
     fail "missing reference to setup-rlcr-loop.sh"
 fi
 
-# Test 12: References validate-gen-plan-io.sh for drafts
-if grep -q 'validate-gen-plan-io' "$START_FILE"; then
-    pass "references validate-gen-plan-io.sh"
-else
-    fail "missing reference to validate-gen-plan-io.sh"
-fi
-
-# Test 13: Supports --plan-only flag (and --draft-only backward compat alias)
+# Test 12: Supports --plan-only flag (and --draft-only backward compat alias)
 if grep -q 'plan-only' "$START_FILE" && grep -q 'draft-only' "$START_FILE"; then
     pass "supports --plan-only flag (with --draft-only alias)"
 else
     fail "missing --plan-only or --draft-only flag support"
 fi
 
-# Test 14: Supports --review-only flag
+# Test 13: Supports --review-only flag
 if grep -q 'review-only' "$START_FILE"; then
     pass "supports --review-only flag"
 else
     fail "missing --review-only flag support"
 fi
 
-# Test 15: Does not contain rlcr in user-facing text (exclude allowed-tools, script refs, and on-disk paths)
+# Test 14: Does not contain rlcr in user-facing text (exclude allowed-tools, script refs, and on-disk paths)
 if grep -v '^allowed-tools\|scripts/\|setup-rlcr\|cancel-rlcr\|rlcr-stop\|\.duo/rlcr' "$START_FILE" | grep -v '^\s*-\s*"Bash' | grep -qi 'rlcr'; then
     fail "contains rlcr in user-facing text"
 else

@@ -159,12 +159,6 @@ fi
 echo ""
 echo "PT-8: Command references required scripts in allowed-tools"
 if [[ -f "$PLAN_LOOP_CMD" ]]; then
-    if grep -q 'validate-gen-plan-io.sh' "$PLAN_LOOP_CMD"; then
-        pass "Command references validate-gen-plan-io.sh"
-    else
-        fail "Command references validate-gen-plan-io.sh"
-    fi
-
     if grep -q 'ask-codex.sh' "$PLAN_LOOP_CMD"; then
         pass "Command references ask-codex.sh"
     else
@@ -178,7 +172,7 @@ fi
 echo ""
 echo "PT-9: Command documents all arguments"
 if [[ -f "$PLAN_LOOP_CMD" ]]; then
-    for arg in "--input" "--output" "--max" "--codex-model" "--codex-timeout"; do
+    for arg in "--max" "--codex-model" "--codex-timeout"; do
         if grep -q -- "$arg" "$PLAN_LOOP_CMD"; then
             pass "Command documents $arg argument"
         else
@@ -207,65 +201,86 @@ if [[ -f "$PLAN_LOOP_CMD" ]]; then
 fi
 
 # ========================================
-# PT-11: Integration contract - validate-gen-plan-io.sh mutates output
+# PT-11: Plan-seeding contract - template path uses CLAUDE_PLUGIN_ROOT
 # ========================================
 echo ""
-echo "--- Integration Contract Tests ---"
-echo ""
-echo "PT-11: validate-gen-plan-io.sh creates output file with template + draft"
+echo "PT-11: Plan-seeding contract"
 
-setup_test_dir
-
-DRAFT_FILE="$TEST_DIR/test-draft.md"
-OUTPUT_FILE="$TEST_DIR/test-plan.md"
-
-echo "# Test Draft" > "$DRAFT_FILE"
-echo "This is a test draft for validation." >> "$DRAFT_FILE"
-
-VALIDATE_SCRIPT="$SCRIPTS_DIR/validate-gen-plan-io.sh"
-if [[ -x "$VALIDATE_SCRIPT" ]]; then
-    # Set CLAUDE_PLUGIN_ROOT so the script can find the template
-    EXIT_CODE=0
-    CLAUDE_PLUGIN_ROOT="$PROJECT_ROOT" "$VALIDATE_SCRIPT" \
-        --input "$DRAFT_FILE" --output "$OUTPUT_FILE" > /dev/null 2>&1 || EXIT_CODE=$?
-
-    if [[ $EXIT_CODE -eq 0 ]]; then
-        pass "validate-gen-plan-io.sh exits 0 for valid inputs"
+if [[ -f "$PLAN_LOOP_CMD" ]]; then
+    # Verify Phase 1 references the template via CLAUDE_PLUGIN_ROOT (not a bare relative path)
+    if grep -q 'CLAUDE_PLUGIN_ROOT.*prompt-template/plan/gen-plan-template' "$PLAN_LOOP_CMD"; then
+        pass "Phase 1 references template via CLAUDE_PLUGIN_ROOT"
     else
-        fail "validate-gen-plan-io.sh exits 0 for valid inputs" "exit 0" "exit $EXIT_CODE"
+        fail "Phase 1 must reference template via CLAUDE_PLUGIN_ROOT, not a relative path"
     fi
 
-    if [[ -f "$OUTPUT_FILE" ]]; then
-        pass "validate-gen-plan-io.sh creates output file"
+    # Verify the template file actually exists at the expected location
+    TEMPLATE_FILE="$PROJECT_ROOT/prompt-template/plan/gen-plan-template.md"
+    if [[ -f "$TEMPLATE_FILE" ]]; then
+        pass "Plan template file exists at prompt-template/plan/gen-plan-template.md"
     else
-        fail "validate-gen-plan-io.sh creates output file" "File exists" "File not created"
+        fail "Plan template file missing: $TEMPLATE_FILE"
     fi
 
-    if grep -q "Original Design Draft Start" "$OUTPUT_FILE" 2>/dev/null; then
-        pass "Output file contains draft start marker"
+    # Verify Phase 1 instructions include both draft markers
+    if grep -q 'Original Design Draft Start' "$PLAN_LOOP_CMD"; then
+        pass "Phase 1 instructs writing Original Design Draft Start marker"
     else
-        fail "Output file contains draft start marker"
+        fail "Phase 1 missing Original Design Draft Start marker instruction"
     fi
 
-    if grep -q "Original Design Draft End" "$OUTPUT_FILE" 2>/dev/null; then
-        pass "Output file contains draft end marker"
+    if grep -q 'Original Design Draft End' "$PLAN_LOOP_CMD"; then
+        pass "Phase 1 instructs writing Original Design Draft End marker"
     else
-        fail "Output file contains draft end marker"
+        fail "Phase 1 missing Original Design Draft End marker instruction"
     fi
 
-    if grep -q "Test Draft" "$OUTPUT_FILE" 2>/dev/null; then
-        pass "Output file preserves original draft content"
+    # Simulate the seeding: combine template + draft with markers, verify output structure
+    setup_test_dir
+    DRAFT_FILE="$TEST_DIR/test-draft.md"
+    SEEDED_FILE="$TEST_DIR/test-plan.md"
+    echo "# Test Draft" > "$DRAFT_FILE"
+    echo "This is a test draft for seeding." >> "$DRAFT_FILE"
+
+    {
+        cat "$TEMPLATE_FILE"
+        echo ""
+        echo "--- Original Design Draft Start ---"
+        echo ""
+        cat "$DRAFT_FILE"
+        echo ""
+        echo "--- Original Design Draft End ---"
+    } > "$SEEDED_FILE"
+
+    if [[ -f "$SEEDED_FILE" ]]; then
+        pass "Seeded output file created"
     else
-        fail "Output file preserves original draft content"
+        fail "Seeded output file not created"
     fi
 
-    if grep -q "Goal Description" "$OUTPUT_FILE" 2>/dev/null; then
-        pass "Output file contains plan template structure"
+    if grep -q "Original Design Draft Start" "$SEEDED_FILE"; then
+        pass "Seeded file contains draft start marker"
     else
-        fail "Output file contains plan template structure"
+        fail "Seeded file missing draft start marker"
     fi
-else
-    fail "validate-gen-plan-io.sh not found or not executable"
+
+    if grep -q "Original Design Draft End" "$SEEDED_FILE"; then
+        pass "Seeded file contains draft end marker"
+    else
+        fail "Seeded file missing draft end marker"
+    fi
+
+    if grep -q "Test Draft" "$SEEDED_FILE"; then
+        pass "Seeded file preserves original draft content"
+    else
+        fail "Seeded file missing original draft content"
+    fi
+
+    if grep -q "Goal Description" "$SEEDED_FILE"; then
+        pass "Seeded file contains plan template structure"
+    else
+        fail "Seeded file missing plan template structure"
+    fi
 fi
 
 # ========================================
@@ -276,6 +291,7 @@ echo "PT-12: ask-codex.sh delivers prompt text to mock codex"
 ASK_CODEX_SCRIPT="$SCRIPTS_DIR/ask-codex.sh"
 if [[ -x "$ASK_CODEX_SCRIPT" ]]; then
     # Use the same mock codex pattern as tests/test-ask-codex.sh
+    setup_test_dir
     MOCK_BIN_DIR="$TEST_DIR/mock-bin"
     mkdir -p "$MOCK_BIN_DIR"
 

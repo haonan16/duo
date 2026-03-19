@@ -4,7 +4,6 @@ argument-hint: "[path/to/file.md | inline text description] [--plan-only | --dra
 allowed-tools:
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/detect-plan-structure.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh:*)"
-  - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/ask-codex.sh:*)"
   - "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-environment.sh:*)"
   - "Bash(mkdir:*)"
@@ -106,14 +105,12 @@ Apply the heuristic from "Distinguishing File Paths From Inline Text" above.
    (same timestamp as the draft file)
 
 4. If `--plan-only` (or `--draft-only`) flag is present (or implied by refinement flags):
-   - Run IO validation: `"${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh" --input <draft-path> --output <plan-path>`
    - Run the plan generation workflow: Round 0 (relevance check, analysis, plan generation) as defined in the "Plan Generation Workflow" section below
    - If `--skip-review` is set: Stop after Round 0. Report the output path and stop.
    - If `--skip-review` is NOT set: Continue to the Codex refinement loop (Round 1+) as defined in the "Codex Refinement Loop" section below.
    - After completion, report the output path and stop
 
 5. If `--plan-only` (or `--draft-only`) flag is NOT present (and no refinement flags imply it):
-   - Run IO validation: `"${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh" --input <draft-path> --output <plan-path>`
    - Run the plan generation workflow: Round 0 only with `--skip-review` (no Codex refinement)
    - After plan generation completes successfully, report: "Plan generated from inline text. Starting development loop..."
    - Run the setup script directly:
@@ -144,13 +141,12 @@ Apply the heuristic from "Distinguishing File Paths From Inline Text" above.
    - Determine output path: `docs/plans/<input-basename>-plan.md`
      - Example: `ideas.md` produces `docs/plans/ideas-plan.md`
    - If `--plan-only` (or `--draft-only`) flag is present (or implied by refinement flags):
-     - Run IO validation: `"${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh" --input <file> --output <output-path>`
      - Run the plan generation workflow: Round 0 as defined in the "Plan Generation Workflow" section below
      - If `--skip-review` is set: Stop after Round 0. Report the output path and stop.
      - If `--skip-review` is NOT set: Continue to the Codex refinement loop (Round 1+).
      - After completion, report the output path and stop
    - If `--plan-only` (or `--draft-only`) flag is NOT present (and no refinement flags imply it):
-     - Run IO validation and plan generation workflow: Round 0 only with `--skip-review`
+     - Run the plan generation workflow: Round 0 only with `--skip-review`
      - After plan generation completes successfully, report: "Plan generated. Starting development loop..."
      - Run the setup script directly:
        ```bash
@@ -178,23 +174,19 @@ needed for both workflows.
 
 This section defines the complete plan generation pipeline. It is referenced by Cases 3 and 4 above.
 
-### Phase 1: IO Validation
+### Phase 1: Seed Output File
 
-Execute the validation script with the parsed input and output paths:
-
-```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/validate-gen-plan-io.sh" --input <INPUT_PATH> --output <OUTPUT_PATH>
-```
-
-**Handle exit codes:**
-- Exit code 0: The script has already created the output file with template structure and original draft appended. Continue to Phase 2.
-- Exit code 1: Report "Input file not found" and stop.
-- Exit code 2: Report "Input file is empty" and stop.
-- Exit code 3: Report "Output directory does not exist - please create it" and stop.
-- Exit code 4: Report "Output file already exists - please choose another path" and stop.
-- Exit code 5: Report "No write permission to output directory" and stop.
-- Exit code 6: Report "Invalid arguments" and show usage, then stop.
-- Exit code 7: Report "Plan template file not found - plugin configuration error" and stop.
+1. If the output file already exists, report "Output file already exists: <path>" and stop.
+2. Read the plan template: `${CLAUDE_PLUGIN_ROOT}/prompt-template/plan/gen-plan-template.md`
+3. Read the input draft file.
+4. Write the output file with the following structure:
+   - The full template content
+   - A blank line
+   - `--- Original Design Draft Start ---`
+   - A blank line
+   - The full draft content
+   - A blank line
+   - `--- Original Design Draft End ---`
 
 ---
 
@@ -292,7 +284,7 @@ Document the user's answer for each metric, as this distinction significantly af
 
 ### Phase 5: Plan Generation
 
-Deeply think and generate the plan following the structure defined in `prompt-template/plan/gen-plan-template.md`.
+Deeply think and generate the plan following the structure defined in `${CLAUDE_PLUGIN_ROOT}/prompt-template/plan/gen-plan-template.md`.
 
 #### Generation Rules
 
@@ -322,7 +314,7 @@ Deeply think and generate the plan following the structure defined in `prompt-te
 
 ### Phase 6: Write Plan
 
-The output file already contains the plan template structure and the original draft content (combined during IO validation). Now complete the plan:
+The output file already contains the plan template structure and the original draft content (combined in Phase 1). Now complete the plan:
 
 1. Use the **Edit tool** (not Write) to update the plan file with the generated content:
    - Replace template placeholders with actual plan content

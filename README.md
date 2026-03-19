@@ -1,6 +1,6 @@
 # Duo
 
-**Current Version: 1.27.0**
+**Current Version: 1.27.1**
 
 > Based on [humanize](https://github.com/humania-org/humanize). Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 

@@ -17,11 +17,8 @@ The installer hydrates this skill with an absolute runtime root path:
 
 ```mermaid
 flowchart TD
-    BEGIN([BEGIN]) --> VALIDATE[Validate input/output paths<br/>Run: {{DUO_RUNTIME_ROOT}}/scripts/validate-gen-plan-io.sh --input &lt;draft&gt; --output &lt;plan&gt;]
-    VALIDATE --> CHECK{Validation passed?}
-    CHECK -->|No| REPORT_ERROR[Report validation error<br/>Stop]
-    REPORT_ERROR --> END_FAIL([END])
-    CHECK -->|Yes| READ_DRAFT[Read input draft file]
+    BEGIN([BEGIN]) --> SEED[Seed output file<br/>Write template + draft content<br/>with Original Design Draft markers]
+    SEED --> READ_DRAFT[Read input draft file]
     READ_DRAFT --> CHECK_RELEVANCE{Is draft relevant to<br/>this repository?}
     CHECK_RELEVANCE -->|No| REPORT_IRRELEVANT[Report: Draft not related to repo<br/>Stop]
     REPORT_IRRELEVANT --> END_FAIL
@@ -48,8 +45,8 @@ flowchart TD
 ## Input Requirements
 
 **Required Arguments:**
-- `--input <path/to/draft.md>` - The draft document
-- `--output <path/to/plan.md>` - Where to write the plan
+- `<input>` - The draft document path
+- `<output>` - Where to write the plan (must not already exist)
 
 ## Plan Structure Output
 
@@ -91,19 +88,6 @@ Minimum viable implementation
 ## Implementation Notes
 - Code should NOT contain plan terminology
 ```
-
-## Validation Exit Codes
-
-| Exit Code | Meaning |
-|-----------|---------|
-| 0 | Success - continue |
-| 1 | Input file not found |
-| 2 | Input file is empty |
-| 3 | Output directory does not exist |
-| 4 | Output file already exists |
-| 5 | No write permission |
-| 6 | Invalid arguments |
-| 7 | Plan template file not found |
 
 ## Usage
 

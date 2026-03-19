@@ -131,11 +131,7 @@ Transforms a rough draft document into a structured implementation plan with:
 
 ### Generate Plan from Draft
 
-```bash
-"{{DUO_RUNTIME_ROOT}}/scripts/validate-gen-plan-io.sh" --input path/to/draft.md --output path/to/plan.md
-```
-
-Then follow the workflow in this skill to generate the structured plan content.
+Seed the output file by writing the plan template (`{{DUO_RUNTIME_ROOT}}/prompt-template/plan/gen-plan-template.md`) followed by the original draft content with `--- Original Design Draft Start/End ---` markers, then follow the workflow in this skill to generate the structured plan content.
 
 ### Ask Codex (One-shot Consultation)
 
@@ -255,12 +251,3 @@ duo monitor pr     # Monitor PR loop
 - `1` - Validation error
 - `124` - Timeout
 
-### validate-gen-plan-io.sh
-- `0` - Success
-- `1` - Input file not found
-- `2` - Input file is empty
-- `3` - Output directory does not exist
-- `4` - Output file already exists
-- `5` - No write permission
-- `6` - Invalid arguments
-- `7` - Plan template file not found
