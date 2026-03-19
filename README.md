@@ -4,25 +4,15 @@
 
 > Based on [humanize](https://github.com/humania-org/humanize). Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 
-A Claude Code plugin that provides iterative development with independent AI review. Build with confidence through continuous feedback loops.
+A Claude Code plugin for iterative development with independent AI review. Write a draft, generate a plan, then let Claude implement while Codex reviews — continuously refining until all acceptance criteria are met.
 
-## What is RLCR?
+## Prerequisites
 
-**RLCR** stands for **Ralph-Loop with Codex Review**, inspired by the official ralph-loop plugin and enhanced with independent Codex review. The name also reads as **Reinforcement Learning with Code Review** -- reflecting the iterative cycle where AI-generated code is continuously refined through external review feedback.
+- [codex CLI](https://github.com/openai/codex) -- `npm install -g @openai/codex`
+- `OPENAI_API_KEY` environment variable set
+- `jq` and `git` available in your PATH
 
-## Core Concepts
-
-- **Iteration over Perfection** -- Instead of expecting perfect output in one shot, Duo leverages continuous feedback loops where issues are caught early and refined incrementally.
-- **One Build + One Review** -- Claude implements, Codex independently reviews. No blind spots.
-- **Ralph Loop with Swarm Mode** -- Iterative refinement continues until all acceptance criteria are met. Optionally parallelize with Agent Teams.
-
-## How It Works
-
-<p align="center">
-  <img src="docs/images/rlcr-workflow.svg" alt="RLCR Workflow" width="680"/>
-</p>
-
-The loop has two phases: **Implementation** (Claude works, Codex reviews summaries) and **Code Review** (Codex checks code quality with severity markers). Issues feed back into implementation until resolved.
+See the full [Installation Guide](docs/install-for-claude.md) for details.
 
 ## Install
 
@@ -31,54 +21,54 @@ The loop has two phases: **Implementation** (Claude works, Codex reviews summari
 /plugin install duo@haonan16
 ```
 
-Requires [codex CLI](https://github.com/openai/codex) for review. See the full [Installation Guide](docs/install-for-claude.md) for prerequisites.
-
 ## Quick Start
 
-1. **Set up once per project** (grants script permissions and installs the CLI):
+1. **Set up once per project** (grants script permissions, installs the CLI):
    ```bash
    /duo:setup
    ```
 
-2. **Start development** from a draft file or inline text:
+2. **Write a draft** describing what you want to build (any markdown file works):
+   ```
+   # Add caching layer
+   Cache API responses in Redis with a 5-minute TTL...
+   ```
+
+3. **Start development** — Duo generates a plan, then implements and reviews it:
    ```bash
    /duo:start draft.md
+   ```
+   Or skip the file and describe inline:
+   ```bash
    /duo:start Add a caching layer for API responses
    ```
 
-3. **Monitor progress** in a separate terminal:
+4. **Monitor progress** in a separate terminal:
    ```bash
    duo monitor
    ```
 
-### Power User Commands
+## How It Works
 
-For more control, use the individual commands:
+<p align="center">
+  <img src="docs/images/rlcr-workflow.svg" alt="RLCR Workflow" width="680"/>
+</p>
 
-- **Generate a plan only** (with Codex refinement):
-  ```bash
-  /duo:start draft.md --plan-only
-  ```
+The loop has two phases: **Implementation** (Claude works, Codex reviews summaries) and **Code Review** (Codex checks code quality with severity markers). Issues feed back into implementation until all acceptance criteria are resolved.
 
-- **Generate a plan only** without Codex refinement:
-  ```bash
-  /duo:start draft.md --plan-only --skip-review
-  ```
+Duo uses **RLCR** (Ralph-Loop with Codex Review) — Claude implements, Codex independently reviews. No blind spots, no self-review bias.
 
-- **Run the loop** with an existing plan:
-  ```bash
-  /duo:run docs/plan.md
-  ```
+## Commands
 
-- **Setup and verify** prerequisites:
-  ```bash
-  /duo:setup
-  ```
-
-- **Show all commands**:
-  ```bash
-  /duo:help
-  ```
+| Command | Purpose |
+|---------|---------|
+| `/duo:start <draft.md>` | Generate a plan from a draft, then run the development loop |
+| `/duo:start <text>` | Use inline text as the draft |
+| `/duo:start --plan-only` | Generate a plan only (with Codex refinement) |
+| `/duo:run <plan.md>` | Run the development loop with an existing plan |
+| `/duo:stop` | Cancel the active loop |
+| `/duo:setup` | Install, configure, and verify prerequisites |
+| `/duo:help` | Show all commands and options |
 
 ## Monitor Dashboard
 
