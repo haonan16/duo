@@ -88,6 +88,55 @@ setup_test_dir() {
     trap "rm -rf $TEST_DIR" EXIT
 }
 
+# ========================================
+# Assertion Helpers
+# ========================================
+
+assert_equals() {
+    local expected="$1" actual="$2" msg="${3:-values are equal}"
+    if [[ "$actual" == "$expected" ]]; then
+        pass "$msg"
+    else
+        fail "$msg" "$expected" "$actual"
+    fi
+}
+
+assert_file_exists() {
+    local file="$1" msg="${2:-file exists: $1}"
+    if [[ -f "$file" ]]; then
+        pass "$msg"
+    else
+        fail "$msg" "file to exist" "not found: $file"
+    fi
+}
+
+assert_not_exists() {
+    local file="$1" msg="${2:-file does not exist: $1}"
+    if [[ ! -f "$file" ]]; then
+        pass "$msg"
+    else
+        fail "$msg" "file to not exist" "found: $file"
+    fi
+}
+
+assert_contains() {
+    local haystack="$1" needle="$2" msg="${3:-output contains expected string}"
+    if printf '%s' "$haystack" | grep -qF "$needle"; then
+        pass "$msg"
+    else
+        fail "$msg" "string containing '$needle'" "not found in: $(printf '%s' "$haystack" | head -3)"
+    fi
+}
+
+assert_exit_code() {
+    local expected="$1" actual="$2" msg="${3:-exit code matches}"
+    if [[ "$actual" == "$expected" ]]; then
+        pass "$msg"
+    else
+        fail "$msg" "exit $expected" "got exit $actual"
+    fi
+}
+
 # Create a mock git repository in a directory
 # Usage: init_test_git_repo "$dir"
 init_test_git_repo() {

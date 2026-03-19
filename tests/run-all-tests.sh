@@ -58,6 +58,8 @@ TEST_SUITES=(
     # Session ID and Agent Teams tests
     "test-session-id.sh"
     "test-agent-teams.sh"
+    # Loop resume tests
+    "test-resume.sh"
     # Ask Codex tests
     "test-ask-codex.sh"
     # Skill monitor tests
