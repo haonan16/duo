@@ -50,6 +50,7 @@ SKIP_IMPL="false"
 SKIP_IMPL_NO_PLAN="false"
 ASK_CODEX_QUESTION="true"
 AGENT_TEAMS="false"
+PROBE_MODE="false"   # --probe: read-only conflict check, exits before any setup
 
 show_help() {
     cat <<HELP_EOF
@@ -228,6 +229,10 @@ while [[ $# -gt 0 ]]; do
             AGENT_TEAMS="true"
             shift
             ;;
+        --probe)
+            PROBE_MODE="true"
+            shift
+            ;;
         -*)
             echo "Unknown option: $1" >&2
             echo "Use --help for usage information" >&2
@@ -251,6 +256,31 @@ done
 # ========================================
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+
+# ========================================
+# Handle --probe: read-only conflict check, no files created
+# ========================================
+if [[ "$PROBE_MODE" == "true" ]]; then
+    PROBE_RLCR_DIR=$(find_active_loop "$PROJECT_ROOT/.duo/rlcr" 2>/dev/null || echo "")
+    if [[ -n "$PROBE_RLCR_DIR" ]]; then
+        PROBE_STATE=$(resolve_active_state_file "$PROBE_RLCR_DIR")
+        if [[ -z "$PROBE_STATE" ]]; then
+            echo "CLEAR"
+            exit 0
+        fi
+        PROBE_ROUND=$(grep -E '^current_round:' "$PROBE_STATE" | sed 's/^current_round:[[:space:]]*//' | tr -d ' ')
+        PROBE_PLAN=$(grep -E '^plan_file:' "$PROBE_STATE" | sed 's/^plan_file:[[:space:]]*//' | tr -d ' ')
+
+        echo "RESUME_PROMPT"
+        echo "loop_dir: $PROBE_RLCR_DIR"
+        echo "current_round: ${PROBE_ROUND:-0}"
+        echo "existing_plan: ${PROBE_PLAN:-unknown}"
+        exit 4
+    else
+        echo "CLEAR"
+        exit 0
+    fi
+fi
 
 # loop-common.sh already sourced above (provides find_active_loop, find_active_pr_loop, etc.)
 
