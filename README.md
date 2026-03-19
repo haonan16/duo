@@ -33,21 +33,23 @@ The loop has two phases: **Implementation** (Claude works, Codex reviews summari
 
 Requires [codex CLI](https://github.com/openai/codex) for review. See the full [Installation Guide](docs/install-for-claude.md) for prerequisites.
 
-> **Per-project setup:** Run `/duo:setup` once in each project to grant Duo script permissions. Without it, Claude will prompt for approval on every run.
-
 ## Quick Start
 
-1. **Start development** from a draft file or inline text:
+1. **Set up once per project** (grants script permissions and installs the CLI):
+   ```bash
+   /duo:setup
+   ```
+
+2. **Start development** from a draft file or inline text:
    ```bash
    /duo:start draft.md
    /duo:start Add a caching layer for API responses
    ```
 
-2. **Monitor progress** in a separate terminal:
+3. **Monitor progress** in a separate terminal:
    ```bash
-   ~/.duo/bin/duo monitor
+   duo monitor
    ```
-   The CLI is auto-installed on first `/duo:start`. Run `/duo:setup` to add it to your PATH permanently.
 
 ### Power User Commands
 
