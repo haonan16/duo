@@ -9,6 +9,7 @@
 # 1. Setup script creates .duo/.pending-session-id with:
 #    Line 1: path to state.md
 #    Line 2: full resolved path of setup script (command signature)
+#    Line 3: "force=true" (optional) -- overwrite existing session_id on resume
 # 2. This hook checks for the signal file on every Bash PostToolUse event
 # 3. Boundary-aware match: verifies the Bash command is a valid invocation
 #    of the setup script path (path followed by end-of-string or whitespace),
@@ -40,11 +41,14 @@ fi
 # Read the signal file contents
 # Line 1: state file path
 # Line 2: full resolved path of setup script (command signature)
+# Line 3: "force=true" (optional) -- overwrite existing session_id on resume
 STATE_FILE_PATH=""
 COMMAND_SIGNATURE=""
+FORCE_FLAG=""
 {
     read -r STATE_FILE_PATH || true
     read -r COMMAND_SIGNATURE || true
+    read -r FORCE_FLAG || true
 } < "$SIGNAL_FILE"
 
 if [[ -z "$STATE_FILE_PATH" ]] || [[ ! -f "$STATE_FILE_PATH" ]]; then
@@ -102,15 +106,20 @@ if [[ -z "$SESSION_ID" ]]; then
     exit 0
 fi
 
-# Patch state.md: replace empty session_id with actual value
-# Only patch if session_id is currently empty (safety check)
+# Patch state.md: set session_id value
+# Patch when empty (normal setup) or when force=true (resume transfer)
 CURRENT_SESSION_ID=$(grep "^session_id:" "$STATE_FILE_PATH" 2>/dev/null | sed 's/session_id: *//' || echo "")
 
-if [[ -z "$CURRENT_SESSION_ID" ]]; then
+SHOULD_PATCH="false"
+if [[ -z "$CURRENT_SESSION_ID" ]] || [[ "$FORCE_FLAG" == "force=true" ]]; then
+    SHOULD_PATCH="true"
+fi
+
+if [[ "$SHOULD_PATCH" == "true" ]]; then
     # Use awk for safe replacement (handles special chars in SESSION_ID: /, &, etc.)
     TEMP_FILE="${STATE_FILE_PATH}.tmp.$$"
     awk -v new_id="$SESSION_ID" '{
-        if ($0 ~ /^session_id:$/) {
+        if ($0 ~ /^session_id:/) {
             print "session_id: " new_id
         } else {
             print
