@@ -36,7 +36,7 @@ Run the probe:
     ```
   - **Stop here.** Do not run the compliance check or normal setup.
 
-- If the first line is `CLEAR` (or the probe exits with code 0 for any reason):
+- If the first line is `CLEAR`:
   - Continue to the Plan Compliance Pre-Check section below.
 
 - If the probe fails (non-zero exit, not exit 4):
