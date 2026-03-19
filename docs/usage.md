@@ -88,7 +88,7 @@ The PR loop automates the process of handling GitHub PR reviews from remote bots
 
 ## Monitoring
 
-The monitor CLI is auto-installed by `/duo:setup`. Use it in a separate terminal:
+The monitor CLI is auto-installed on first `/duo:start` (or by running `/duo:setup`). Use it in a separate terminal:
 
 ```bash
 # Monitor development loop progress

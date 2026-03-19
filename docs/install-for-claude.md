@@ -58,7 +58,11 @@ curl -fsSL https://raw.githubusercontent.com/haonan16/duo/main/scripts/remote-in
 
 This installs `duo`, `duo-gen-plan`, and `duo-rlcr` skills into `${CODEX_HOME:-~/.codex}/skills`.
 
-For both Codex and Kimi at once: append `-- --target both`
+For both Codex and Kimi at once:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/haonan16/duo/main/scripts/remote-install.sh | bash -s -- --target both
+```
 
 ## Other Install Guides
 
