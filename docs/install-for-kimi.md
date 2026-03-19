@@ -162,13 +162,6 @@ Look for the "Skills" section in the help output.
 | `--skip-impl` | Skip to code review | false |
 | `--push-every-round` | Push after each round | false |
 
-### Generate Plan Options
-
-| Option | Description | Required |
-|--------|-------------|----------|
-| `--input <path>` | Draft file path | Yes |
-| `--output <path>` | Plan output path | Yes |
-
 ## Prerequisites
 
 Ensure you have `codex` CLI installed:
@@ -257,5 +250,5 @@ Ensure these directories are writable.
 
 - [Kimi CLI Documentation](https://moonshotai.github.io/kimi-cli/)
 - [Agent Skills Format](https://agentskills.io/)
-- [Install for Codex](./install-for-codex.md)
+- [Install for Claude Code](./install-for-claude.md)
 - [Duo README](../README.md)

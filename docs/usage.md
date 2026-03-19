@@ -1,27 +1,6 @@
 # Duo Usage Guide
 
-Detailed usage documentation for the Duo plugin. For installation, see [Install for Claude Code](install-for-claude.md).
-
-## How It Works
-
-Duo creates an iterative feedback loop with two phases:
-
-1. **Implementation Phase**: Claude works on your plan, Codex reviews summaries until COMPLETE
-2. **Review Phase**: `codex review --base <branch>` checks code quality with `[P0-9]` severity markers
-
-The loop continues until all acceptance criteria are met or no issues remain.
-
-## Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/duo:start <file.md or text>` | Smart start (file path or inline text, auto-detects draft vs plan). Also generates plans with `--plan-only`. |
-| `/duo:run <plan.md>` | Start iterative development with Codex review |
-| `/duo:stop` | Cancel active loop |
-| `/duo:pr --claude\|--codex` | Start PR review loop with bot monitoring |
-| `/duo:pr-stop` | Cancel active PR loop |
-| `/duo:setup` | Install, configure, verify prerequisites |
-| `/duo:help` | Show all commands |
+Detailed command reference for the Duo plugin. For installation, see [Install for Claude Code](install-for-claude.md).
 
 ## Command Reference
 
@@ -109,20 +88,13 @@ The PR loop automates the process of handling GitHub PR reviews from remote bots
 
 ## Monitoring
 
-The monitor CLI is auto-installed on first `/duo:start`. Use it in a separate terminal:
+The monitor CLI is auto-installed by `/duo:setup`. Use it in a separate terminal:
 
 ```bash
 # Monitor development loop progress
-~/.duo/bin/duo monitor
+duo monitor
 
 # Monitor PR loop progress
-~/.duo/bin/duo monitor --pr
-```
-
-To use `duo monitor` without the full path, run `/duo:setup` which adds `~/.duo/bin` to your PATH. After that:
-
-```bash
-duo monitor
 duo monitor --pr
 ```
 

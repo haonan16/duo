@@ -48,9 +48,20 @@ You should see Duo commands available:
 
 Run `/duo:setup` once in each project where you use Duo. It adds Duo's script permissions to `.claude/settings.local.json` so Claude does not prompt for approval every time Duo runs its scripts. Without this step, Claude will ask for access on each invocation.
 
+## Install Duo Skills for Codex
+
+To use Duo as a Codex skill (run Duo from within Codex):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/haonan16/duo/main/scripts/remote-install.sh | bash
+```
+
+This installs `duo`, `duo-gen-plan`, and `duo-rlcr` skills into `${CODEX_HOME:-~/.codex}/skills`.
+
+For both Codex and Kimi at once: append `-- --target both`
+
 ## Other Install Guides
 
-- [Install for Codex](install-for-codex.md)
 - [Install for Kimi](install-for-kimi.md)
 
 ## Next Steps

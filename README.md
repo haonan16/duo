@@ -1,6 +1,6 @@
 # Duo
 
-**Current Version: 1.27.1**
+**Current Version: 1.27.2**
 
 > Based on [humanize](https://github.com/humania-org/humanize). Derived from the [GAAC (GitHub-as-a-Context)](https://github.com/SihaoLiu/gaac) project.
 
@@ -79,8 +79,7 @@ Duo uses **RLCR** (Ralph-Loop with Codex Review) — Claude implements, Codex in
 ## Documentation
 
 - [Usage Guide](docs/usage.md) -- Commands, options, environment variables
-- [Install for Claude Code](docs/install-for-claude.md) -- Full installation instructions
-- [Install for Codex](docs/install-for-codex.md) -- Codex skill runtime setup
+- [Install for Claude Code](docs/install-for-claude.md) -- Full installation instructions (includes Codex skill setup)
 - [Install for Kimi](docs/install-for-kimi.md) -- Kimi CLI skill setup
 
 ## License
