@@ -105,6 +105,23 @@ Progress data is stored in `.duo/rlcr/<timestamp>/` for each loop session.
 - **Development loop**: `/duo:stop`
 - **PR loop**: `/duo:pr-stop`
 
+## Interrupted Loop Recovery
+
+If your Claude session crashes or is disconnected mid-loop, the loop state is preserved. Running `/duo:run` again automatically detects the interrupted loop and resumes from the last completed round — no flags needed.
+
+```bash
+# Session crashed at round 5 — just run again:
+/duo:run path/to/plan.md
+# Output: "Resuming interrupted loop at round 5."
+```
+
+To discard the interrupted loop and start fresh instead, cancel it first:
+
+```bash
+/duo:stop          # archives the interrupted loop
+/duo:run path/to/plan.md   # starts a new loop
+```
+
 ## Environment Variables
 
 ### DUO_CODEX_BYPASS_SANDBOX

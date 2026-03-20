@@ -369,6 +369,61 @@ else
 fi
 
 # ========================================
+# Tests: Error invocation with partial stdout in output.md
+# ========================================
+
+echo "=== Skill Monitor: Error With Partial Stdout ==="
+
+setup_test_env
+mkdir -p .duo/skill
+err_id="2026-02-19_21-00-00-111-err"
+err_dir=".duo/skill/$err_id"
+mkdir -p "$err_dir/cache"
+
+# Simulate a failed run: metadata says error, output.md has partial stdout from the
+# failed Codex invocation, and codex-run.log has the real error details.
+cat > "$err_dir/metadata.md" << 'EOF'
+---
+model: gpt-5.4
+effort: xhigh
+timeout: 3600
+exit_code: 1
+duration: 5s
+status: error
+started_at: 2026-02-19T21:00:00Z
+---
+EOF
+echo "partial stdout from failed run" > "$err_dir/output.md"
+echo "Error: Codex hit a fatal error" > "$err_dir/cache/codex-run.log"
+cat > "$err_dir/input.md" << 'EOF'
+# Ask Codex Input
+
+## Question
+
+Error test question
+
+## Configuration
+
+- Model: gpt-5.4
+- Effort: xhigh
+- Timeout: 3600s
+- Timestamp: 2026-02-19 21:00:00
+EOF
+
+output=$(_duo_monitor_skill --once 2>&1) && rc=0 || rc=$?
+if echo "$output" | grep -q "Error: Codex hit a fatal error"; then
+    pass "Error invocation shows log content, not partial stdout"
+else
+    fail "Error invocation should show log, not partial stdout" "got: $output"
+fi
+
+if ! echo "$output" | grep -q "partial stdout from failed run"; then
+    pass "Error invocation does not show partial stdout in output section"
+else
+    fail "Error invocation should not show partial stdout" "got: $output"
+fi
+
+# ========================================
 # Tests: Non-skill directories are ignored
 # ========================================
 

@@ -391,10 +391,10 @@ else
     fail "cache directory contains codex-run.cmd" "codex-run.cmd exists" "cache=$CACHE_PATH"
 fi
 
-if [[ -n "$CACHE_PATH" ]] && [[ -f "$CACHE_PATH/codex-run.out" ]]; then
-    pass "cache directory contains codex-run.out"
+if [[ -n "$CACHE_PATH" ]] && [[ ! -f "$CACHE_PATH/codex-run.out" ]]; then
+    pass "cache directory does not contain codex-run.out (stdout written directly to skill dir)"
 else
-    fail "cache directory contains codex-run.out"
+    fail "cache directory does not contain codex-run.out (stdout written directly to skill dir)"
 fi
 
 if [[ -n "$CACHE_PATH" ]] && grep -q "cache test" "$CACHE_PATH/codex-run.cmd"; then

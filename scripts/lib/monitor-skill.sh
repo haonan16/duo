@@ -156,8 +156,13 @@ _duo_monitor_skill() {
             f=$(_check_cache_files "$lcache" true); [[ -n "$f" ]] && { echo "$f"; return; }
             [[ -f "$dir/input.md" ]] && { echo "$dir/input.md"; return; }
         else
-            # Completed: prefer output.md with content, then cache files
-            [[ -f "$dir/output.md" && -s "$dir/output.md" ]] && { echo "$dir/output.md"; return; }
+            # Completed: prefer output.md only on success; for errors prefer the log
+            # so partial stdout from a failed run does not obscure the real error details.
+            local completed_status
+            completed_status=$(monitor_get_yaml_value "status" "$dir/metadata.md")
+            if [[ "$completed_status" == "success" ]]; then
+                [[ -f "$dir/output.md" && -s "$dir/output.md" ]] && { echo "$dir/output.md"; return; }
+            fi
             local f
             f=$(_check_cache_files "$gcache" false); [[ -n "$f" ]] && { echo "$f"; return; }
             f=$(_check_cache_files "$lcache" false); [[ -n "$f" ]] && { echo "$f"; return; }

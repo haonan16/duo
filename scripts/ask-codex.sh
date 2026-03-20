@@ -14,7 +14,7 @@
 #
 # Storage:
 #   Project-local: .duo/skill/<unique-id>/{input,output,metadata}.md
-#   Cache: ~/.cache/duo/<sanitized-path>/skill-<unique-id>/codex-run.{cmd,out,log}
+#   Cache: ~/.cache/duo/<sanitized-path>/skill-<unique-id>/codex-run.{cmd,log}
 #
 
 set -euo pipefail
@@ -259,7 +259,7 @@ CODEX_EXEC_ARGS+=("$CODEX_AUTO_FLAG" "-C" "$PROJECT_ROOT")
 # ========================================
 
 CODEX_CMD_FILE="$CACHE_DIR/codex-run.cmd"
-CODEX_STDOUT_FILE="$CACHE_DIR/codex-run.out"
+CODEX_STDOUT_FILE="$SKILL_DIR/output.md"
 CODEX_STDERR_FILE="$CACHE_DIR/codex-run.log"
 
 {
@@ -383,9 +383,6 @@ fi
 # ========================================
 # Save Output and Metadata
 # ========================================
-
-# Save Codex response to project-local storage
-cp "$CODEX_STDOUT_FILE" "$SKILL_DIR/output.md"
 
 # Save metadata
 cat > "$SKILL_DIR/metadata.md" << EOF
