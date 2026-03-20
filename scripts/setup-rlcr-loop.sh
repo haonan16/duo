@@ -800,8 +800,14 @@ else
     # Auto-detect base branch
     # Note: codex review --base requires a LOCAL branch, so we must verify local existence
     # Priority 1: Remote default branch (if it exists locally)
-    # Guard with || true to prevent pipefail from terminating script when origin is missing
-    REMOTE_DEFAULT=$(run_with_timeout "$GIT_TIMEOUT" git -C "$PROJECT_ROOT" remote show origin 2>/dev/null | grep "HEAD branch:" | sed 's/.*HEAD branch:[[:space:]]*//' || true)
+    # Guard with || to prevent pipefail from terminating script when origin is missing or times out
+    REMOTE_SHOW_OUTPUT=""
+    REMOTE_EXIT=0
+    REMOTE_SHOW_OUTPUT=$(run_with_timeout "$GIT_TIMEOUT" git -C "$PROJECT_ROOT" remote show origin 2>/dev/null) || REMOTE_EXIT=$?
+    if [[ "$REMOTE_EXIT" -eq 124 ]]; then
+        echo "Warning: Remote branch detection timed out (${GIT_TIMEOUT}s). Falling back to local branches." >&2
+    fi
+    REMOTE_DEFAULT=$(echo "$REMOTE_SHOW_OUTPUT" | grep "HEAD branch:" | sed 's/.*HEAD branch:[[:space:]]*//' || true)
     if [[ -n "$REMOTE_DEFAULT" && "$REMOTE_DEFAULT" != "(unknown)" ]]; then
         # Verify the remote default branch exists locally
         if run_with_timeout "$GIT_TIMEOUT" git -C "$PROJECT_ROOT" show-ref --verify --quiet "refs/heads/$REMOTE_DEFAULT" 2>/dev/null; then

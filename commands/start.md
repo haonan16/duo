@@ -78,12 +78,14 @@ Report: "Starting code review (skipping implementation)..."
 
 ### Case 2: No file argument provided
 
-Check for an existing loop state in the project:
-1. Look for `.duo/rlcr/*/state.md` (active loop state)
-2. If found, report: "An active loop is already running. Use `/duo:stop` to cancel it first."
-3. If not found, report: "No input provided. Usage: `/duo:start <file.md>` or `/duo:start <description text>`. See `/duo:help` for all commands."
+Run the probe to check for an existing loop:
 
-Note: There is no "resume" capability. If a loop was cancelled, the user must start a new one.
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-rlcr-loop.sh" --probe
+```
+
+- If the first line is `RESUME_PROMPT`: An interrupted loop was detected. Read `loop_dir:` and `current_round:` from the output. Report: "Found an interrupted loop at round <current_round>. Run `/duo:run` to resume it, or `/duo:stop` to cancel it." Stop.
+- If the first line is `CLEAR` (or probe fails): Report: "No input provided. Usage: `/duo:start <file.md>` or `/duo:start <description text>`. See `/duo:help` for all commands." Stop.
 
 ### Case 3: Argument provided but file does not exist
 

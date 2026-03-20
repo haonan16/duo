@@ -30,4 +30,6 @@ Print the following reference card to the user exactly as shown:
 
 Run `/duo:setup` to add `~/.duo/bin` to PATH, then use `duo monitor` directly.
 
+**Interrupted loop recovery:** If your session crashes mid-loop, run `/duo:run` — it detects the interrupted loop and resumes from where it left off. Run `/duo:stop` first if you want to discard it and start fresh.
+
 **Docs:** See `docs/usage.md` for full command reference and options.
